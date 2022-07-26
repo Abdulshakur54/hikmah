@@ -1,0 +1,82 @@
+table{
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 1.2em;
+    margin-top:12px;
+}
+
+th,td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#headerRow th, #tablesectionhead{
+    background-color: rgb(3, 3, 190);
+    color:rgb(255, 255, 255);
+    padding-top: 12px;
+}
+
+a:link, a:visited{
+    color:rgb(11, 27, 245);
+    text-decoration: none;
+    display:block;
+    width:100%;
+}
+
+a:active, a:hover{
+    text-decoration: underline;
+}
+
+
+ tr:hover{
+     background-color: rgb(240, 248, 255);
+ }
+
+ @media only screen and (max-width:768px){
+    table{
+        font-size: 1em;
+        margin-top:10px;
+    }
+    th,td{
+        padding: 7px;
+    }
+ }
+
+
+ @media only screen and (max-width:465px){
+     table{
+         margin-top: 7px;
+     }
+     tbody tr :not(#tablesectionhead){
+         display: grid;
+         grid-template-columns: 1fr;
+     }
+     tbody tr td{
+         text-align: left;
+     }
+
+     tbody tr :first-child{
+         background-color: aliceblue;
+         font-weight: bold;
+     }
+
+     tr:hover{
+        background-color: rgb(255, 255, 255);
+    }
+    #headerRow th{
+        padding-top: 12px;
+        margin-bottom:0px;
+    }
+    tbody tr a:link, tbody tr a:visited{
+        background-color: rgb(255, 255, 255);
+        font-weight: normal;
+    }
+    th,td{
+        padding: 5px;
+    }
+
+    #tablesectionhead td{
+        background-color: rgb(3, 3, 190);
+    }
+ }    

@@ -1,0 +1,179 @@
+*{
+    box-sizing: border-box;
+}
+#headerContainer{
+    display:flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+
+#school_logo{
+    width:100%;
+    height: auto;
+}
+#logoContainer{
+    width: 40%;
+}
+
+#navlinks{
+    width:100%;
+}
+#navlinks div{
+    display:flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    width:100%;
+    margin: auto;
+    background-color: rgb(10, 10, 119);
+    font-size: 1.3em;
+    position:relative;
+}
+#toggleBar, #homeBar{
+    display:none;
+    outline: 0px;
+    border: 0px;
+    font-weight: bold;
+    cursor: pointer;
+    width:30px;
+    height: 30px;
+    font-size: 1em;
+    background-color: rgb(10, 10, 119);
+    color:#ffffff;
+}
+
+#toggleBar:hover, #homeBar:hover{
+    display:none;
+    outline: 0px;
+    border: 0px;
+    font-weight: bold;
+    background-color: rgb(221, 235, 248);
+    color:rgb(0, 0, 0);
+}
+
+
+#navlinks a:link, #navlinks a:visited{
+    color:#ffffff;
+    text-decoration: none;
+    padding: 7px 20px;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+
+}
+
+#navlinks #examNav{
+    box-sizing: border-box;
+    background-color: rgb(191, 225, 245);
+    color: rgb(0, 0, 0);
+    border: 2px solid rgb(0, 0, 0);
+    font-size: 0.8em;
+}
+#navlinks a:hover, #navlinks a:active{
+    outline:2px solid white;
+    background-color: rgb(221, 235, 248);
+    color:rgb(0, 0, 0);
+}
+#navlinks a:link, #navlinks a:visited{
+    text-align: center;
+}
+
+body{
+    width: 90%;
+    margin:auto;
+}
+
+#navUsername{
+    position:absolute;
+    top:17px;
+    right:1px;
+    font-size: 0.8em;
+}
+
+#headerContainer{
+    margin-bottom: 15px;
+}
+
+
+
+@media only screen and (max-width:970px){
+    #navlinks div{
+        font-size: 1em;
+    }
+    #navlinks a:link, #navlinks a:visited{
+        padding: 5px 5px;
+    }
+
+    #headerContainer{
+        margin-bottom: 13px;
+    }
+
+
+}  
+
+@media only screen and (max-width:768px){
+    #navlinks div{
+        width: 100%;
+        font-size: 0.9em;
+    }
+
+    #navlinks a:link, #navlinks a:visited{
+        padding: 5px 5px;
+    }
+
+    #headerContainer{
+        margin-bottom: 10px;
+    }
+
+
+}   
+
+@media only screen and (max-width:526px){ /*465 is what would have been used, 526 is used to avoid recoding*/
+    #navlinks{
+        position: relative;
+        background-color: rgb(10, 10, 119);
+        height: 30px;
+    }
+
+    #navlinks div.showNav{
+        display:flex;
+        width: 100%;
+        font-size: 0.9em;
+        display:flex;
+        flex-flow: column nowrap;
+        position:absolute;
+        top:0px;
+        left:0px;
+        z-index: 2;
+    }
+
+    #navlinks div.hideNav{
+        display:none;
+    }
+
+    #toggleBar{
+        display:block;
+        position:absolute;
+        right:0px;
+        top:0px;
+        z-index: 3;
+        border-left: 1px solid #ffffff;
+    }
+    #homeBar{
+        display:block;
+        position:absolute;
+        left:0px;
+        top:0px;
+        border-right: 1px solid #ffffff;
+    }
+
+     #navlinks a:link, #navlinks a:visited{
+        padding: 5px 5px;
+    }
+
+    #navUsername{
+        display:none;
+    }
+
+    #headerContainer{
+        margin-bottom: 7px;
+    }
+
+}

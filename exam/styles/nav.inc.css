@@ -1,0 +1,180 @@
+*{
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+}
+#school_logo{
+    width:100%;
+    height: auto;
+}
+#logoContainer{
+    width: 40%;
+    margin: 0px auto;
+    min-width: 300px;
+    max-width: 500px;
+}
+
+nav{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 270px;
+    height: 100%;
+    background-color: rgb(10, 10, 119);
+    font-size: 16px;
+    color: rgb(255,255,255);
+    padding-top: 100px;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+
+
+nav>div{
+    margin-bottom: 50px;
+    margin-left: 30px;
+}
+
+nav #toggleBody div, #toggleDiv{
+    color: rgb(75, 232, 238);
+    margin-bottom: 20px;
+}
+#toggleBody div{
+    display:grid;
+    row-gap: 20px;
+}
+
+nav a:link,nav a:visited{
+    text-decoration: none;
+    color: rgb(255,255,255);
+    display: block;
+    margin-left: 20px;
+}
+
+#toggleDiv{
+    font-size: 20px;
+    color: #ffffff;
+}
+
+#toggleDiv a{
+    margin-left: 0px;
+}
+
+#toggleBar{
+    display:none;
+}
+
+#schoolPortal{
+    width: 150px;
+}
+nav #schoolPortal a:link{
+    background-color: rgb(191, 225, 245);
+    color: rgb(0, 0, 0);
+    padding: 3px;
+    margin-left: 0px;
+    text-align: center;
+}
+
+
+
+nav a:not(.active):hover{
+    color: #000000;
+    background: aqua;
+    padding: 5px;
+    margin-top: -5px;
+    margin-bottom: -5px;
+}
+
+nav div#schoolPortal a:hover{
+    background-color: rgb(93, 197, 204);
+    color: rgb(0, 0, 0);
+    margin: 0px;
+}
+.active{
+    color: rgb(250, 118, 118);
+}
+
+main, header{
+    margin-left: 270px;
+    overflow: auto;
+    padding: 20px;
+}
+
+#toggleDiv a:link{
+    color: white;
+    display: inline;
+}
+
+#toggleDiv a:hover{
+    color: white;
+    padding: 0px;
+    margin: 0px;
+    background: inherit;
+}
+
+#toggleDiv{
+    position: relative;
+}
+
+/*this style the second togglebar which is functional for large screen*/
+#toggleBarLg{
+    display: inline;
+    position: absolute;
+    top: 0px;
+    right: 10px;
+}
+
+
+
+@media only screen and (max-width: 768px){
+    nav{
+        position: relative;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        font-size: 16px;
+        color: rgb(255,255,255);
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+   
+    #toggleBarLg{
+        display: none;
+    }
+    
+    #toggleDiv i{
+      font-size: 30px;
+    }
+    
+    #toggleBar{
+        display: inline;
+        position: absolute;
+        top: 0px;
+        right: 10px;
+    }
+    #toggleBody{
+        display: none;
+    }
+    #schoolPortal{
+        display: none;
+    }
+    
+    #toggleBody div{
+        row-gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    
+    #schoolPortal{
+        margin-bottom: 10px;
+    }
+    #toggleDiv{
+        margin: 0px;
+        margin-left: 10px;
+    }
+    
+    main, header{
+        margin-left: 0px;
+    }
+}

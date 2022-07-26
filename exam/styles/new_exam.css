@@ -1,0 +1,106 @@
+.formhead{
+    text-align: center;
+    padding-bottom: 7px;
+    margin-top: 7px;
+}
+
+#gridContainer{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 2em;
+    column-gap: 2em;
+}
+
+#gridContainer div{
+    display:grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.5em;
+}
+
+div.leftPad{
+    grid-column: 2 / 3;
+    grid-row: 2/3;
+}
+
+.inputWithMsgBox{
+    column-gap: 2px;
+    grid-template-columns: auto 1fr;
+}
+
+label, input{
+    font-size: 1.2em;
+    border: none;
+}
+
+input{
+    border-bottom: 1px solid #ddd;
+}
+input:not(#createExam):focus{
+    border-color: rgb(0, 0, 255);
+}
+
+h2{
+    text-align: center;
+}
+
+
+#createExam{
+    display: block;
+    padding: 7px 11px;
+    margin: auto;
+    border:none;
+    background-color: rgb(29, 29, 161);
+    color:rgb(255, 255, 255);
+    margin-top: 25px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+@media only screen and (max-width:1100px){
+    #gridContainer{
+        row-gap: 1.2em;
+        grid-template-columns: 1fr;
+    }
+    label, input{
+        font-size: 1.1em;
+    }
+
+    #createExam{
+        display: block;
+        padding: 5px 9px;
+    }
+    .formhead{
+        padding-bottom: 9px;
+        font-size:1.2em;
+    }
+
+    #createExam{
+        margin-top: 20px;
+    }
+    
+}
+
+@media only screen and (max-width:465px){
+
+    #gridContainer div{
+        grid-template-columns: 1fr;
+        row-gap: 0em;
+    }
+    #gridContainer{
+        row-gap: 0.5em;
+        font-size:1em;
+    }
+
+    div .leftPad{
+        grid-column: 1 / 2;
+        grid-row: 3 / 4;
+    }
+    #createExam{
+        margin-top: 15px;
+    }
+    
+     label, input{
+        font-size: 1em;
+    }
+    
+}

@@ -1,0 +1,151 @@
+*{
+    margin:0px;
+    padding:0px;
+    outline:none;
+    border: 0px;
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 100%;
+}
+
+h1 {
+    font-size: 2em;
+  }
+  
+  h2 {
+    font-size: 1.75em;
+  }
+  
+  h3 {
+    font-size: 1.17em;
+  }
+  
+  h4 {
+    font-size: 1.00em;
+  }
+  
+  h5 {
+    font-size: 0.83em;
+  }
+  
+  h6 {
+    font-size: 0.67em;
+  }
+
+p {
+    font-size: 0.875em;
+}
+
+
+#wrapper{
+    position: absolute;
+    width: 400px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    border: 1px solid rgb(0, 204, 255);
+    border-radius: 5px;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+#wrapper h2{
+    margin-bottom: 20px;
+    color:rgb(0, 153, 255);
+    font-family: "Times New Roman", Times, serif;
+    text-align: center;
+}
+
+#wrapper :not(h2){
+    font-size: 1.2em;
+}
+
+#wrapper label[for=remember]{
+    font-size: 0.9em;
+}
+
+#wrapper label[for=username], #wrapper label[for=password]{
+    color:rgb(112, 107, 107)
+}
+
+#wrapper #unameMsg, #wrapper #pwdMsg{
+    color: red;
+    font-size: 1em;
+}
+
+#wrapper input[type=submit]{
+    background-color: rgba(0, 0, 255, 0.877);
+    color: rgb(255,255,255);
+    cursor: pointer;
+}
+
+#wrapper p{
+    font-size: 0.7em;
+    margin-top: 2px;
+}
+
+
+
+#wrapper>*{
+    display: block;
+    width: 350px;
+    padding: 0px;
+    border-radius: 3px;
+    font-family: Tahoma, Geneva, sans-serif;
+    margin: auto;
+}
+
+#wrapper input[type=text],#wrapper input[type=password], #wrapper input[type=submit]{
+    padding: 5px;
+    border: 1px solid rgb(193, 230, 255);
+    margin-top: 5px;
+}
+
+
+@media only screen and (max-width:768px) {
+    #wrapper h2{
+        font-size: 1.5em;
+        margin-bottom: 17px;
+    }
+
+
+    #wrapper #unameMsg, #wrapper #pwdMsg{
+        color: red;
+        font-size: 0.9em;
+    }
+    #wrapper input[type=text],#wrapper input[type=password], #wrapper input[type=submit]{
+        font-size: 1.1em;
+    }
+
+}
+
+@media only screen and (max-width:465px){
+    #wrapper h2{
+        font-size: 1.3em;
+        margin-bottom: 15px;
+    }
+
+    #wrapper div{
+        font-size: 0.7em;
+    }
+    
+    #wrapper>*{
+        width: 100%;
+        margin: 0px auto;
+    }
+
+    #wrapper{
+        width: 90%;
+    }
+    #wrapper input[type=text],#wrapper input[type=password], #wrapper input[type=submit]{
+        font-size: 1em;
+    }
+
+    
+    #wrapper label{
+        font-size: 0.9em;
+    }
+}

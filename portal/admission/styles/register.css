@@ -1,0 +1,89 @@
+form{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+form>div{
+    display:grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 1em;
+    margin: 1em;
+    margin-bottom: 1em;
+    font-size: 1.2em;
+}
+
+input, select{
+    border-bottom: 1px solid #ddd;
+    font-size: 1.1em;
+}
+
+label{
+    color:rgb(20, 20, 196);
+}
+
+input:focus, select:focus{
+    border-bottom: 1px solid rgb(0, 0, 255);
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+#regBtn{
+    display: block;
+    text-align: center;
+    padding: 7px;
+    margin: 10px auto;
+    background-color: rgb(20, 20, 196);
+    color:rgb(255, 255, 255);
+    border-radius: 5px;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+.leftDiv{
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    font-size: 0.9em;
+    color:rgb(255, 0, 0);
+}
+
+.formhead{
+    text-align: center;
+    padding-bottom: 7px;
+    margin-top: 7px;
+    margin-bottom: 5px;
+    color: rgb(20, 20, 196);
+}
+
+@media only screen and (max-width:768px){
+    form>div{
+        display:grid;
+        grid-template-columns: auto 1fr;
+        column-gap: 0.8em;
+        margin-bottom: 0.8em;
+        font-size: 1em;
+    }
+    .formhead{
+        text-align: center;
+        padding-bottom: 5px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        color: rgb(20, 20, 196);
+        font-size: 1.1em;
+    }
+    
+}
+
+@media only screen and (max-width:465px){
+    form>div{
+        display:grid;
+        grid-template-columns: 1fr;
+        row-gap: 0.2em;
+        font-size: 1em;
+    }
+
+    input,#regBtn{
+        font-size: 1em;
+    }
+
+    .leftDiv{
+        grid-column: 1 / 2;
+        grid-row: 3 / 4;
+    }
+}

@@ -1,0 +1,31 @@
+
+*{
+    outline: none;
+    border:none;
+}
+.success{
+    color:rgb(50, 148, 50);
+}
+
+.failure{
+    color:rgb(145, 11, 11);
+}
+
+.message{
+    color:rgb(24, 11, 145);
+    font-size: 1em;
+}
+table .section td{
+    font-weight: bold;
+    padding-top: 11px;
+}
+
+.sectionhead{
+    font-weight: bold;
+}
+.centered{
+    text-align: center;
+}
+.paragraph{
+    font-size:1em;
+}

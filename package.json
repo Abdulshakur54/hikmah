@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "just-validate": "^3.8.1",
+    "sweetalert": "^2.1.2"
+  }
+}

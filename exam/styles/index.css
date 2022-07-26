@@ -1,0 +1,74 @@
+ul{
+    list-style-type: none;
+    margin:0px;
+    padding: 0px;
+}
+
+.headDiv{
+    text-align: center;
+    font-size: 1em;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-weight:lighter;
+    margin-bottom: 20px;
+}
+
+.innerheadDiv{
+     color: rgb(29, 29, 161);
+     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+     margin-bottom: 10px;
+     font-weight: normal;
+     font-size: 1.2em;
+}
+
+
+#examinerDiv, #examineeDiv{
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 5px;
+}
+
+#examinerDiv a, #examineeDiv a{
+    border-radius: 15px;
+    box-sizing: border-box;
+    background-color: rgb(29, 29, 161);
+    flex: 1;
+    margin: 1em;
+    padding: 1em;
+}
+
+
+#examinerDiv a:link, #examinerDiv a:visited, #examineeDiv a:link, #examineeDiv a:visited{
+    color: #ffffff;
+    text-decoration: none;
+    text-align: center;
+    font-size:1.1em;
+    display:block;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#examineeDiv a:nth-child(1), #examinerDiv a:nth-child(1){
+    border-right: 2px solid white;
+}
+
+#examineeDiv a:nth-child(3), #examinerDiv a:nth-child(3){
+    border-left: 2px solid white;
+}
+
+
+
+@media only screen and (max-width:768px){
+    
+    #examinerDiv, #examineeDiv{
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+    
+    #examinerDiv a, #examineeDiv a{
+        margin: 5px auto;
+        font-size: 1em;
+        width: 80%;
+    }
+
+}
+
+

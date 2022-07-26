@@ -1,0 +1,40 @@
+.questionNo{
+    font-weight: bold;
+}
+.checkboxlabel, .germanboxlabel{
+    color:rgb(12, 82, 233);
+    font-weight: bold;
+}
+
+.sectionhead{
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+#qtnContainer{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1em;
+    row-gap: 1em;
+    font-size: 1.2em;
+}
+
+#qtnContainer>div{
+    padding: 10px;
+    background-color: rgb(189, 209, 245);
+    border-radius: 5px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+
+@media only screen and (max-width:768px){
+    #qtnContainer{
+        grid-template-columns: 1fr;
+        row-gap: 1em;
+        font-size: 1em;
+    }
+
+    .sectionhead{
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }
+}

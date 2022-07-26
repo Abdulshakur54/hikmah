@@ -1,0 +1,180 @@
+#qtnContainer, #data, #subBtn{
+    display:none;
+}
+
+input.germanAns{
+    background:none;  
+    outline:none;  
+    border:none;
+    border-bottom: 1px solid black;
+    width:45px;
+}
+#linkDiv{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#linkDiv .qtnNavs{
+    padding: 2px;
+    margin: 5px 5px 0px 0px;
+    text-align: center;
+    background-color: rgb(18, 18, 184);
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+textarea{
+    border: 1px solid #ddd;
+    display:block;
+    width: 100%;
+}
+
+.selected{
+    padding: 2px;
+    margin: 3px 3px 0px 0px;
+    text-align: center;
+    background-color: rgb(95, 230, 235);
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+}
+
+
+.afterselection{
+    padding: 2px;
+    margin: 3px 3px 0px 0px;
+    text-align: center;
+    background-color: rgb(246, 247, 227);
+    color: rgb(0,0,0);
+    cursor: pointer;
+}
+
+#navDiv{
+    display:flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+
+#navDiv button{
+    cursor: pointer;
+}
+
+#navDiv #subBtn{
+    background-color: rgb(255, 0, 0);
+    color:rgb(255, 255, 255);
+    font-size: 1em;
+    border-radius: 3px;
+}
+
+#subBtn{
+    padding: 5px 7px;
+}
+
+#navDiv #prevBtn{
+    margin-left: 2px;
+}
+
+#navDiv #nextBtn{
+    margin-right: 2px;
+}
+
+.sectionheader{
+    text-align: center;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 1.1em;
+    color: rgb(0, 0, 0);
+    margin-bottom: 10px;
+}
+#startContainer{
+    text-align: center;
+}
+#instruction{
+    font-size: 1.1em;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+#startBtn, #prevBtn, #nextBtn{
+    padding:5px 7px;
+    font-size:1em;
+    background-color: rgb(29, 29, 161);
+    color:rgb(255, 255, 255);
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top:5px;
+}
+#qtnContainer, #theoryAns{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 1.1em;
+}
+
+#theoryAns,.germanAns{
+    font-size: 1em;
+}
+#qtnContainer div:not(#qtnAndTimer){
+    margin-bottom: 20px;
+}
+#qtnAndTimer{
+    display:grid;
+    grid-template-columns: 1fr auto;
+}
+
+#timer{
+    text-align: center;
+    color: rgb(29, 29, 161);
+    font-size: 1.4em;
+}
+
+input.germanAns:focus, textarea:focus{
+    border-color: rgb(0, 0, 255);
+}
+
+input.germanAns{
+    width: 150px;
+}
+
+.noPassage{
+   display:none;
+}
+
+.isPassage{
+    border: 1px inset #ddd;
+    display:block;
+    width: 100%;
+    padding:2px;
+    background-color: rgb(231,240,255)
+}
+
+@media only screen and (max-width:768px){
+    #qtnContainer div:not(#qtnAndTimer){
+        margin-bottom: 12px;
+    }
+    #timer{
+        font-size: 1.2em;    
+    }
+    #prevBtn, #nextBtn, #subBtn{
+        padding: 3px 5px;
+        font-size: 0.8em;
+    }
+    input.germanAns{
+        width: 120px;
+    }
+}
+
+@media only screen and (max-width:465px){
+    #qtnContainer div:not(#qtnAndTimer){
+        margin-bottom: 10px;
+    }
+
+    #prevBtn, #nextBtn, #subBtn{
+        padding: 2px 3px;
+        font-size: 0.8em;
+    }
+    input.germanAns{
+        width: 100px;
+    }
+     #timer{
+        font-size: 1.1em;    
+    }
+}

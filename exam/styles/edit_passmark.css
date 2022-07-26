@@ -1,0 +1,63 @@
+form div:not(#submitDiv){
+    display: grid;
+    grid-template-columns: auto 1fr;
+    margin:10px auto;
+    
+}
+form div:not(#submitDiv) :focus{
+    border-color: blue;
+}
+input, label{
+    font-size: 1.3em;
+    padding: 10px;
+}
+input:not([type=submit]){
+    border-bottom: 1px solid #ddd;
+}
+
+.formhead{
+    text-align: center;
+    padding-bottom: 7px;
+    margin-top: 7px;
+}
+
+#saveChanges{
+    display: block;
+    padding: 7px 11px;
+    margin: auto;
+    border:none;
+    background-color: rgb(29, 29, 161);
+    color:rgb(255, 255, 255);
+    margin-top: 9px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 1.3em;
+}
+
+@media only screen and (max-width:768px){
+    form div:not(#submitDiv){
+        margin: 5px auto;
+    }
+    label, input, #saveChanges{
+        font-size: 1.1em;
+        padding: 7px;
+    }
+
+    #createExam{
+        padding: 5px 9px;
+    }
+    .formhead{
+        padding-bottom: 9px;
+        font-size:1.2em;
+    }
+}
+
+@media only screen and (max-width:465px){
+    form div:not(#submitDiv){
+        grid-template-columns: 1fr;
+    }
+    input, label, #saveChanges{
+        padding: 3px;
+        font-size: 1em;
+    }
+}
