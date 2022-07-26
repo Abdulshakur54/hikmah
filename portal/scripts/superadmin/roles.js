@@ -46,5 +46,9 @@ async function deleteRole(roleId) {
       swalNotifyDismiss(rsp.message, "success");
     }
   }
-
 }
+
+ $(document).ready(function () {
+   $("#rolesTable").DataTable(dataTableOptions);
+ });
+

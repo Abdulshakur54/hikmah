@@ -1,17 +1,56 @@
-<?php 
-    $url = '/hikmah/portal/superadmin/role_edit.php?role_id=1&page_token=59d4bc9202207364342796dcd2c152642e9b975afa62271f0126a714ab233ede';
-$tokenIndex = strpos($url, 'page_token');
-echo $tokenIndex;
+<!DOCTYPE html>
+<html>
 
-    // view role:
-    //     url: /hikmah/portal/superadmin/role_list.php?page_token=2dacb0ea837cc020165f17ace7454cf7aa87c9e64b2e9f3531690bc0a73ccd8e
-    //     tokenIndex: 40
-    //     len: 24
-    //     page_url: superadmin/role_list.php
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+</head>
 
-    // edit role
-    //     url: /hikmah/portal/superadmin/role_edit.php?role_id=1&page_token=14fbf5746f2e61f12e1241aebb3e6c28626e8b524e19129a903d1223441238c3
-    //     tokenIndex: 54
-    //     len: 38
-    //     page_url: superadmin/role_edit.php?role_id=1&
-?>
+<body>
+
+
+    <table id="table_id" class="display">
+        <thead>
+            <tr>
+                <th>Column 1</th>
+                <th>Column 2</th>
+                <th>Column 3</th>
+                <th>Column 4</th>
+                <th>Column 5</th>
+                <th>Column 6</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>MUHAMMED</td>
+                <td>15</td>
+                <td>MUHAMMED</td>
+                <td>15</td>
+                <td>MUHAMMED</td>
+                <td>15</td>
+            </tr>
+            <tr>
+                <td>jAMIU</td>
+                <td>14</td>
+                <td>jAMIU</td>
+                <td>14</td>
+                <td>jAMIU</td>
+                <td>14</td>
+            </tr>
+        </tbody>
+    </table>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#table_id').DataTable();
+        });
+    </script>
+</body>
+
+</html>
