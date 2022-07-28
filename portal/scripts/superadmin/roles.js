@@ -2,12 +2,18 @@ function saveRole(op) {
   const role = _("role").value;
   const roleId = _("role_id").value;
   const token = _("token");
-  ld_startLoading("saveBtn");
-  ajaxRequest(
-    "superadmin/responses/responses.php",
-    handleSaveRoleReq,
-    `op=${op}&role_id=${roleId}&role=${role}&token=${token.value}`
-  );
+  if (validate("roleForm", { validateOnSubmit: true})) {
+     console.log("valid");
+     ld_startLoading("saveBtn");
+      ajaxRequest(
+        "superadmin/responses/responses.php",
+        handleSaveRoleReq,
+        `op=${op}&role_id=${roleId}&role=${role}&token=${token.value}`
+      );
+  }else{
+    console.log('invalid');
+  }
+  
 }
 
 function handleSaveRoleReq() {
@@ -51,4 +57,8 @@ async function deleteRole(roleId) {
  $(document).ready(function () {
    $("#rolesTable").DataTable(dataTableOptions);
  });
+
+
+
+
 

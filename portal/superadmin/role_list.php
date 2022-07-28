@@ -17,6 +17,7 @@ require_once '../includes/val_page_request.inc.php';
                 <table class="table table-hover display" id="rolesTable">
                     <thead>
                         <tr>
+                            <th>S/N</th>
                             <th>Role</th>
                             <th></th>
                             <th></th>
@@ -29,9 +30,10 @@ require_once '../includes/val_page_request.inc.php';
                         foreach ($roles as $role) {
                             echo '
                                      <tr id="row' . $role->id . '">
+                                        <td></td>
                                         <td>' . $role->role . '</td>
-                                        <td class="text-info cursor-hand" onclick="getPage(\'superadmin/role_edit.php?op=edit&role_id=' . $role->id . '\',\'scripts/superadmin/roles.js\')">Edit</td>
-                                        <td class="text-danger cursor-hand" onclick="deleteRole(' . $role->id . ')">Delete</td>
+                                        <td><button class = "btn btn-success btn-sm" onclick="getPage(\'superadmin/role_edit.php?op=edit&role_id=' . $role->id . '\')">Edit</button></td>
+                                        <td><button class="btn btn-danger btn-sm" onclick="deleteRole(' . $role->id . ')">Delete</button></td>
                                     </tr>
                                 ';
                         }

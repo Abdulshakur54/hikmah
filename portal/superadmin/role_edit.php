@@ -15,19 +15,22 @@ if ($op === 'edit') {
     <div class="card">
         <div class="card-body">
             <h4 class="card-title"><?php echo $op ?> Role</h4>
-            <form class="forms-sample" onsubmit="return false">
+            <form class="forms-sample" id="roleForm">
                 <div class="form-group">
                     <label for="role">Role</label>
-                    <input type="text" class="form-control" id="role" placeholder="Name" value="<?php echo Utility::escape($role) ?>" onfocus="clearHTML('messageContainer')">
+                    <input type="text" class="form-control" id="role" placeholder="Name" value="<?php echo Utility::escape($role) ?>" onfocus="clearHTML('messageContainer')" title="Rolle" required>
                 </div>
                 <input type="hidden" name="role_id" id="role_id" value="<?php echo $role_id ?>">
                 <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
                 <div id="messageContainer"></div>
-                <button type="submit" class="btn btn-primary mr-2" onclick="saveRole('<?php echo $op . '_role' ?>')" id="saveBtn">Save</button><span id="ld_loader"></span>
-                <button class="btn btn-light" onclick="getAltPage('<?php echo Utility::escape(Session::getAltLastPage()) ?>')" id="saveBtn">Return</button>
+                <button type="button" class="btn btn-primary mr-2" id="saveBtn" onclick="saveRole('<?php echo $op . '_role' ?>')">Save</button><span id="ld_loader"></span>
+                <button type="button" class="btn btn-light" onclick="getAltPage('<?php echo Utility::escape(Session::getAltLastPage()) ?>')" id="returnBtn">Return</button>
             </form>
         </div>
         <input type="hidden" name="page_token" id="page_token" value="<?php echo Token::generate(32, 'page_token') ?>">
     </div>
 </div>
-<script src="scripts/superadmin/roles.js">
+<script src="scripts/superadmin/roles.js"></script>
+<script>
+    validate('roleForm');;
+</script>
