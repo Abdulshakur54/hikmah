@@ -7,6 +7,10 @@ const dataTableOptions = {
     [10, 25, 50, "All"],
   ],
   responsive: true,
+  fnRowCallback: function (nRow, aData, iDisplayIndex) {
+    $("td:first", nRow).html(iDisplayIndex + 1);
+    return nRow;
+  },
 };
 function getPage(url) {
   if (url.indexOf("?") === -1) {
@@ -67,3 +71,4 @@ function emptyInputs(input) {
 function clearHTML(elementId) {
   _(elementId).innerHTML = "";
 }
+

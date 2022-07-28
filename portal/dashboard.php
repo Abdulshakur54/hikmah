@@ -24,6 +24,7 @@
   <!-- My CSS-->
   <link rel="stylesheet" href="styles/style.css" />
   <link rel="stylesheet" type="text/css" href="ld_loader/ld_loader.css" />
+  <link rel="stylesheet" href="validation/validation.css" />
   <!-- My CSS-->
 </head>
 
@@ -483,6 +484,7 @@
   <!-- End custom js for this page-->
 
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="validation/validation.js" type="text/javascript"></script>
   <!--Div to hold custom JS -->
 
 
@@ -491,7 +493,6 @@
   <script src="scripts/script.js"></script>
   <script src="scripts/portalscript.js"></script>
   <script src="scripts/ajaxrequest.js"></script>
-  <script src="scripts/validation.js"></script>
   <script src="scripts/main.js"></script>
   <script src="ld_loader/ld_loader.js"></script>
   <script>

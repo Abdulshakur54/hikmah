@@ -1,0 +1,19 @@
+ .failure {
+     color: #dc1d34;
+ }
+
+ .success {
+     color: #168b3f;
+ }
+
+ .inputsuccess {
+     outline: none;
+     border: 1px solid #168b3f !important;
+     border-bottom-width: 2px !important;
+ }
+
+ .inputfailure {
+     outline: none;
+     border: 1px solid #dc1d34 !important;
+     border-bottom-width: 2px !important;
+ }

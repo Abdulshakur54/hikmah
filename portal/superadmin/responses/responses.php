@@ -19,12 +19,13 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             $role = Utility::escape(Input::get('role'));
             $role_id = Utility::escape(Input::get('role_id'));
             $rules = [
-                'role'=>['name'=>'Role','required'=>true],
+                'role'=>['name'=>'Role','required'=>true, 'unique' => 'role/role'],
                 'role_id' => ['name' => 'Role Id', 'required' => true]
             ];
             $val = new Validation();
-            if($val->check($rules)){
-
+            if(!$val->check($rules)){
+                echo response(406, implode('<br />',$val->errors()));
+                exit();
             }
             
             if(Menu::edit_role($role, $role_id)){
@@ -35,10 +36,15 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         break;
         case 'add_role':
             $role = Utility::escape(Input::get('role'));
-            if(empty($role)){
-                echo response(500, 'Role is required');
+            $rules = [
+                'role' => ['name' => 'Role', 'required' => true, 'unique' => 'role/role']
+            ];
+            $val = new Validation();
+            if (!$val->check($rules)) {
+                echo response(406, implode('<br />', $val->errors()));
                 exit();
             }
+            
             if (Menu::add_role($role)) {
                 echo response(204, 'Role was successfully inserted');
             } else {

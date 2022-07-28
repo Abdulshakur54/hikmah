@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        .failure{
+            color:#dc1d34;
+        }
+        .success{
+            color:#168b3f;
+        }
+        .inputsuccess{
+            outline: none;
+            border: 1px solid #168b3f;
+            border-bottom-width: 2px;
+        }
+        .inputfailure{
+            outline: none;
+            border: 1px solid #dc1d34;
+            border-bottom-width: 2px;
+
+        }
+    </style>
+  </head>
+  <body>
+    <form id="form1" novalidate>
+      <div>
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" title="Email" required />
+      </div>
+      <div>
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" title="Name" required/>
+      </div>
+      <div>
+        <label for="address">Address</label>
+        <textarea id="address" name="address" title="Address" required> </textarea>
+      </div>
+      <div>
+        <label for="state">Select State</label>
+        <select name="state" id="state" title="State" required>
+          <option value=""></option>
+          <option>Kaduna</option>
+          <option>Kano</option>
+          <option>Kastina</option>
+        </select>
+      </div>
+
+      <div>
+        <input type="radio" name="gender" value="male" title="Gender" id="male"required /><label for="male">Male</label>
+        <input type="radio" name="gender" value="female" title="Gender" id="female" required /><label for="female">Female</label>
+      </div>
+
+      <div>
+        <label for="color">Select preferred Colors
+            
+        </label>
+        <input type="checkbox" name="color" value="blue" title="Color" id="blue" required /><label for = "blue">Blue</label>
+        <input type="checkbox" name="color" value="green" title="Color" id="green" required /><label for = "green">Green</label>
+        <input type="checkbox" name="color" value="yellow" title="Color" id="yellow" required /><label for = "yellow">Yellow</label>
+        <input type="checkbox" name="color" value="red" title="Color" id="red" required /><label for = "red">Red</label>
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+    <script type="text/javascript" src="validation.js"></script>
+    <script>
+      validate('form1');
+    </script>
+  </body>
+</html>
