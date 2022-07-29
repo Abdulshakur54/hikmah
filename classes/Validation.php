@@ -18,7 +18,7 @@
                                 $empty='';
 				foreach($val as $rule => $rule_val){
 					$value = trim(Input::get($fieldname));//gets the input from the user
-					$empty = (empty($value)) ? true: false;
+					$empty = (empty($value) && $value != 0) ? true: false;
 
 					switch($rule){
 						case 'name': 

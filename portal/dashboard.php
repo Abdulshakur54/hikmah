@@ -327,13 +327,13 @@
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#ui-roles" aria-expanded="false" aria-controls="ui-roles">
               <i class="icon-layout menu-icon"></i>
-              <span class="menu-title">Role</span>
+              <span class="menu-title">Roles Management</span>
               <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="ui-roles">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/role_list.php')" href="#">View Roles</a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/ui-features/dropdowns.html">Dropdowns</a></li>
+                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/role_list.php')" href="#">Roles</a></li>
+                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/menu_list.php')" href="#">Menus</a></li>
                 <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Typography</a></li>
               </ul>
             </div>

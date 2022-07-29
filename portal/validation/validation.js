@@ -10,6 +10,7 @@ const defaultOptions = {
   displaySuccessMessage: false,
   successMessageText: "valid",
   minCharForSuccessMessageText: 3,
+  numberIncludedForMinCharForSuccessMessageText: false,
 };
 const defaultMessages = {
   required: "val_Title is required",
@@ -22,15 +23,14 @@ const defaultMessages = {
   min: "val_Title should not be less than val_RuleValue",
 };
 
-function validate(
-  formId,
-  options = {},
-  customMessages = {}
-) {
+function validate(formId, options = {}, customMessages = {}) {
   options = { ...defaultOptions, ...options };
   customMessages = { ...defaultMessages, ...customMessages };
   const form = document.getElementById(formId);
-  const textInput = form.querySelectorAll("input[type=text], textarea");
+  const textInput = form.querySelectorAll(
+    "input[type=text], textarea, input[type=number]"
+  );
+  const numberInput = form.querySelectorAll("input[type=number]");
   const radioInput = form.querySelectorAll("input[type=radio]");
   const checkInput = form.querySelectorAll("input[type=checkbox]");
   const selectInput = form.querySelectorAll("select");
@@ -46,6 +46,7 @@ function validate(
       ...checkInput,
       ...selectInput,
       ...otherTextInput,
+      ...numberInput,
     ];
     let valid = true;
     for (let eachElement of allElements) {
@@ -64,6 +65,7 @@ function validate(
 
   if (options.instant) {
     addEvents(textInput, "keyup");
+    addEvents(numberInput, "change");
     addEvents(radioInput);
     addEvents(checkInput);
     addEvents(selectInput);
@@ -169,10 +171,15 @@ function validate(
         }
         break;
     }
-
-    if (userInput.length >= options.minCharForSuccessMessageText) {
+    if (!options.numberIncludedForMinCharForSuccessMessageText) {
+      //this will help validate number input below minChar
       outputMessage(element, "success");
+    } else {
+      if (userInput.length >= options.minCharForSuccessMessageText) {
+        outputMessage(element, "success");
+      }
     }
+
     return true;
   }
 
@@ -226,4 +233,30 @@ function match(valuestring, pattern) {
   }
   pattern = new RegExp(pattern);
   return pattern.test(valuestring);
+}
+
+function resetInputStyling(formId, firstClass, secondClass = "") {
+  const form = document.getElementById(formId);
+  const textInput = form.querySelectorAll(
+    "input[type=text], textarea, input[type=number]"
+  );
+  const numberInput = form.querySelectorAll("input[type=number]");
+  const radioInput = form.querySelectorAll("input[type=radio]");
+  const checkInput = form.querySelectorAll("input[type=checkbox]");
+  const selectInput = form.querySelectorAll("select");
+  const otherTextInput = form.querySelectorAll(
+    "input[type=email],[type=date],[type=number],[type=password],[type=month],[type=tel],[type=time],[type=url],[type=week]"
+  );
+  const allElements = [
+    ...textInput,
+    ...radioInput,
+    ...checkInput,
+    ...selectInput,
+    ...otherTextInput,
+    ...numberInput,
+  ];
+  for(let element of allElements){
+    element.classList.remove(firstClass);
+    element.classList.remove(secondClass);
+  }
 }

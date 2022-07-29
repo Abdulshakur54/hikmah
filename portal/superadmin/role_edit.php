@@ -18,7 +18,7 @@ if ($op === 'edit') {
             <form class="forms-sample" id="roleForm">
                 <div class="form-group">
                     <label for="role">Role</label>
-                    <input type="text" class="form-control" id="role" placeholder="Name" value="<?php echo Utility::escape($role) ?>" onfocus="clearHTML('messageContainer')" title="Rolle" required>
+                    <input type="text" class="form-control" id="role" placeholder="Name" value="<?php echo Utility::escape($role) ?>" onfocus="clearHTML('messageContainer')" title="Role" required>
                 </div>
                 <input type="hidden" name="role_id" id="role_id" value="<?php echo $role_id ?>">
                 <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />

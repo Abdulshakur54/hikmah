@@ -8,11 +8,6 @@ require_once '../includes/val_page_request.inc.php';
         <div class="card-body">
             <div class="text-right"> <button type="submit" class="btn btn-info btn-sm mr-2" onclick="getPage('superadmin/role_edit.php?op=add')">Add Role</button></div>
             <h4 class="card-title text-primary">Roles</h4>
-            <script>
-                function player() {
-                    alert('worked');
-                }
-            </script>
             <div class="table-responsive">
                 <table class="table table-hover display" id="rolesTable">
                     <thead>

@@ -3,32 +3,34 @@ function saveRole(op) {
   const roleId = _("role_id").value;
   const token = _("token");
   if (validate("roleForm", { validateOnSubmit: true})) {
-     console.log("valid");
      ld_startLoading("saveBtn");
       ajaxRequest(
         "superadmin/responses/responses.php",
         handleSaveRoleReq,
         `op=${op}&role_id=${roleId}&role=${role}&token=${token.value}`
       );
-  }else{
-    console.log('invalid');
   }
-  
-}
 
-function handleSaveRoleReq() {
+  function handleSaveRoleReq() {
   ld_stopLoading("saveBtn");
   const rsp = JSON.parse(xmlhttp.responseText);
   let msgStyleClass = "success m-2";
   if (rsp.status != 204) {
     msgStyleClass = "failure m-2";
   }
+    resetInputStyling("roleForm", "inputsuccess", "inputfailure");
+    if(op==='add_role'){
+      emptyInputs('role')
+    }
   _("token").value = rsp.token;
-  emptyInputs("role");
   const msgDiv = _("messageContainer");
   msgDiv.className = msgStyleClass;
   msgDiv.innerHTML = rsp.message;
 }
+  
+}
+
+
 
 async function deleteRole(roleId) {
   const token = _("token");
