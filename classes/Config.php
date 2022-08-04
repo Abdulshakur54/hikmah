@@ -86,6 +86,9 @@ $GLOBALS['configuration'] = array(
 		'menu_table' => 'menu',
 		'role_table' => 'role',
 		'user_menu_table' => 'user_menu'
+	],
+	'audit'=>[
+		'table'=>'audit'
 	]
 );
 

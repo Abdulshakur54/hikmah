@@ -7,50 +7,63 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        img {
+            width: 50px;
+            height: 50px;
+        }
+
+        div {
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+            text-align: center;
+            margin: 10px;
+            padding: 20px;
+        }
+    </style>
 </head>
 
 <body>
 
+    <div id="div2">
+        <img src="test.jpg" alt="test.jpg" draggable="true" id="draggableImage">
+    </div>
+    <div id="div1">
 
-    <table id="table_id" class="display">
-        <thead>
-            <tr>
-                <th>Column 1</th>
-                <th>Column 2</th>
-                <th>Column 3</th>
-                <th>Column 4</th>
-                <th>Column 5</th>
-                <th>Column 6</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>MUHAMMED</td>
-                <td>15</td>
-                <td>MUHAMMED</td>
-                <td>15</td>
-                <td>MUHAMMED</td>
-                <td>15</td>
-            </tr>
-            <tr>
-                <td>jAMIU</td>
-                <td>14</td>
-                <td>jAMIU</td>
-                <td>14</td>
-                <td>jAMIU</td>
-                <td>14</td>
-            </tr>
-        </tbody>
-    </table>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+    </div>
     <script>
-        $(document).ready(function() {
-            $('#table_id').DataTable();
+        const draggableImage = document.getElementById('draggableImage');
+        draggableImage.addEventListener('dragstart', function(event) {
+            event.dataTransfer.setData('text', event.target.id);
+        });
+        const div1 = document.getElementById('div1');
+        div1.addEventListener('dragover', function(event) {
+            event.preventDefault();
+        });
+
+        div1.addEventListener('drop', function(event) {
+            event.preventDefault();
+            const imgId = document.getElementById(event.dataTransfer.getData('text'));
+            event.target.appendChild(imgId);
+        });
+
+        const div2 = document.getElementById('div2');
+        div2.addEventListener('dragover', function(event) {
+            event.preventDefault();
+        });
+
+        div2.addEventListener('drop', function(event) {
+            event.preventDefault();
+            const imgId = document.getElementById(event.dataTransfer.getData('text'));
+            event.target.appendChild(imgId);
         });
     </script>
+
 </body>
 
 </html>

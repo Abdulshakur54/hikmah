@@ -8,7 +8,7 @@ class DB
 			$_result: holds the result as an object
 		*/
 	private $_pdo, $_row_count, $_query, $_result;
-	private static $_instance, $_instance2, $_instance3; # an instance of the pdo connection
+	private static $_instance, $_instance2, $_instance3, $_db_audit; # an instance of the pdo connection
 	private $_trans_row_count = array(); #row_count for a multi query 
 	private $_sql; #hold the inputted sql statement
 
@@ -56,19 +56,33 @@ class DB
 		}
 		return self::$_instance3;
 	}
+	//this method is provided to help get an instance of the connection for audit when needed, so as not to interfere with requeries if needed
+	public static function get_audit_db()
+	{
+		if (!isset(self::$_db_audit)) {
+			self::$_db_audit = new DB();
+		}
+		return self::$_db_audit;
+	}
 
 
 
 	/*this method prepares the sql, binds value to it and executes the query
 			it returns a boolean based on if the query is successfully executed
 			note: that the query executed successful does not mean it returns a result
+			audit_options requires the following when used
+			[
+				0=> 'the table where operation is performed',
+				1=> 'insert,update or delete'
+				2=> 'e.g id=5'
+			]
 		*/
 
-	public function query(string $sql, $val = array()): bool
+	public function query(string $sql, $val = array(), $audit_options = []): bool
 	{
 		$this->_sql = $sql;
 		if ($this->_query = $this->_pdo->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL))) {
-			return $this->insert_val($val);
+			return $this->insert_val($val, $audit_options);
 		}
 		return false;
 	}
@@ -76,20 +90,26 @@ class DB
 
 
 	//this function helps to bindvalues and execute queries
-	private function insert_val($values = array())
+	private function insert_val($values = array(), $audit_options=[])
 	{
 		if (count($values)) {
 			$this->bindVal($values);
+		}
+		if (!empty($audit_options)) {
+			return $this->audit_record($this->_sql,$audit_options[0], $audit_options[1], $audit_options[2]);
 		}
 		return $this->execute();
 	}
 
 	//this function bindvalues to the prepared statement dynamically
-	private function bindVal($values)
+	private function bindVal($values,$qry='')
 	{
 		$x = 1;
+		if($qry == ''){
+			$qry = $this->_query;
+		}
 		foreach ($values as $value) {
-			$this->_query->bindValue($x, $value);
+			$qry->bindValue($x, $value);
 			$x++;
 		}
 	}
@@ -165,7 +185,7 @@ class DB
 				}
 				return false;
 			} catch (PDOException $e) {
-				echo $e->getMessage();
+				$e->getMessage();
 				$this->_pdo->rollBack();
 				return false;
 			}
@@ -186,7 +206,7 @@ class DB
 		return $this->get_result()[0];
 	}
 
-	public  function update(string $table, array $colAndVal, string $condition = ''): bool
+	public  function update(string $table, array $colAndVal, string $condition = '', bool $audit = false): bool
 	{
 		$placeholders = [];
 		$sql = 'update ' . $table . ' set ';
@@ -195,14 +215,17 @@ class DB
 			$placeholders[] = $val;
 		}
 		$sql = trim($sql, "\n,");
-		if ($condition != ' ') {
+		if ($condition != '') {
 			$sql .= ' where ' . $condition;
 		}
-
-		return $this->query($sql, $placeholders);
+		if ($audit) {
+			return $this->audit_record([$sql, $placeholders], $table, 'update', $condition);
+		} else {
+			return $this->query($sql, $placeholders);
+		}
 	}
 
-	public  function insert(string $table, array $colAndVal): bool
+	public  function insert(string $table, array $colAndVal, bool $audit = false): bool
 	{
 		$sql = 'insert into ' . $table . '(';
 		$columns = array_keys($colAndVal);
@@ -210,22 +233,34 @@ class DB
 		$columns_string = implode(', ', $columns) . ')';
 		$placeholders = '?' . str_repeat(',?', count($columns) - 1);
 		$sql .= $columns_string . ' values(' . $placeholders . ')';
-		return $this->query($sql, $values);
+		if ($audit) {
+			return $this->audit_record([$sql, $values], $table, 'insert');
+		} else {
+			return $this->query($sql, $values);
+		}
 	}
 
-	public function delete(string $table, string $condition = ''): bool
+
+
+
+	public function delete(string $table, string $condition = '', bool $audit = false): bool
 	{
+		$audit_sql = '';
 		$sql = 'delete from ' . $table;
-		if ($condition != ' ') {
+		if ($condition != '') {
 			$sql .= ' where ' . $condition;
+		}
+		if ($audit) {
+			return $this->audit_record([$sql, []], $table, 'delete', $condition);
 		}
 		return $this->query($sql);
 	}
 
+
 	public function select(string $table, string $columns, string $condition = ''): array
 	{
 		$sql = 'select ' . $columns . ' from ' . $table;
-		if ($condition != ' ') {
+		if ($condition != '') {
 			$sql .= ' where ' . $condition;
 		}
 		$this->query($sql);
@@ -238,7 +273,7 @@ class DB
 	public function get(string $table, string $columns, string $condition = ''): array
 	{
 		$sql = 'select ' . $columns . ' from ' . $table;
-		if ($condition != ' ') {
+		if ($condition != '') {
 			$sql .= ' where ' . $condition;
 		}
 		$sql .= ' limit 1';
@@ -248,4 +283,78 @@ class DB
 		}
 		return [];
 	}
+
+	public function audit_record(array $main_sql, string $table, string $operation, string $condition = '')
+	{
+
+		$audit_sql = 'select * from ' . $table;
+		if ($condition != '') {
+			$audit_sql .= ' where ' . $condition;
+		}
+		if ($operation == 'insert') {
+			$audit_sql .= ' order by id desc limit 1';
+		}
+		$audit_insert_sql = 'insert into ' . Config::get('audit/table') . ' (operation,table_name,record) values (?,?,?)';
+
+		return $this->audit_trans_query([$audit_sql, []], $main_sql, [$audit_insert_sql, [$operation,$table]], $operation);
+	}
+
+	private function audit_trans_query(array $audit_qry,array $main_qry,array $insert_qry,string $operation) :bool{
+		$this->_pdo->beginTransaction();
+		try{
+			$result = '';
+			if($operation === 'insert'){
+				$qry =  $this->_pdo->prepare($main_qry[0]);
+				$this->bindVal($main_qry[1], $qry);
+				$qry->execute();
+				
+				$qry =  $this->_pdo->prepare($audit_qry[0]);
+				$this->bindVal($audit_qry[1], $qry);
+				$qry->execute();
+
+				if ($qry->rowCount() > 0) {
+					$result = $qry->fetchAll(PDO::FETCH_OBJ);
+					$qry =  $this->_pdo->prepare($insert_qry[0]);
+					$insert_qry[1][] = json_encode($result);
+				
+					$this->bindVal($insert_qry[1], $qry);
+					$qry->execute();
+
+					$this->_pdo->commit();
+					return true;
+				} else {
+					$this->_pdo->commit();
+					return false;
+				}
+
+			}else{
+				$qry =  $this->_pdo->prepare($audit_qry[0]);
+				$this->bindVal($audit_qry[1], $qry);
+				$qry->execute();
+
+				if($qry->rowCount() > 0){
+					$result = $qry->fetchAll(PDO::FETCH_OBJ);
+					$qry =  $this->_pdo->prepare($main_qry[0]);
+					$this->bindVal($main_qry[1], $qry);
+					$qry->execute();
+
+					$qry =  $this->_pdo->prepare($insert_qry[0]);
+					$this->bindVal([json_encode($result)], $qry);
+					$qry->execute();
+
+					$this->_pdo->commit();
+					return true;
+				}else{
+					$this->_pdo->commit();
+					return false;
+				}
+				
+			}
+		}catch(PDOException $e){
+			echo $e->getMessage();
+			$this->_pdo->rollBack();
+			return false;
+		}
+	}
+
 }

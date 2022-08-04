@@ -72,3 +72,25 @@ function clearHTML(elementId) {
   _(elementId).innerHTML = "";
 }
 
+
+function typeheadInput(elementId, dataSource) {
+ 
+  const engine = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.whitespace,
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: dataSource,
+  });
+
+  $("#"+elementId).typeahead(
+    {
+      hint: true,
+      highlight: true,
+      minLength: 1,
+    },
+    {
+      name: elementId + "_name",
+      source: engine,
+    }
+  );
+}
+

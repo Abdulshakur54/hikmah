@@ -145,12 +145,41 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 echo response(500, 'Something went wrong');
             }
             break;
+        case 'get_roles':
+            $roles = Menu::get_roles();
+            echo response(200,'',$roles);
+            break;
+        case 'get_available_menus':
+            $role_id = Utility::escape(Input::get('role_id'));
+            $menus = Menu::get_available_menus($role_id);
+            echo response(200, '', $menus);
+            break;
+        case 'get_role_menus':
+            $role = Utility::escape(Input::get('role'));
+            $menus = Menu::get_role_menus($role);
+            echo response(200, '');
+            break;
+        case 'add_menu_to_roles':
+            $role_id = Utility::escape(Input::get('role_id'));
+            $menu_ids = Utility::escape(Input::get('menu_ids'));
+            $menu_ids = json_decode($menu_ids,true);
+            $ids = [];
+            foreach($menu_ids as $menu_id){
+                $ids[] = Utility::escape($menu_id);
+            }
+            Menu::add_menu_to_roles($role_id,$ids);
+            $menus = Menu::get_available_menus($role_id);
+            echo response(200, 'Successfully added menus', $menus);
+            break;
+            
     }
     
+}else{
+    echo response(400, 'Invalid request method');
 }
 
 
-function response(int $status, $message = '', $data = [])
+function response(int $status, $message = '', array $data = [])
 {
     return json_encode(['status' => $status, 'message' => $message, 'data' => $data, 'token' => Token::generate()]);
 }

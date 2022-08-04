@@ -37,20 +37,31 @@ class Menu
         $db->query('select * from menu where id = ?', [$menu_id]);
         return $db->one_result();
     }
-    
-    
-    public static function edit_role(array $values, $role_id) :bool{
+
+    public static function get_available_menus($role_id)
+    {
+        $db = DB::get_instance();
+        $db->query('select * from menu where id not in(select menu_id from roles_menu where role_id = ?) order by menu asc',[$role_id]);
+        if($db->row_count()>0){
+            return $db->get_result();
+        }
+        return [];
+    }
+
+    public static function edit_role(array $values, $role_id): bool
+    {
         $db = DB::get_instance();
         return $db->update('role', $values, 'id=' . $role_id);
     }
 
-    public static function edit_menu(array $values,$menu_id): bool
+    public static function edit_menu(array $values, $menu_id): bool
     {
         $db = DB::get_instance();
-        return $db->update('menu',$values,'id='.$menu_id);
+        return $db->update('menu', $values, 'id=' . $menu_id, true);
     }
 
-    public static function add_role(array $values) :bool{
+    public static function add_role(array $values): bool
+    {
         $db = DB::get_instance();
         return $db->insert('role', $values);
     }
@@ -58,21 +69,28 @@ class Menu
     public static function add_menu(array $values): bool
     {
         $db = DB::get_instance();
-        return $db->insert('menu',$values);
+        return $db->insert('menu', $values, true);
     }
 
     public static function delete_role($role_id): bool
     {
         $db = DB::get_instance();
-        return $db->delete('role','id = '.$role_id);
+        return $db->delete('role', 'id = ' . $role_id);
     }
 
     public static function delete_menu($menu_id): bool
     {
         $db = DB::get_instance();
-        return $db->delete('menu', 'id = ' . $menu_id);
+        return $db->delete('menu', 'id = ' . $menu_id, true);
     }
 
+    public static function
+    add_menu_to_roles($role_id, array $menu__ids)
+    {
+        $db = DB::get_instance();
 
-    
+        foreach($menu__ids as $menu__id){
+            $db->insert('roles_menu', ['role_id' => $role_id, 'menu_id' => $menu__id],true);
+        }
+    }
 }
