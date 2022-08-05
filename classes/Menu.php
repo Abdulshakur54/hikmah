@@ -84,13 +84,31 @@ class Menu
         return $db->delete('menu', 'id = ' . $menu_id, true);
     }
 
-    public static function
-    add_menu_to_roles($role_id, array $menu__ids)
+
+    public static function add_menu_to_roles($role_id, array $menu__ids)
     {
         $db = DB::get_instance();
 
         foreach($menu__ids as $menu__id){
             $db->insert('roles_menu', ['role_id' => $role_id, 'menu_id' => $menu__id],true);
+        }
+    }
+
+    public static function add_menu_to_users($role_id, array $menu__ids)
+    {
+        $db = DB::get_instance();
+        $users_menu = Config::get('users/menu_table');
+        $users_table = Config::get('users/table_name');
+        $id_column = Config::get('users/username_column');
+        $users = $db->select($users_table,$id_column,'role_id='.$role_id);
+        $users_count = count($users);
+        if($users_count > 0){
+            foreach ($menu__ids as $menu__id) {
+                $db->query('insert into ' . $users_menu . '(' . $id_column . ',menu_id) values(?,?)', [$users[0]->$id_column, $menu__id]);
+                for ($i = 1; $i < $users_count; $i++) {
+                    $db->requery([$users[$i]->$id_column, $menu__id]);
+                }
+            }
         }
     }
 }

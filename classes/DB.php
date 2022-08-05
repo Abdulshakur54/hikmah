@@ -257,11 +257,18 @@ class DB
 	}
 
 
-	public function select(string $table, string $columns, string $condition = ''): array
+	public function select(string $table, string $columns = '*', string $condition = '', string $order_column = '', string $sort = 'asc', int $limit=0): array
 	{
 		$sql = 'select ' . $columns . ' from ' . $table;
 		if ($condition != '') {
 			$sql .= ' where ' . $condition;
+		}
+		if ($order_column !== '') {
+			$sql .= ' order by ' . $order_column . ' ' . $sort;
+		}
+
+		if ($limit !== 0) {
+			$sql .= ' limit ' . $limit;
 		}
 		$this->query($sql);
 		if ($this->row_count() > 0) {
@@ -270,11 +277,14 @@ class DB
 		return [];
 	}
 
-	public function get(string $table, string $columns, string $condition = ''): array
+	public function get(string $table, string $columns='*', string $condition = '',string $order_column='', string $sort = 'asc'): array
 	{
 		$sql = 'select ' . $columns . ' from ' . $table;
 		if ($condition != '') {
 			$sql .= ' where ' . $condition;
+		}
+		if($order_column !== ''){
+			$sql .= ' order by ' . $order_column.' '.$sort;
 		}
 		$sql .= ' limit 1';
 		$this->query($sql);

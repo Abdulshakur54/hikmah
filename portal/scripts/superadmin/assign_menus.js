@@ -12,7 +12,7 @@ function rolesResponse() {
     var roles = data.map((row) => {
       return `<option value="${row.id}">${row.role}</option>`;
     });
-   _('role').innerHTML = roles.join("");
+   _('role').innerHTML = '<option value="">:::Select Role:::</option>.'+roles.join("");
   }
   _("token").value = rsp.token;
 }
@@ -29,8 +29,9 @@ function populateMenuTable(event) {
       `op=get_available_menus&token=${token.value}&role_id=${event.value}`
     );
   } else {
+    document.querySelector('tbody').innerHTML = '';
     messageContainer.className = "failure text-center";
-    messageContainer.innerHTML = "Enter a role first";
+    messageContainer.innerHTML = "Select a role first";
   }
 }
 

@@ -48,6 +48,7 @@ $GLOBALS['configuration'] = array(
 		'table_name1' => 'staff',
 		'table_name2' => 'student',
 		'table_name3' => 'admission',
+		'menu_table'=>'users_menu',
 		'username_column' => 'user_id', //the column holding the username in the users table
 		'username_column0' => 'mgt_id', //the column holding the username in the users table
 		'username_column1' => 'staff_id', //the column holding the username in the users table

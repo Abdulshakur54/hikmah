@@ -336,7 +336,7 @@
                 <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/role_list.php')" href="#">Roles</a></li>
                 <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/menu_list.php')" href="#">Menus</a></li>
                 <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/assign_menus.php')" href="#">Assign Menus</a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Typography</a></li>
+                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/unassign_menus.php')" href="#">Unassign Menus</a></li>
               </ul>
             </div>
           </li>

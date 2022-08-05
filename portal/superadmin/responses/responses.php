@@ -168,6 +168,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 $ids[] = Utility::escape($menu_id);
             }
             Menu::add_menu_to_roles($role_id,$ids);
+            Menu::add_menu_to_users($role_id, $ids);
             $menus = Menu::get_available_menus($role_id);
             echo response(200, 'Successfully added menus', $menus);
             break;
