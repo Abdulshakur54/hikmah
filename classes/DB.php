@@ -245,7 +245,6 @@ class DB
 
 	public function delete(string $table, string $condition = '', bool $audit = false): bool
 	{
-		$audit_sql = '';
 		$sql = 'delete from ' . $table;
 		if ($condition != '') {
 			$sql .= ' where ' . $condition;
@@ -349,7 +348,8 @@ class DB
 					$qry->execute();
 
 					$qry =  $this->_pdo->prepare($insert_qry[0]);
-					$this->bindVal([json_encode($result)], $qry);
+					$insert_qry[1][] = json_encode($result);
+					$this->bindVal($insert_qry[1], $qry);
 					$qry->execute();
 
 					$this->_pdo->commit();

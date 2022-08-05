@@ -48,6 +48,16 @@ class Menu
         return [];
     }
 
+    public static function get_role_menus($role_id)
+    {
+        $db = DB::get_instance();
+        $db->query('select * from menu where id in(select menu_id from roles_menu where role_id = ?) order by menu asc', [$role_id]);
+        if ($db->row_count() > 0) {
+            return $db->get_result();
+        }
+        return [];
+    }
+
     public static function edit_role(array $values, $role_id): bool
     {
         $db = DB::get_instance();
@@ -94,6 +104,13 @@ class Menu
         }
     }
 
+    public static function remove_menu_from_roles($role_id, array $menu__ids)
+    {
+        $db = DB::get_instance();
+        $menu__ids_string = implode("','",$menu__ids);
+        $db->delete('roles_menu','role_id='.$role_id.' and menu_id in(\''.$menu__ids_string.'\')',true);
+    }
+
     public static function add_menu_to_users($role_id, array $menu__ids)
     {
         $db = DB::get_instance();
@@ -108,6 +125,26 @@ class Menu
                 for ($i = 1; $i < $users_count; $i++) {
                     $db->requery([$users[$i]->$id_column, $menu__id]);
                 }
+            }
+        }
+    }
+
+    public static function remove_menu_from_users($role_id, array $menu_ids)
+    {
+        $db = DB::get_instance();
+        $users_menu = Config::get('users/menu_table');
+        $users_table = Config::get('users/table_name');
+        $id_column = Config::get('users/username_column');
+        $users = $db->select($users_table, $id_column, 'role_id=' . $role_id);
+        $users_array = [];
+        foreach($users as $user){
+            $users_array[] = $user->$id_column;
+        }
+        $users_count = count($users);
+        if ($users_count > 0) {
+            foreach ($menu_ids as $menu_id) {
+                $users_string = implode("','", $users_array);
+                $db->delete($users_menu,'menu_id = '.$menu_id.' and '.$id_column.' in(\''.$users_string.'\')');
             }
         }
     }

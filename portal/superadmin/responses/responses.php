@@ -155,9 +155,9 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             echo response(200, '', $menus);
             break;
         case 'get_role_menus':
-            $role = Utility::escape(Input::get('role'));
-            $menus = Menu::get_role_menus($role);
-            echo response(200, '');
+            $role_id = Utility::escape(Input::get('role_id'));
+            $menus = Menu::get_role_menus($role_id);
+            echo response(200, '', $menus);
             break;
         case 'add_menu_to_roles':
             $role_id = Utility::escape(Input::get('role_id'));
@@ -171,6 +171,19 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             Menu::add_menu_to_users($role_id, $ids);
             $menus = Menu::get_available_menus($role_id);
             echo response(200, 'Successfully added menus', $menus);
+            break;
+        case 'remove_menu_from_roles':
+            $role_id = Utility::escape(Input::get('role_id'));
+            $menu_ids = Utility::escape(Input::get('menu_ids'));
+            $menu_ids = json_decode($menu_ids, true);
+            $ids = [];
+            foreach ($menu_ids as $menu_id) {
+                $ids[] = Utility::escape($menu_id);
+            }
+            Menu::remove_menu_from_roles($role_id, $ids);
+            Menu::remove_menu_from_users($role_id, $ids);
+            $menus = Menu::get_role_menus($role_id);
+            echo response(200, 'Successfully removed menus', $menus);
             break;
             
     }
