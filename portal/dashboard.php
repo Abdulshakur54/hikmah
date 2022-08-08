@@ -13,7 +13,6 @@
   <!-- endinject -->
   <!-- Plugin css for this page -->
   <link rel="stylesheet" href="vendors/datatables.net-bs4/dataTables.bootstrap4.css" />
-  <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css" />
   <link rel="stylesheet" type="text/css" href="js/select.dataTables.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <!-- End plugin css for this page -->
@@ -40,6 +39,9 @@
   session_start(Config::get('session/options'));
   //end of initializatons
   $last_page = (Session::lastPageExists()) ? Session::getLastPage() : '';
+  // $menu = new Menu();
+  // print_r($menu->get('m100'));
+  // exit();
   ?>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
@@ -487,7 +489,6 @@
 
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="validation/validation.js" type="text/javascript"></script>
-  <script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <!--Div to hold custom JS -->
 

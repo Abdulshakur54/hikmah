@@ -121,8 +121,11 @@
             return $numArr;
          }
          
-        public static function getBanks(){
-            return ['FIRST BANK','ZENITH BANK', 'GUARANTEED TRUST BANK'];
+        public static function getBanks() :array{
+           $db = DB::get_instance();
+           $banks = $db->select('banks','name');
+           $banks = self::convertToArray($banks,'name');
+           return $banks;
         }
         
         public static function altValue($val,$altVal){
@@ -157,6 +160,24 @@
                 $sum+=$x;
             }
             return $sum;
+        }
+
+        public static function convertToArray(array $result,$columns) :array{
+            $res = [];
+            if(is_string($columns)){
+                foreach($result as $r){
+                    $res[]=$r->$columns;
+                }
+            }else{
+            foreach ($result as $r) {
+                $vals = [];
+                foreach($columns as $col){
+                    $vals[$col] = $r->$col;
+                }
+                $res[]=$vals;
+            }
+            }
+            return $res;
         }
        
     }

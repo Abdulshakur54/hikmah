@@ -5,6 +5,7 @@ $op = Utility::escape(Input::get('op'));
 if ($op === 'edit') {
     $menu_id = Utility::escape(Input::get('menu_id'));
     $menu_row =  Menu::get_menu($menu_id);
+    $display_name = Utility::escape($menu_row->display_name);
     $menu = Utility::escape($menu_row->menu);
     $url = Utility::escape($menu_row->url);
     $menu_order = Utility::escape($menu_row->menu_order);
@@ -16,6 +17,7 @@ if ($op === 'edit') {
 } else {
     $menu_id = "";
     $menu = "";
+    $display_name = '';
     $url = "";
     $menu_order = "";
     $parent_id = "";
@@ -30,10 +32,14 @@ if ($op === 'edit') {
     <div class="card">
         <div class="card-body">
             <h4 class="card-title"><?php echo $op ?> Menu</h4>
-            <form class="forms-sample" id="menuForm">
+            <form class="forms-sample" id="menuForm" onsubmit="return false">
                 <div class="form-group">
                     <label for="menu">Menu</label>
                     <input type="text" class="form-control" id="menu" placeholder="Menu" value="<?php echo $menu ?>" onfocus="clearHTML('messageContainer')" title="Menu" required>
+                </div>
+                <div class="form-group">
+                    <label for="display_name">Display Name</label>
+                    <input type="text" class="form-control" id="display_name" placeholder="Display Name" value="<?php echo $display_name ?>" onfocus="clearHTML('messageContainer')" title="Display Name" required>
                 </div>
                 <div class="form-group">
                     <label for="url">Url</label>

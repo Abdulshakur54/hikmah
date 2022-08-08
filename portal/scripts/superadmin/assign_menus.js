@@ -43,7 +43,7 @@ function menuSearchResponse() {
     let retVal = "";
     let x = 1;
     for (let row of rows) {
-      retVal += `<tr><td>${x}</td><td>${row.menu}</td><td>${row.url}</td><td><input type="checkbox" value="${row.id}"/></td></tr>`;
+      retVal += `<tr><td>${x}</td><td>${row.menu}</td><td>${row.display_name}</td><td>${row.url}</td><td><input type="checkbox" value="${row.id}"/></td></tr>`;
       x++;
     }
     $("tbody").html(retVal);
@@ -95,7 +95,7 @@ function addMenuToRole() {
         let retVal = "";
         let x = 1;
         for (let row of rows) {
-          retVal += `<tr><td>${x}</td><td>${row.menu}</td><td>${row.url}</td><td><input type="checkbox" value="${row.id}"/></td></tr>`;
+          retVal += `<tr><td>${x}</td><td>${row.menu}</td><td>${row.display_name}</td><td>${row.url}</td><td><input type="checkbox" value="${row.id}"/></td></tr>`;
           x++;
         }
         $("tbody").html(retVal);

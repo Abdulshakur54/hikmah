@@ -22,15 +22,17 @@ require_once '../includes/val_page_request.inc.php';
                     <tbody>
                         <?php
                         $roles = Menu::get_roles();
-                        foreach ($roles as $role) {
-                            echo '
-                                     <tr id="row' . $role->id . '">
-                                        <td></td>
-                                        <td>' . $role->role . '</td>
-                                        <td><button class = "btn btn-success btn-sm" onclick="getPage(\'superadmin/role_edit.php?op=edit&role_id=' . $role->id . '\')">Edit</button></td>
-                                        <td><button class="btn btn-danger btn-sm" onclick="deleteRole(' . $role->id . ')">Delete</button></td>
-                                    </tr>
-                                ';
+                        if (!empty($roles)) {
+                            foreach ($roles as $role) {
+                                echo '
+                                         <tr id="row' . $role->id . '">
+                                            <td></td>
+                                            <td>' . $role->role . '</td>
+                                            <td><button class = "btn btn-success btn-sm" onclick="getPage(\'superadmin/role_edit.php?op=edit&role_id=' . $role->id . '\')">Edit</button></td>
+                                            <td><button class="btn btn-danger btn-sm" onclick="deleteRole(' . $role->id . ')">Delete</button></td>
+                                        </tr>
+                                    ';
+                            }
                         }
                         ?>
 

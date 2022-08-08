@@ -10,7 +10,7 @@
 
 		//this method gets the userinput from a form field using the method which the form was submitted with
 		public static function get($fieldname){
-			if(!empty($_REQUEST[$fieldname])){
+			if(isset($_REQUEST[$fieldname])){
 				return $_REQUEST[$fieldname];
 			}
 			return '';

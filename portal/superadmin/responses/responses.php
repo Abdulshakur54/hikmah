@@ -39,6 +39,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         break;
         case 'edit_menu':
             $menu = Utility::escape(Input::get('menu'));
+            $display_name = Utility::escape(Input::get('display_name'));
             $menu_id = Utility::escape(Input::get('menu_id'));
             $url = Utility::escape(Input::get('url'));
             $menu_order = Utility::escape(Input::get('menu_order'));
@@ -49,6 +50,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             $active = (int)Utility::escape(Input::get('active'));
             $rules = [
                 'menu' => ['name' => 'Menu', 'required' => true],
+                'display_name' => ['name' => 'Display Name', 'required' => true],
                 'menu_id' => ['name' => 'Menu Id', 'required' => true],
                 'url' => ['name' => 'Url', 'required' => true],
                 'menu_order' => ['name' => 'Order', 'required' => true],
@@ -63,7 +65,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 exit();
             }
 
-            if (Menu::edit_menu(['menu'=>$menu,'url'=>$url,'menu_order'=>$menu_order,'parent_id'=>$parent_id,'icon'=>$icon,'parent_order'=>$parent_order,'shown'=>$shown,'active'=>$active], $menu_id)) {
+            if (Menu::edit_menu(['menu'=>$menu,'display_name'=>$display_name,'url'=>$url,'menu_order'=>$menu_order,'parent_id'=>$parent_id,'icon'=>$icon,'parent_order'=>$parent_order,'shown'=>$shown,'active'=>$active], $menu_id)) {
                 echo response(204, 'Changes were saved successfully');
             } else {
                 echo response(500, 'Something went wrong');
@@ -88,6 +90,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             break;
         case 'add_menu':
             $menu = Utility::escape(Input::get('menu'));
+            $display_name = Utility::escape(Input::get('display_name'));
             $url = Utility::escape(Input::get('url'));
             $menu_order = Utility::escape(Input::get('menu_order'));
             $parent_id = Utility::escape(Input::get('parent_id'));
@@ -97,6 +100,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             $active = (int)Utility::escape(Input::get('active'));
             $rules = [
                 'menu' => ['name' => 'Menu', 'required' => true],
+                'display_name' => ['name' => 'Display Name', 'required' => true],
                 'url' => ['name' => 'Url', 'required' => true],
                 'menu_order' => ['name' => 'Order', 'required' => true],
                 'parent_id' => ['name' => 'Parent Id', 'required' => true],
@@ -110,7 +114,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 exit();
             }
 
-            if (Menu::add_menu(['menu' => $menu, 'url' => $url, 'menu_order' => $menu_order, 'parent_id' => $parent_id, 'icon' => $icon, 'parent_order' => $parent_order, 'shown' => $shown, 'active' => $active])) {
+            if (Menu::add_menu(['menu' => $menu, 'display_name' => $display_name,'url' => $url, 'menu_order' => $menu_order, 'parent_id' => $parent_id, 'icon' => $icon, 'parent_order' => $parent_order, 'shown' => $shown, 'active' => $active])) {
                 echo response(204, 'Changes were saved successfully');
             } else {
                 echo response(500, 'Something went wrong');

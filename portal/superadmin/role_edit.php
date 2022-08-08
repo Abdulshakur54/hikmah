@@ -15,7 +15,7 @@ if ($op === 'edit') {
     <div class="card">
         <div class="card-body">
             <h4 class="card-title"><?php echo $op ?> Role</h4>
-            <form class="forms-sample" id="roleForm">
+            <form class="forms-sample" id="roleForm" onsubmit="return false">
                 <div class="form-group">
                     <label for="role">Role</label>
                     <input type="text" class="form-control" id="role" placeholder="Name" value="<?php echo Utility::escape($role) ?>" onfocus="clearHTML('messageContainer')" title="Role" required>

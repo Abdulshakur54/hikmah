@@ -1,0 +1,240 @@
+ <?php
+  //initializations
+  spl_autoload_register(
+    function ($class) {
+      require_once '../classes/' . $class . '.php';
+    }
+  );
+  session_start(Config::get('session/options'));
+
+  if (Input::submitted('get')) {
+    if (empty(Utility::escape(Input::get('user_type')))) {
+      $user_type = 'admission';
+    } else {
+      $user_type = Utility::escape(Input::get('user_type'));
+    }
+  }
+  $errors = [];
+  if (Input::submitted() && Token::check(Input::get('token'))) {
+    $val = new Validation();
+    $form_values = array(
+      'username' => array(
+        'name' => 'Username',
+        'required' => true,
+        'pattern' => '^[a-zA-Z`][a-zA-Z0-9`\/]+$'
+      ),
+      'password' => array(
+        'name' => 'Password',
+        'required' => true
+      )
+    );
+
+    if ($val->check($form_values)) {
+      $remember = (Input::get('remember') === 'on') ? true : false;
+      $user_type = Utility::escape(Input::get('user_type'));
+      switch ($user_type) {
+        case 'student':
+          $user = new Student();
+          break;
+        case 'staff':
+          $user = new Staff();
+        case 'management':
+          $user = new Management();
+          break;
+      }
+      if ($user->pass_match(Input::get('username'), Input::get('password'))) {
+        if ($user->login($remember)) {
+          $data = $user->data();
+          Session::set('user_type', $user_type);
+          Redirect::to('dashboard.php');
+        }
+      } else {
+        $errors[] = 'Wrong username and password combination';
+      }
+    } else {
+      $errors = $val->errors();
+    }
+  }
+  //end of initializatons
+  //$last_page = (Session::lastPageExists()) ? Session::getLastPage() : '';
+  ?>
+ <!DOCTYPE html>
+ <html lang="en">
+
+ <head>
+   <!-- Required meta tags -->
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <title>Registration Page</title>
+   <!-- plugins:css -->
+   <link rel="stylesheet" href="vendors/feather/feather.css">
+   <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+   <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+   <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
+   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+   <!-- endinject -->
+   <!-- Plugin css for this page -->
+   <!-- End plugin css for this page -->
+   <!-- inject:css -->
+   <link rel="stylesheet" href="css/vertical-layout-light/style.css">
+   <!-- endinject -->
+   <link rel="shortcut icon" href="images/favicon.png" />
+   <link rel="stylesheet" href="validation/validation.css" />
+   <link rel="stylesheet" href="styles/style.css" />
+   <link rel="stylesheet" href="login.css" />
+ </head>
+
+ <body>
+   <div class="container-scroller">
+     <div class="container-fluid page-body-wrapper full-page-wrapper">
+       <div class="content-wrapper d-flex align-items-center auth px-0">
+         <div class="row w-100 mx-0">
+           <div class="col-lg-4 mx-auto">
+             <div class="auth-form-light text-left py-5 px-4 px-sm-5 ">
+               <div class="tab">
+                 <button id="student" onclick="changeContent('admission')"> <i class="mdi mdi-human-male-female"></i> Admission</button>
+                 <button id="staff" onclick="changeContent('staff')"> <i class="mdi mdi-account-multiple"></i> Staff</button>
+                 <button id="management" onclick="changeContent('management')"> <i class="mdi mdi-account-multiple-plus"></i> Management</button>
+               </div>
+               <form class="pt-5" method="post" action="<?php echo Utility::myself(); ?>" onsubmit="register(event)" novalidate id="regForm">
+                 <h6 class="font-weight-light font-weight-bold pb-1" id="headerInfo"><?php echo Utility::escape(ucfirst($user_type) . ' Registration') ?>.</h6>
+                 <div class="backendMsg">
+                   <?php
+                    foreach ($errors as $error) {
+                      echo '<div class = "failure">' . $error . '</div>';
+                    }
+                    ?>
+                 </div>
+                 <?php
+                  if ($user_type === 'staff') {
+                  ?>
+                   <div class="form-group">
+                     <label for="title">Title</label>
+                     <select class="js-example-basic-single w-100 p-2" id="title" Title="title">
+                       <option>Mall</option>
+                       <option>Mallama</option>
+                       <option>Mr</option>
+                       <option>Mrs</option>
+                       <option>Miss</option>
+                     </select>
+                   </div>
+                 <?php
+                  }
+                  ?>
+                 <div class="form-group">
+                   <label for="fname">Firstname</label>
+                   <input type="text" class="form-control form-control-lg" id="fname" title="Firstname" required name="fname" value="<?php echo Utility::escape(Input::get('fname')) ?>">
+                 </div>
+                 <div class="form-group">
+                   <label for="lname">Lastname</label>
+                   <input type="text" class="form-control form-control-lg" id="lname" title="Lastname" required name="lname" value="<?php echo Utility::escape(Input::get('lname')) ?>">
+                 </div>
+                 <div class="form-group">
+                   <label for="oname">Othername</label>
+                   <input type="text" class="form-control form-control-lg" id="oname" title="Othername" required name="oname" value="<?php echo Utility::escape(Input::get('oname')) ?>">
+                 </div>
+                 <div class="form-group">
+                   <label for="password">Password</label>
+                   <input type="password" class="form-control form-control-lg" id="password" title="Password" required name="password">
+                 </div>
+                 <div class="form-group">
+                   <label for="c_password">Confirm Password</label>
+                   <input type="text" class="form-control form-control-lg" id="c_password" title="Confirm Password" required name="c_password">
+                 </div>
+                 <div class="form-group">
+                   <label for="phone">Phone No <?php if ($user_type == 'admission') {
+                                                  echo '(Parent)';
+                                                } ?></label>
+                   <input type="text" maxlength="11" class="form-control form-control-lg" id="phone" title="Phone No" required name="phone" pattern="^[0-9]{11}$" value="<?php echo Utility::escape(Input::get('phone')) ?>">
+                 </div>
+                 <div class="form-group">
+                   <label for="email">Email <?php if ($user_type == 'admission') {
+                                              echo '(Parent)';
+                                            } ?></label>
+                   <input type="email" class="form-control form-control-lg" id="email" title="Email" required name="email" value="<?php echo Utility::escape(Input::get('email')) ?>">
+                 </div>
+
+                 <?php
+                  if ($user_type == 'management' || $user_type == 'staff') {
+                  ?>
+                   <div class="form-group">
+                     <label for="account">Account No</label>
+                     <input type="text" class="form-control form-control-lg" id="account" title="Account No" required name="account" pattern="^[0-9]{10}$" value="<?php echo Utility::escape(Input::get('account')) ?>">
+                   </div>
+                   <div class="form-group">
+                     <label for="bank">Bank</label>
+                     <select class="js-example-basic-single w-100 p-2" id="bank" title="Bank">
+                       <?php
+                        $banks = Utility::getBanks();
+                        echo '<option value="">:::Select Bank:::</option>';
+                        foreach ($banks as $bank) {
+                          echo '<option>' . $bank . '</option>';
+                        }
+                        ?>
+                     </select>
+                   </div>
+                 <?php
+                  }
+                  ?>
+
+
+                 <div class="form-group">
+                   <label for="address">Residential Address</label>
+                   <textarea class="form-control" id="address" rows="4" name="address"><?php echo Input::get('address') ?></textarea>
+                 </div>
+
+
+                 <div class="mb-4">
+                   <label for="picture" id="uploadTrigger" style="cursor: pointer; color:green;">Upload Picture</label>
+                   <div>
+                     <input type="file" name="picture" id="picture" style="display: none" onchange="showImage(this)" accept="image/jpg, image/jpeg, image/png" />
+                     <img id="image" width="100" height="100" />
+                     <input type="hidden" name="hiddenPic" value="" id="hiddenPic" />
+                     <div id="picMsg" class="errMsg"></div>
+                   </div>
+                 </div>
+
+                 <div class="form-group">
+                   <label for="pin">Pin</label>
+                   <input type="text" class="form-control form-control-lg" id="pin" title="Pin" required name="pin" value="<?php echo Utility::escape(Input::get('pin')) ?>">
+                 </div>
+                 <input type="hidden" name="user_type" id="userType" value="<?php echo Utility::escape(Input::get('user_type'))?>" />
+                 <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
+                 <div class="mt-3">
+                   <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" type="submit">SIGN UP</button>
+                 </div>
+                 <div class="text-center mt-4 font-weight-light">
+                   Already have an account? <a href="login.html" class="text-primary">Login</a>
+                 </div>
+               </form>
+             </div>
+           </div>
+         </div>
+       </div>
+       <!-- content-wrapper ends -->
+     </div>
+     <!-- page-body-wrapper ends -->
+   </div>
+   <!-- container-scroller -->
+   <!-- plugins:js -->
+   <script src="vendors/js/vendor.bundle.base.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+   <!-- endinject -->
+   <!-- Plugin js for this page -->
+   <!-- End plugin js for this page -->
+   <!-- inject:js -->
+   <script src="js/off-canvas.js"></script>
+   <script src="js/hoverable-collapse.js"></script>
+   <script src="js/template.js"></script>
+   <script src="js/settings.js"></script>
+   <script src="js/todolist.js"></script>
+   <!-- endinject -->
+   <!--My JS -->
+   <script src="scripts/script.js"></script>
+   <script src="validation/validation.js"></script>
+   <script src="register.js"></script>
+   <!--End of My JS -->
+   <!-- End custom js for this page-->
+ </body>
+
+ </html>
