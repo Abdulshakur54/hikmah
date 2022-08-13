@@ -62,34 +62,24 @@
             switch($lastLetter){
                 case '0':
                     return 'th';
-                break;
                 case '1':
                     return 'st';
-                break;
                 case '2':
                     return 'nd';
-                break;
                 case '3':
                     return 'rd';
-                break;
                 case '4':
                     return 'th';
-                break;
                 case '5':
                     return 'th';
-                break;
                 case '6':
                     return 'th';
-                break;
                 case '7':
                     return 'th';
-                break;
                 case '8':
                     return 'th';
-                break;
                 case '9':
                     return 'th';
-                break;
             }
          }
 
@@ -126,6 +116,19 @@
            $banks = $db->select('banks','name');
            $banks = self::convertToArray($banks,'name');
            return $banks;
+        }
+
+        public static function getStates() :array{
+           $db = DB::get_instance();
+           $states = $db->select('states','*');
+           $states = self::convertToArray($states,['id','name']);
+           return $states;
+        }
+        public static function getLgas($stateId) :array{
+           $db = DB::get_instance();
+           $lgas = $db->select('local_governments','*','state_id='.$stateId);
+           $lgas = self::convertToArray($lgas,['id','name']);
+           return $lgas;
         }
         
         public static function altValue($val,$altVal){

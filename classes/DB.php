@@ -81,6 +81,7 @@ class DB
 	public function query(string $sql, $val = array(), $audit_options = []): bool
 	{
 		$this->_sql = $sql;
+
 		if ($this->_query = $this->_pdo->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL))) {
 			return $this->insert_val($val, $audit_options);
 		}
@@ -185,8 +186,8 @@ class DB
 				}
 				return false;
 			} catch (PDOException $e) {
-				$e->getMessage();
 				$this->_pdo->rollBack();
+				echo $e->getMessage();
 				return false;
 			}
 		}
@@ -276,7 +277,7 @@ class DB
 		return [];
 	}
 
-	public function get(string $table, string $columns='*', string $condition = '',string $order_column='', string $sort = 'asc'): array
+	public function get(string $table, string $columns='*', string $condition = '',string $order_column='', string $sort = 'asc')
 	{
 		$sql = 'select ' . $columns . ' from ' . $table;
 		if ($condition != '') {

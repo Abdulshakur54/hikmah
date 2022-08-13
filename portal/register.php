@@ -6,50 +6,177 @@
     }
   );
   session_start(Config::get('session/options'));
-
   if (Input::submitted('get')) {
     if (empty(Utility::escape(Input::get('user_type')))) {
       $user_type = 'admission';
     } else {
       $user_type = Utility::escape(Input::get('user_type'));
+      if($user_type == 'student'){
+        $user_type = 'admission';
+      }
     }
   }
   $errors = [];
   if (Input::submitted() && Token::check(Input::get('token'))) {
     $val = new Validation();
-    $form_values = array(
-      'username' => array(
-        'name' => 'Username',
-        'required' => true,
-        'pattern' => '^[a-zA-Z`][a-zA-Z0-9`\/]+$'
-      ),
-      'password' => array(
-        'name' => 'Password',
-        'required' => true
-      )
+    $formvalues = array(
+      'fname' => array('name' => 'Firstname', 'required' => true, 'min' => 3, 'max' => '20', 'pattern' => '^[a-zA-Z`]+$'),
+      'lname' => array('name' => 'Lastname', 'required' => true, 'min' => 3, 'max' => '20', 'pattern' => '^[a-zA-Z`]+$'),
+      'oname' => array('name' => 'Othername', 'min' => 3, 'max' => '20', 'pattern' => '^[a-zA-Z`]+$'),
+      'password' => array('name' => 'password', 'required' => true, 'min' => 3, 'max' => '32', 'pattern' => '^[a-zA-Z0-9]+$'),
+      'c_password' => array('name' => 'Confirm_Password', 'same' => 'password'),
+      'phone' => array('name' => 'Phone', 'required' => true, 'pattern' => '^(080|070|090|081|091|071)[0-9]{8}$'),
+      'pin' => array('name' => 'Pin', 'required' => true, 'pattern' => '^[0-9a-zA-Z]{14}$'),
+      'email' => array('name' => 'Email', 'required' => true, 'max' => 70, 'min' => 10, 'pattern' => '^[a-zA-Z]+[a-zA-Z0-9]*@[a-zA-Z]+.[a-zA-Z]+$'),
+      'dob' => array('name' => 'Date of Birth', 'required' => true),
+      'state' => array('name' => 'State', 'required' => true),
+      'lga' => array('name' => 'LGA', 'required' => true)
     );
+    $user_type = Utility::escape(Input::get('user_type'));
+    if ($user_type === 'staff' || $user_type === 'management') {
+      $formvalues['account'] = array('name' => 'Account No', 'required' => true, 'max' => 15, 'min' => 10, 'pattern' => '^[0-9]+$');
+      $formvalues['bank'] = array('name' => 'Bank', 'in' => Utility::getBanks());
+    }
 
-    if ($val->check($form_values)) {
-      $remember = (Input::get('remember') === 'on') ? true : false;
-      $user_type = Utility::escape(Input::get('user_type'));
-      switch ($user_type) {
-        case 'student':
-          $user = new Student();
-          break;
-        case 'staff':
-          $user = new Staff();
-        case 'management':
-          $user = new Management();
-          break;
-      }
-      if ($user->pass_match(Input::get('username'), Input::get('password'))) {
-        if ($user->login($remember)) {
-          $data = $user->data();
-          Session::set('user_type', $user_type);
-          Redirect::to('dashboard.php');
+    $fileValues = [
+      'picture' => [
+        'name' => 'Picture',
+        'required' => true,
+        'maxSize' => 100,
+        'extension' => ['jpg', 'jpeg', 'png']
+      ]
+    ];
+
+    $file = new File('picture');
+    if (!$file->isUploaded()) {
+      $errors[] = 'Picture not uploaded';
+    }
+    $pin = Utility::escape(Input::get('pin'));
+    $agg = new Aggregate();
+    if ($val->check($formvalues) && $val->checkFile($fileValues) && Utility::noScript(Input::get('address'))) {
+      if (Utility::equals($pin, $agg->lookUp('token', 'token', 'token,=,' . $pin))) { //confirm the token
+        switch ($user_type) {
+          case 'admission':
+            $user = new Admission();
+            $user_id = 'A' . Admission::genId(); //generates the admission id
+            $table = Config::get('users/table_name3');
+            $username_column = Config::get('users/username_column3');
+            break;
+          case 'staff':
+            $user = new Staff();
+            $user_id = 'S' . Staff::genId(); //generates the Staff id
+            $table = Config::get('users/table_name1');
+            $username_column = Config::get('users/username_column1');
+            break;
+          case 'management':
+            $user = new Management();
+            $user_id = 'M' . Management::genId(); //generates the Management i
+            $table = Config::get('users/table_name0');
+            $username_column = Config::get('users/username_column0');
+            break;
+        }
+        $password = Utility::escape(Input::get('password'));
+        $fname = Utility::escape(Input::get('fname'));
+        $lname = Utility::escape(Input::get('lname'));
+        $oname = Utility::escape(Input::get('oname'));
+        $dob = Utility::escape(Input::get('dob'));
+        $db = DB::get_instance();
+        $url = new Url();
+        $db->query('select * from token where token=?', [$pin]); //get the token and the data associated with it
+        $res = $db->one_result();
+        $sch_abbr = $res->sch_abbr;
+        $rank = $res->pro_rank;
+        switch ($user_type) {
+          case 'admission':
+            $level = (int) $res->level;
+            break;
+          case 'staff':
+          case 'management':
+            $salary = $res->salary;
+            $asst = $res->asst;
+            $account = Utility::escape(Input::get('account'));
+            $bank = Utility::escape(Input::get('bank'));
+            $title = Utility::escape(Input::get('title'));
+            break;
+        }
+        $email = Utility::escape(Input::get('email'));
+        $state = Utility::escape(Input::get('state'));
+        $lga = Utility::escape(Input::get('lga'));
+        $address = Input::get('address');
+        $ext = $file->extension();
+        $pictureName = $user_id . '.' . $ext;
+        $file_path = "$user_type/uploads/passports/";
+        switch ($user_type) {
+          case 'admission':
+            $sql1 = 'insert into ' . $table . '(' . $username_column . ', password,fname,lname,oname,rank,sch_abbr,phone,email,level,dob,state,lga,picture) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+            $vals1 = [$user_id, password_hash($password, PASSWORD_DEFAULT), $fname, $lname, $oname, $rank, $sch_abbr, Utility::escape(Input::get('phone')), $email, $level, $dob, $state, $lga,$pictureName];
+            if ($db->query($sql1, $vals1)) { //performs a query
+
+              /*for hikmah only to help use the role and menu functionality*/
+              $role_id = $user->get_role_id($rank, 0);
+              $db->insert(Config::get('users/table_name'), ['user_id' => $user_id, 'role_id' => $role_id]);
+              Menu::add_available_menus($user_id, $role_id);
+              /*for hikmah only to help use the role and menu functionality*/
+
+              $file->move($file_path . $pictureName); //move picture to the destination folder
+              $agg->rowDelete('token', 'token,=,' . $pin); //delete the token from the token table
+              $alert = new Alert(true);
+              Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $adm_id . '</strong><br><em>Copy and save it</em></div>');
+              Redirect::to('success2.php?user_type=admission');
+            } else {
+              $errors[] = 'Registration Not Successful';
+            }
+            break;
+          case 'staff':
+          case 'management':
+            $sql1 = 'insert into ' . $table . '(' . $username_column . ', password,fname,lname,oname,rank,sch_abbr,phone,email,dob,state,lga,title,picture) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+            $vals1 = [$user_id, password_hash($password, PASSWORD_DEFAULT), $fname, $lname, $oname, $rank, $sch_abbr, Utility::escape(Input::get('phone')), $email, $dob, $state, $lga,$title,$pictureName];
+            $sql2 = 'insert into account(receiver,no,bank,salary) values(?,?,?,?)';
+            $vals2 = [$user_id,$account,$bank, $salary];
+            
+            if ($db->trans_query([[$sql1, $vals1], [$sql2, $vals2]])) { //performs a transaction which consist of 2 queries
+
+              /*for hikmah only to help use the role and menu functionality*/
+              $role_id = $user->get_role_id($rank,$asst);
+              $db->insert(Config::get('users/table_name'),['user_id'=>$user_id,'role_id'=>$role_id]);
+              Menu::add_available_menus($user_id,$role_id);
+              /*for hikmah only to help use the role and menu functionality*/
+
+              $agg->rowDelete('token', 'token,=,' . $pin); //delete the token from the token table
+              $file->move($file_path. $pictureName); //move picture to the destination folder
+              $alert = new Alert(true);
+              $req = new Request();
+              //send a confirmation request to the accountant
+              $req->send($user_id, 3, 'Please, confirm a request of &#8358;' . $salary . ' as salary for ' . $title . ' ' . Utility::formatName($fname, $oname, $lname), 1);
+              //notify the APM(s)
+              $notMessage = 'This is to inform you that ' . $title . ' ' . Utility::formatName($fname, $oname, $lname) . ' has successfully registered as ' . formatStaffMsg($rank,$user) . '.<br>A request has been sent to the accountant to confirm his salary of &#8358;' . $salary;
+              $alert->sendToRank(2, 'Registration Completion', $notMessage);
+              //customize a message to notify the HOS(s)
+              $notMessage .= '.<br><br><a href="assign_class.php">Assign Class (If staff is a Class Teacher)</a><br>
+                                             <a href="assign_subject.php">Assign Subject (If staff is a Subject Teacher)</a>
+                                             <a>Ignore (if staff is a Non Teaching Staff)</a>
+                                           ';
+              if($user_type === 'management'){
+                //notify the director(s)
+                $alert->sendToRank(1, 'Registration Completion', 'This is to inform you that ' . Utility::formatName($fname, $oname, $lname) . ' has successfully registered as ' . formatManagementMsg($rank,$user) . '.<br>A request has been sent to the accountant to confirm his salary of &#8358;' . $salary);
+                Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>Copy and save it</em></div>');
+                Redirect::to('success2.php?user_type=management');
+              }else{
+                if($user_type === 'staff'){
+                  //send to HOS(s) of the selected school
+                  $alert->reset(); //this will help reset the object for another prepared query
+                  $alert->sendToRank(5, 'Registration Completion', $notMessage, 'sch_abbr,=,' . $sch_abbr);
+                  Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $$user_id . '</strong><br><em>Copy and save it</em></div>');
+                  Redirect::to('success2.php?user_type=staff');
+                }
+              }
+            } else {
+              $errors[] = 'Registration Not Successful';
+            }
+            break;
         }
       } else {
-        $errors[] = 'Wrong username and password combination';
+        $errors[] = 'Pin did not match'; 
       }
     } else {
       $errors = $val->errors();
@@ -57,6 +184,24 @@
   }
   //end of initializatons
   //$last_page = (Session::lastPageExists()) ? Session::getLastPage() : '';
+
+  //helper functions 
+  function formatStaffMsg($rank,$user)
+  {
+    return 'a ' . $user->getFullPosition($rank,$user);
+  }
+
+  function formatManagementMsg($rank,$user)
+  {
+    switch ($rank) {
+      case 2:
+        return 'an Academic Planning Manager';
+      case 3:
+        return 'an Accountant';
+      default:
+        return 'a ' . $user->getFullPosition($rank,$user);
+    }
+  }
   ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -92,11 +237,11 @@
            <div class="col-lg-4 mx-auto">
              <div class="auth-form-light text-left py-5 px-4 px-sm-5 ">
                <div class="tab">
-                 <button id="student" onclick="changeContent('admission')"> <i class="mdi mdi-human-male-female"></i> Admission</button>
+                 <button id="admission" onclick="changeContent('admission')"> <i class="mdi mdi-human-male-female"></i> Admission</button>
                  <button id="staff" onclick="changeContent('staff')"> <i class="mdi mdi-account-multiple"></i> Staff</button>
                  <button id="management" onclick="changeContent('management')"> <i class="mdi mdi-account-multiple-plus"></i> Management</button>
                </div>
-               <form class="pt-5" method="post" action="<?php echo Utility::myself(); ?>" onsubmit="register(event)" novalidate id="regForm">
+               <form class="pt-5" method="post" action="<?php echo Utility::myself(); ?>" onsubmit="register(event)" novalidate id="regForm" enctype = "multipart/form-data">
                  <h6 class="font-weight-light font-weight-bold pb-1" id="headerInfo"><?php echo Utility::escape(ucfirst($user_type) . ' Registration') ?>.</h6>
                  <div class="backendMsg">
                    <?php
@@ -106,11 +251,11 @@
                     ?>
                  </div>
                  <?php
-                  if ($user_type === 'staff') {
+                  if ($user_type === 'staff' || $user_type === 'management') {
                   ?>
                    <div class="form-group">
                      <label for="title">Title</label>
-                     <select class="js-example-basic-single w-100 p-2" id="title" Title="title">
+                     <select class="js-example-basic-single w-100 p-2" id="title" Title="title" name="title">
                        <option>Mall</option>
                        <option>Mallama</option>
                        <option>Mr</option>
@@ -134,23 +279,44 @@
                    <input type="text" class="form-control form-control-lg" id="oname" title="Othername" required name="oname" value="<?php echo Utility::escape(Input::get('oname')) ?>">
                  </div>
                  <div class="form-group">
-                   <label for="password">Password</label>
-                   <input type="password" class="form-control form-control-lg" id="password" title="Password" required name="password">
+                   <label for="dob">Date of birth</label>
+                   <input type="date" class="form-control form-control-lg" id="dob" title="Date of birth" required name="dob" value="<?php echo Utility::escape(Input::get('dob')) ?>">
                  </div>
+
                  <div class="form-group">
-                   <label for="c_password">Confirm Password</label>
-                   <input type="text" class="form-control form-control-lg" id="c_password" title="Confirm Password" required name="c_password">
+                   <label for="state">State</label>
+                   <select class="js-example-basic-single w-100 p-2" id="state" title="State" onchange="populateLGA(this)" name="state">
+                     <?php
+                      $states = Utility::getStates();
+                      echo '<option value="">:::Select State:::</option>';
+                      foreach ($states as $state) {
+                        echo '<option value="' . $state['id'] . '">' . $state['name'] . '</option>';
+                      }
+                      ?>
+                   </select>
                  </div>
+
                  <div class="form-group">
-                   <label for="phone">Phone No <?php if ($user_type == 'admission') {
-                                                  echo '(Parent)';
-                                                } ?></label>
+                   <label for="lga">LGA</label>
+                   <select class="js-example-basic-single w-100 p-2" id="lga" title="LGA" name="lga">
+                     <option value="">:::Select State First:::</option>
+                   </select>
+                 </div>
+
+                 <div class="form-group">
+                   <label for="phone">Phone No
+                     <?php if ($user_type == 'admission') {
+                        echo '(Parent)';
+                      } ?>
+                   </label>
                    <input type="text" maxlength="11" class="form-control form-control-lg" id="phone" title="Phone No" required name="phone" pattern="^[0-9]{11}$" value="<?php echo Utility::escape(Input::get('phone')) ?>">
                  </div>
                  <div class="form-group">
-                   <label for="email">Email <?php if ($user_type == 'admission') {
-                                              echo '(Parent)';
-                                            } ?></label>
+                   <label for="email">Email
+                     <?php if ($user_type == 'admission') {
+                        echo '(Parent)';
+                      } ?>
+                   </label>
                    <input type="email" class="form-control form-control-lg" id="email" title="Email" required name="email" value="<?php echo Utility::escape(Input::get('email')) ?>">
                  </div>
 
@@ -163,7 +329,7 @@
                    </div>
                    <div class="form-group">
                      <label for="bank">Bank</label>
-                     <select class="js-example-basic-single w-100 p-2" id="bank" title="Bank">
+                     <select class="js-example-basic-single w-100 p-2" id="bank" title="Bank" name="bank">
                        <?php
                         $banks = Utility::getBanks();
                         echo '<option value="">:::Select Bank:::</option>';
@@ -198,13 +364,21 @@
                    <label for="pin">Pin</label>
                    <input type="text" class="form-control form-control-lg" id="pin" title="Pin" required name="pin" value="<?php echo Utility::escape(Input::get('pin')) ?>">
                  </div>
-                 <input type="hidden" name="user_type" id="userType" value="<?php echo Utility::escape(Input::get('user_type'))?>" />
+                 <div class="form-group">
+                   <label for="password">Password</label>
+                   <input type="password" class="form-control form-control-lg" id="password" title="Password" required name="password">
+                 </div>
+                 <div class="form-group">
+                   <label for="c_password">Confirm Password</label>
+                   <input type="password" class="form-control form-control-lg" id="c_password" title="Confirm Password" required name="c_password">
+                 </div>
+                 <input type="hidden" name="user_type" id="userType" value="<?php echo $user_type ?>" />
                  <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
                  <div class="mt-3">
                    <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" type="submit">SIGN UP</button>
                  </div>
                  <div class="text-center mt-4 font-weight-light">
-                   Already have an account? <a href="login.html" class="text-primary">Login</a>
+                   Already have an account? <a href="login.php" class="text-primary">Login</a>
                  </div>
                </form>
              </div>
@@ -231,6 +405,7 @@
    <!-- endinject -->
    <!--My JS -->
    <script src="scripts/script.js"></script>
+   <script src="scripts/ajaxrequest.js"></script>
    <script src="validation/validation.js"></script>
    <script src="register.js"></script>
    <!--End of My JS -->

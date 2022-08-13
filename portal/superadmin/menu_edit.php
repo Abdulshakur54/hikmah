@@ -1,6 +1,6 @@
 <?php
 require_once 'superadmin.inc1.php';
-require_once '../includes/val_page_request.inc.php';
+require_once './includes/val_page_request.inc.php';
 $op = Utility::escape(Input::get('op'));
 if ($op === 'edit') {
     $menu_id = Utility::escape(Input::get('menu_id'));

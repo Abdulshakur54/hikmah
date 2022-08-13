@@ -27,3 +27,8 @@
 .tab button:hover {
     background-color: #ddd;
 }
+.tab{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}

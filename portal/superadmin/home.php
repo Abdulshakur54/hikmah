@@ -1,6 +1,6 @@
 <?php
 require_once 'superadmin.inc1.php';
-require_once '../includes/val_page_request.inc.php';
+require_once './includes/val_page_request.inc.php';
 ?>
 <table id="tblUser" class="display">
     <thead>

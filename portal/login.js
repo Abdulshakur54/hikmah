@@ -5,6 +5,9 @@ function changeContent(tab) {
   }
   localStorage.setItem("user_type", tab);
   document.getElementById(tab).className = "active";
+  if(tab==='admission'){
+    tab  = 'admission student';
+  }
   document.getElementById('headerInfo').innerHTML = 'Sign in as a '+tab;
 }
 

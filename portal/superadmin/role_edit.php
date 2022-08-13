@@ -1,6 +1,6 @@
 <?php
 require_once 'superadmin.inc1.php';
-require_once '../includes/val_page_request.inc.php';
+require_once './includes/val_page_request.inc.php';
 $op = Utility::escape(Input::get('op'));
 if ($op === 'edit') {
     $role_id = Input::get('role_id');
@@ -28,6 +28,7 @@ if ($op === 'edit') {
             </form>
         </div>
         <input type="hidden" name="page_token" id="page_token" value="<?php echo Token::generate(32, 'page_token') ?>">
+
     </div>
 </div>
 <script src="scripts/superadmin/roles.js"></script>

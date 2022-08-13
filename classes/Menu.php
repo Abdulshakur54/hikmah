@@ -1,68 +1,34 @@
 <?php
 class Menu
 {
-    private $menu_table, $role_table, $user_menu_table, $output_menus;
-    public function __construct()
-    {
-        $this->menu_table = Config::get('menu/menu_table');
-        $this->role_table = Config::get('menu/role_table');
-        $this->user_menu_table = Config::get('menu/user_menu_table');
-        $this->output_menus = [];
-    }
 
     public function get(string $user_id){
         $db = DB::get_instance();
         $users_menu = Config::get('users/menu_table');
+        $menu_table = Config::get('menu/menu_table');
         $username_column = Config::get('users/username_column');
-        $menu_ids = $db->select($users_menu,'menu_id',"$username_column = '$user_id' and shown=1");
-        $menu_ids_array = [];
-        foreach($menu_ids as $menu_id){
-            $menu_ids_array[] = $menu_id->menu_id;
+        $db->query("select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1  and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = 0 order by $menu_table.parent_order asc", []);
+        if($db->row_count() > 0){
+            $first_level_parents = $db->get_result();
+        }else{
+            $first_level_parents = [];
         }
-        $menu_ids_string = implode("','",$menu_ids_array);
-        $first_level_parents = $db->select('menu', '*', 'shown = 1 and parent_id = 0 and id in(\'' . $menu_ids_string . '\')', 'parent_order');
+      
         $output_menus = $first_level_parents;
-        if(!empty($first_level_parents)){
-            foreach ($output_menus as $menu) {
-                $menu = $this->addChild($menu, true);
+        foreach($output_menus as $menu){
+            $db->query("select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1  and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = $menu->id order by $menu_table.menu_order asc",[]);
+            if($db->row_count() > 0){
+                $childrenMenu = $db->get_result();
+                $menu->children = $childrenMenu;
             }
-            return $output_menus;
-        }else{
-            return [];
-        }
-
-    }
-
-    function addChild($menu, bool $starting = false){
-        $db = DB::get_instance();
-        if($starting){
-            $menu_id = $menu->id;
-            $child_menus = $db->select('menu', '*', 'parent_id = ' . $menu_id . ' and shown =1');
-            if (!empty($child_menus)) {
-                $menu->children = $child_menus;
-                $this->addChild($menu, false);
-            }
-            return $menu;
-        }else{
-            foreach($menu->children as $child){
-                $child = $this->getAllChildren($child, $child);
-            }
-            return $menu;
            
         }
-    }
 
-    function getAllChildren($menu, $placeholder){
-        $db =DB::get_instance();
-        $menu_id = $placeholder->id;
-        $child_menus = $db->select('menu', '*', 'parent_id = ' . $menu_id . ' and shown =1');
-        if (!empty($child_menus)) {
-            $placeholder->children = $child_menus;
-            $this->getAllChildren($menu, $placeholder->children);
-        }
-        return $menu;
+        return $output_menus;
 
     }
+
+
 
     public static function get_roles()
     {
@@ -208,11 +174,12 @@ class Menu
     public static function add_available_menus($user_id, $role_id)
     {
         $db = DB::get_instance();
-        $menus = self::get_available_menus($role_id);
+        $menus = self::get_role_menus($role_id);
         $menusArray = Utility::convertToArray($menus, 'id');
         $users_menu = Config::get('users/menu_table');
+        $users_column = Config::get('users/username_column');
         $len = count($menusArray);
-        $db->query('insert into ' . $users_menu . ' (users_id,menu_id) values(?,?)', [$user_id, $menusArray[0]]);
+        $db->query('insert into ' . $users_menu . ' ('.$users_column.',menu_id) values(?,?)', [$user_id, $menusArray[0]]);
         for ($i = 1; $i < $len; $i++) {
             $db->requery([$user_id, $menusArray[$i]]);
         }
@@ -221,7 +188,7 @@ class Menu
     public static function delete_available_menus($user_id, $role_id)
     {
         $db = DB::get_instance();
-        $menus = self::get_available_menus($role_id);
+        $menus = self::get_role_menus($role_id);
         $menusArray = Utility::convertToArray($menus, 'id');
         $menu_string = implode("','", $menusArray);
         $users_menu = Config::get('users/menu_table');

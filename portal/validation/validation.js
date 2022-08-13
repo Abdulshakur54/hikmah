@@ -69,6 +69,7 @@ function validate(formId, options = {}, customMessages = {}) {
     addEvents(radioInput);
     addEvents(checkInput);
     addEvents(selectInput);
+    addEvents(otherTextInput);
     addEvents(otherTextInput, "keyup");
   }
 

@@ -18,13 +18,24 @@ function getPage(url) {
   } else {
     url += "&page_token=" + _("page_token").value;
   }
+
   ajaxRequest(url, loadPage);
 }
 
 function loadPage() {
   const rsp = xmlhttp.responseText;
- $('#page').html(rsp);
+  $("#page").html(rsp);
+  //  const notCountContainer = _('notificationCount');
+  //  const notCount = parseInt(_("notCount").value);
+  //  const requestCountContainer = _("requestCount");
+  //  const requestCount = parseInt(_("reqCount").value);
+  //  notCountContainer.innerHTML = notCount;
+  //  requestCountContainer.innerHTML = requestCount;
 }
+
+setTimeout(function () {
+  _("welcomeMessage").style.display = "none";
+},10000);
 
 function getAltPage(altPage) {
   getPage(altPage);
@@ -72,16 +83,14 @@ function clearHTML(elementId) {
   _(elementId).innerHTML = "";
 }
 
-
 function typeheadInput(elementId, dataSource) {
- 
   const engine = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.whitespace,
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     local: dataSource,
   });
 
-  $("#"+elementId).typeahead(
+  $("#" + elementId).typeahead(
     {
       hint: true,
       highlight: true,
@@ -93,4 +102,3 @@ function typeheadInput(elementId, dataSource) {
     }
   );
 }
-

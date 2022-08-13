@@ -1,4 +1,14 @@
-$(".js-example-basic-single").select2();
+function runFirst(){
+  const user_type = document.getElementById('userType').value;
+  $(".js-example-basic-single").select2();
+  const children = document.getElementsByClassName("tab")[0].children;
+  for (let child of children) {
+    child.classList.remove("active");
+  }
+  localStorage.setItem("user_type", user_type);
+  document.getElementById(user_type).className = "active";
+}
+runFirst();
 
 function showImage(event) {
   if (objLength(event.files) > 0) {
@@ -27,10 +37,34 @@ function changeContent(userType){
 function register(event) {
   event.preventDefault();
   if (validate("regForm", { validateOnSubmit: true })) {
-    document.getElementById("userType").value =
-      localStorage.getItem("user_type");
     event.target.submit();
   }
+ 
+}
+
+function populateLGA(obj){
+  const stateId = obj.value;
+  if(stateId.trim().length > 0){
+     ajaxRequest(
+       "responses/responses.php",
+       handleLGAListResponse,
+       `op=get_lga_list&state_id=${stateId}&token=${token.value}`
+     );
+  }
+
+   function handleLGAListResponse(){
+     const rsp = JSON.parse(xmlhttp.responseText);
+     if (rsp.status === 200) {
+       const lgaContainer = _('lga');
+       const lgas = rsp.data;
+       let output = ``;
+       for(let lga of lgas){
+        output += `<option value="${lga.id}">${lga.name}</option>`;
+       }
+       lgaContainer.innerHTML = output;
+     }
+      _("token").value = rsp.token;
+   }
 }
 
 validate("regForm");

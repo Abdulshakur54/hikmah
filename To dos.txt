@@ -1,0 +1,4 @@
+# You have to implement forgotten password for the users
+# You have to send email when a user signs in containing the username of the user
+# notification and confirmation should only show when the user has it, same with the welcome message 
+# the search at the dashboard should be implemented as a search of menus

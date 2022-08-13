@@ -7,7 +7,7 @@
   );
   session_start(Config::get('session/options'));
   $errors = [];
-  if(Input::submitted() && Token::check(Input::get('token'))) {
+  if (Input::submitted() && Token::check(Input::get('token'))) {
     $val = new Validation();
     $form_values = array(
       'username' => array(
@@ -27,24 +27,29 @@
       switch ($user_type) {
         case 'student':
           $user = new Student();
+          $id_col = Config::get('users/username_column2');
           break;
         case 'staff':
           $user = new Staff();
         case 'management':
           $user = new Management();
           break;
+        case 'admission':
+          $user = new Admission();
+          break;
       }
       if ($user->pass_match(Input::get('username'), Input::get('password'))) {
         if ($user->login($remember)) {
           $data = $user->data();
-         Session::set('user_type',$user_type);
-         Redirect::to('dashboard.php');
+          Session::set('user_type', $user_type);
+          Session::set('user', Input::get('username'));
+          Redirect::to('dashboard.php');
         }
       } else {
         $errors[] = 'Wrong username and password combination';
       }
     } else {
-     $errors = $val->errors();
+      $errors = $val->errors();
     }
   }
   //end of initializatons
@@ -70,7 +75,7 @@
    <link rel="stylesheet" href="css/vertical-layout-light/style.css">
    <!-- endinject -->
    <link rel="shortcut icon" href="images/favicon.png" />
-      <link rel="stylesheet" href="validation/validation.css" />
+   <link rel="stylesheet" href="validation/validation.css" />
    <link rel="stylesheet" href="styles/style.css" />
    <link rel="stylesheet" href="login.css" />
  </head>
@@ -83,6 +88,7 @@
            <div class="col-lg-4 mx-auto">
              <div class="auth-form-light text-left py-5 px-4 px-sm-5 ">
                <div class="tab">
+                 <button id="admission" onclick="changeContent('admission')"> <i class="mdi mdi-account-multiple-plus"></i> admission</button>
                  <button id="student" onclick="changeContent('student')"> <i class="mdi mdi-human-male-female"></i> Student</button>
                  <button id="staff" onclick="changeContent('staff')"> <i class="mdi mdi-account-multiple"></i> Staff</button>
                  <button id="management" onclick="changeContent('management')"> <i class="mdi mdi-account-multiple-plus"></i> Management</button>
@@ -90,11 +96,11 @@
                <form class="pt-5" method="post" action="<?php echo Utility::myself(); ?>" onsubmit="login(event)" novalidate id="loginForm">
                  <h6 class="font-weight-light font-weight-bold pb-1" id="headerInfo">Sign in to continue.</h6>
                  <div class="backendMsg">
-                  <?php
-                  foreach($errors as $error){
-                    echo '<div class = "failure">'.$error.'</div>';
-                  }
-                  ?>
+                   <?php
+                    foreach ($errors as $error) {
+                      echo '<div class = "failure">' . $error . '</div>';
+                    }
+                    ?>
                  </div>
                  <div class="form-group">
                    <input type="text" class="form-control form-control-lg" id="username" placeholder="Username" title="Username" required name="username">
@@ -110,14 +116,14 @@
                  <div class="my-2 d-flex justify-content-between align-items-center">
                    <div class="form-check">
                      <label class="form-check-label text-muted">
-                       <input type="checkbox" class="form-check-input">
+                       <input type="checkbox" class="form-check-input" name="remember" id="remember">
                        Keep me signed in
                      </label>
                    </div>
                    <a href="#" class="auth-link text-black">Forgot password?</a>
                  </div>
                  <div class="text-center mt-4 font-weight-light">
-                   Don't have an account? <a href="register.html" class="text-primary">Create</a>
+                   Don't have an account? <a href="register.php" class="text-primary">Create</a>
                  </div>
                </form>
              </div>

@@ -304,6 +304,88 @@ class User
 		}
 	}
 
+	public function get_role_id($rank, $asst = 0)
+	{
+		$role_table = Config::get('menu/role_table');
+		switch ($rank) {
+			case 1:
+				switch ($asst) {
+					case 0:
+						return $this->_db->get($role_table,'id',"role='director'")->id;
+					case 1:
+						return $this->_db->get($role_table, 'id', "role='Deputy Director'")->id;
+					case 2:
+						return $this->_db->get($role_table, 'id', "role='Secretary Director'")->id;
+				}
+			case 2:
+				switch ($asst) {
+					case 0:
+						return $this->_db->get($role_table, 'id', "role='Academic Planning Manager'")->id;
+					case 2:
+						return $this->_db->get($role_table, 'id', "role='Secretary APM'")->id;
+				}
+			case 3:
+				switch ($asst) {
+					case 0:
+						return $this->_db->get($role_table, 'id', "role='Accountant'")->id;
+					case 2:
+						return $this->_db->get($role_table, 'id', "role='Secretary Accountant'")->id;
+				}
+			case 4:
+				switch ($asst) {
+					case 0:
+						return $this->_db->get($role_table, 'id', "role='Islamiyyah Coordinator'")->id;
+					case 2:
+						return $this->_db->get($role_table, 'id', "role='Secretary IC'")->id;
+				}
+			case 5:
+				switch ($asst) {
+					case 0:
+						return $this->_db->get($role_table, 'id', "role='Head of School'")->id;
+					case 1:
+						return $this->_db->get($role_table, 'id', "role='Deputy HOS'")->id;
+					case 2:
+						return $this->_db->get($role_table, 'id', "role='Secretary HOS'")->id;
+				}
+			case 6:
+				switch ($asst) {
+					case 0:
+						return $this->_db->get($role_table, 'id', "role='Human Resource Manager'")->id;
+					case 2:
+						return $this->_db->get($role_table, 'id', "role='Secretary HRM'")->id;
+				}
+			case 7:
+				return $this->_db->get($role_table, 'id', "role='Teaching Staff'")->id;
+			case 8:
+				return $this->_db->get($role_table, 'id', "role='Non Teaching Staff'")->id;
+			case 9:
+				return $this->_db->get($role_table, 'id', "role='Student'")->id;
+			case 10:
+				return $this->_db->get($role_table, 'id', "role='Student'")->id;
+			case 11:
+				return $this->_db->get($role_table, 'id', "role='Admission Student'")->id;
+			case 12:
+				return $this->_db->get($role_table, 'id', "role='Admission Student'")->id;
+			case 13:
+				return $this->_db->get($role_table, 'id', "role='Alumni'")->id;
+			case 14:
+				return $this->_db->get($role_table, 'id', "role='Alumni'")->id;
+			case 15:
+				return $this->_db->get($role_table, 'id', "role='Teaching Staff'")->id;
+			case 16:
+				return $this->_db->get($role_table, 'id', "role='Non Teaching Staff'")->id;
+			case 17: //Islamiyah head of school
+				switch ($asst) {
+					case 0:
+						return $this->_db->get($role_table, 'id', "role='Head of School'")->id;
+					case 1:
+						return $this->_db->get($role_table, 'id', "role='Deputy HOS'")->id;
+					case 2:
+						return $this->_db->get($role_table, 'id', "role='Secretary HOS'")->id;
+				}
+		}
+	}
+
 
 	//a getter for the postion
 	public function getFullPosition($rank)
