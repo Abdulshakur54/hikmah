@@ -9,14 +9,11 @@ require_once './includes/director.inc.php';
             <form class="forms-sample" id="tokenForm" onsubmit="return false" novalidate>
                 <div class="form-group">
                     <label for="staffname">Name</label>
-                    <input type="text" class="form-control" id="staffname" onfocus="clearHTML('messageContainer')" title="Name" required>
+                    <input type="text" class="form-control" id="staffname" onfocus="clearHTML('messageContainer')" title="Name" required pattern="^[a-zA-Z` ]+$">
                 </div>
                 <div class="form-group">
                     <label for="position">Position</label>
                     <select class="js-example-basic-single w-100 p-2" id="position" title="Position" name="position" required>
-                        <?php
-                        $banks = Utility::getBanks();
-                        ?>
                         <option value="">:::Select Position:::</option>
                         <?php
                         foreach (Management::getPositions(3) as $pos => $rank) {
@@ -34,7 +31,7 @@ require_once './includes/director.inc.php';
                 </div>
                 <div class="form-group">
                     <label for="salary">Salary(&#8358;)</label>
-                    <input type="text" class="form-control" id="salary" onfocus="clearHTML('messageContainer')" title="Salary" required>
+                    <input type="text" class="form-control" id="salary" onfocus="clearHTML('messageContainer')" title="Salary" required pattern="^[0-9]+\.?[0-9]+$">
                 </div>
                 <div id="messageContainer"></div>
                 <button type="button" class="btn btn-primary mr-2" id="generatePin" onclick="addToken()">Generate Pin</button><span id="ld_loader"></span>

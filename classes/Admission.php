@@ -19,8 +19,8 @@
                    return $preZeros.$id;
                 }
                 
-                public function apply($fatherName, $motherName, $phone, $email,$pictureName,$address){
-                    return $this->_db->query('update admission set fathername=?, mothername=?, phone=?, email=?, picture=?, applied = ?, address=? where adm_id=?',[$fatherName,$motherName,$phone,$email,$pictureName,true,$address,$this->data()->adm_id]);
+                public function apply($fatherName, $motherName, $username){
+                    return $this->_db->query('update admission set fathername=?, mothername=?, applied = ? where adm_id=?',[$fatherName,$motherName,true, $username]);
                 }
                 
                 public function getData($adm_id){

@@ -38,15 +38,22 @@
   );
   session_start(Config::get('session/options'));
   //end of initializatons
+
   $last_page = (Session::lastPageExists()) ? Session::getLastPage() : '';
   $username = Session::get('user');
-  if(Session::exists('user')){
+  if (Session::exists('user')) {
     $menu = new Menu();
     $menus = $menu->get($username);
-  }else{
+  } else {
     Redirect::to('login.php');
   }
- 
+
+  //this function is used to allow complete redirect into exam portal, this is done when the file url ends with new_exam.php
+  function is_new_exam($url): bool
+  {
+    return (substr($url, -12) == 'new_exam.php') ? true : false;
+  }
+
   ?>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
@@ -87,7 +94,7 @@
               <img src="images/faces/face28.jpg" alt="profile" />
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-              <a class="dropdown-item">
+              <a class="dropdown-item" href="logout.php">
                 <i class="ti-power-off text-primary"></i>
                 Logout
               </a>
@@ -128,7 +135,7 @@
                   if (property_exists($menu, 'children')) {
                     foreach ($menu->children as $child) {
                   ?>
-                      <li class="nav-item"> <a class="nav-link" onclick="getPage('<?php echo Utility::escape($child->url) ?>')" href="#"><?php echo Utility::escape($child->display_name) ?></a></li>
+                      <li class="nav-item"> <a class="nav-link" onclick="<?php echo (!is_new_exam($child->url)) ? 'getPage(\''. Utility::escape($child->url).'\')': '#' ?>" href="<?php echo (is_new_exam($child->url)) ? Utility::escape($child->url) : '#' ?>"><?php echo Utility::escape($child->display_name) ?></a></li>
                   <?php
                     }
                   } ?>

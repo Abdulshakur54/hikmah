@@ -6,6 +6,13 @@
     }
   );
   session_start(Config::get('session/options'));
+
+  //redirect user
+  if (Session::exists('user')) {
+    Redirect::to('dashboard.php');
+  }
+  //end of redirect user
+
   $errors = [];
   if (Input::submitted() && Token::check(Input::get('token'))) {
     $val = new Validation();
@@ -88,7 +95,7 @@
            <div class="col-lg-4 mx-auto">
              <div class="auth-form-light text-left py-5 px-4 px-sm-5 ">
                <div class="tab">
-                 <button id="admission" onclick="changeContent('admission')"> <i class="mdi mdi-account-multiple-plus"></i> admission</button>
+                 <button id="admission" onclick="changeContent('admission')"> <i class="mdi mdi-account-multiple-plus"></i> Admission</button>
                  <button id="student" onclick="changeContent('student')"> <i class="mdi mdi-human-male-female"></i> Student</button>
                  <button id="staff" onclick="changeContent('staff')"> <i class="mdi mdi-account-multiple"></i> Staff</button>
                  <button id="management" onclick="changeContent('management')"> <i class="mdi mdi-account-multiple-plus"></i> Management</button>

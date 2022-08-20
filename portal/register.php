@@ -6,14 +6,20 @@
     }
   );
   session_start(Config::get('session/options'));
+
+  // //redirect user
+  // if (Session::exists('user')) {
+  //   Redirect::to('dashboard.php');
+  // }
+  // //end of redirect user
   if (Input::submitted('get')) {
     if (empty(Utility::escape(Input::get('user_type')))) {
-      $user_type = 'admission';
+      if (!Session::exists('user_type')) {
+        Session::set('user_type', 'admission');
+      }
+      $user_type = Session::get('user_type');
     } else {
       $user_type = Utility::escape(Input::get('user_type'));
-      if($user_type == 'student'){
-        $user_type = 'admission';
-      }
     }
   }
   $errors = [];
@@ -109,7 +115,7 @@
         switch ($user_type) {
           case 'admission':
             $sql1 = 'insert into ' . $table . '(' . $username_column . ', password,fname,lname,oname,rank,sch_abbr,phone,email,level,dob,state,lga,picture) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-            $vals1 = [$user_id, password_hash($password, PASSWORD_DEFAULT), $fname, $lname, $oname, $rank, $sch_abbr, Utility::escape(Input::get('phone')), $email, $level, $dob, $state, $lga,$pictureName];
+            $vals1 = [$user_id, password_hash($password, PASSWORD_DEFAULT), $fname, $lname, $oname, $rank, $sch_abbr, Utility::escape(Input::get('phone')), $email, $level, $dob, $state, $lga, $pictureName];
             if ($db->query($sql1, $vals1)) { //performs a query
 
               /*for hikmah only to help use the role and menu functionality*/
@@ -120,8 +126,7 @@
 
               $file->move($file_path . $pictureName); //move picture to the destination folder
               $agg->rowDelete('token', 'token,=,' . $pin); //delete the token from the token table
-              $alert = new Alert(true);
-              Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $adm_id . '</strong><br><em>Copy and save it</em></div>');
+              Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>Copy and save it</em></div>');
               Redirect::to('success2.php?user_type=admission');
             } else {
               $errors[] = 'Registration Not Successful';
@@ -130,39 +135,40 @@
           case 'staff':
           case 'management':
             $sql1 = 'insert into ' . $table . '(' . $username_column . ', password,fname,lname,oname,rank,sch_abbr,phone,email,dob,state,lga,title,picture) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-            $vals1 = [$user_id, password_hash($password, PASSWORD_DEFAULT), $fname, $lname, $oname, $rank, $sch_abbr, Utility::escape(Input::get('phone')), $email, $dob, $state, $lga,$title,$pictureName];
+            $vals1 = [$user_id, password_hash($password, PASSWORD_DEFAULT), $fname, $lname, $oname, $rank, $sch_abbr, Utility::escape(Input::get('phone')), $email, $dob, $state, $lga, $title, $pictureName];
             $sql2 = 'insert into account(receiver,no,bank,salary) values(?,?,?,?)';
-            $vals2 = [$user_id,$account,$bank, $salary];
-            
+            $vals2 = [$user_id, $account, $bank, $salary];
+
             if ($db->trans_query([[$sql1, $vals1], [$sql2, $vals2]])) { //performs a transaction which consist of 2 queries
 
               /*for hikmah only to help use the role and menu functionality*/
-              $role_id = $user->get_role_id($rank,$asst);
-              $db->insert(Config::get('users/table_name'),['user_id'=>$user_id,'role_id'=>$role_id]);
-              Menu::add_available_menus($user_id,$role_id);
+              $role_id = $user->get_role_id($rank, $asst);
+              $db->insert(Config::get('users/table_name'), ['user_id' => $user_id, 'role_id' => $role_id]);
+              Menu::add_available_menus($user_id, $role_id);
               /*for hikmah only to help use the role and menu functionality*/
 
               $agg->rowDelete('token', 'token,=,' . $pin); //delete the token from the token table
-              $file->move($file_path. $pictureName); //move picture to the destination folder
+              $file->move($file_path . $pictureName); //move picture to the destination folder
               $alert = new Alert(true);
               $req = new Request();
               //send a confirmation request to the accountant
               $req->send($user_id, 3, 'Please, confirm a request of &#8358;' . $salary . ' as salary for ' . $title . ' ' . Utility::formatName($fname, $oname, $lname), 1);
-              //notify the APM(s)
-              $notMessage = 'This is to inform you that ' . $title . ' ' . Utility::formatName($fname, $oname, $lname) . ' has successfully registered as ' . formatStaffMsg($rank,$user) . '.<br>A request has been sent to the accountant to confirm his salary of &#8358;' . $salary;
-              $alert->sendToRank(2, 'Registration Completion', $notMessage);
-              //customize a message to notify the HOS(s)
-              $notMessage .= '.<br><br><a href="assign_class.php">Assign Class (If staff is a Class Teacher)</a><br>
-                                             <a href="assign_subject.php">Assign Subject (If staff is a Subject Teacher)</a>
-                                             <a>Ignore (if staff is a Non Teaching Staff)</a>
-                                           ';
-              if($user_type === 'management'){
+
+              if ($user_type === 'management') {
                 //notify the director(s)
-                $alert->sendToRank(1, 'Registration Completion', 'This is to inform you that ' . Utility::formatName($fname, $oname, $lname) . ' has successfully registered as ' . formatManagementMsg($rank,$user) . '.<br>A request has been sent to the accountant to confirm his salary of &#8358;' . $salary);
+                $alert->sendToRank(1, 'Registration Completion', 'This is to inform you that ' . Utility::formatName($fname, $oname, $lname) . ' has successfully registered as ' . formatManagementMsg($rank, $user) . '.<br>A request has been sent to the accountant to confirm his salary of &#8358;' . $salary);
                 Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>Copy and save it</em></div>');
                 Redirect::to('success2.php?user_type=management');
-              }else{
-                if($user_type === 'staff'){
+              } else {
+                if ($user_type === 'staff') {
+                  //notify the APM(s)
+                  $notMessage = 'This is to inform you that ' . $title . ' ' . Utility::formatName($fname, $oname, $lname) . ' has successfully registered as ' . formatStaffMsg($rank, $user);
+                  $alert->sendToRank(2, 'Registration Completion', $notMessage);
+                  //customize a message to notify the HOS(s)
+                  $notMessage .= '.<br><br><a href="#" onclick="getPage(\'management/hos/assign_class.php\')">Assign Class (If staff is a Class Teacher)</a><br>
+                                            <a href="#" onclick="getPage(\'management/hos/add_subject.php\')">Assign Subject (If staff is a Subject Teacher)</a>
+                                            <a href="#" onclick="' . Utility::escape(Session::getAltLastPage()) .'">Ignore (if staff is a Non Teaching Staff)</a>
+                                           ';
                   //send to HOS(s) of the selected school
                   $alert->reset(); //this will help reset the object for another prepared query
                   $alert->sendToRank(5, 'Registration Completion', $notMessage, 'sch_abbr,=,' . $sch_abbr);
@@ -176,7 +182,7 @@
             break;
         }
       } else {
-        $errors[] = 'Pin did not match'; 
+        $errors[] = 'Pin did not match';
       }
     } else {
       $errors = $val->errors();
@@ -186,12 +192,12 @@
   //$last_page = (Session::lastPageExists()) ? Session::getLastPage() : '';
 
   //helper functions 
-  function formatStaffMsg($rank,$user)
+  function formatStaffMsg($rank, $user)
   {
-    return 'a ' . $user->getFullPosition($rank,$user);
+    return 'a ' . $user->getFullPosition($rank, $user);
   }
 
-  function formatManagementMsg($rank,$user)
+  function formatManagementMsg($rank, $user)
   {
     switch ($rank) {
       case 2:
@@ -199,7 +205,7 @@
       case 3:
         return 'an Accountant';
       default:
-        return 'a ' . $user->getFullPosition($rank,$user);
+        return 'a ' . $user->getFullPosition($rank, $user);
     }
   }
   ?>
@@ -241,7 +247,7 @@
                  <button id="staff" onclick="changeContent('staff')"> <i class="mdi mdi-account-multiple"></i> Staff</button>
                  <button id="management" onclick="changeContent('management')"> <i class="mdi mdi-account-multiple-plus"></i> Management</button>
                </div>
-               <form class="pt-5" method="post" action="<?php echo Utility::myself(); ?>" onsubmit="register(event)" novalidate id="regForm" enctype = "multipart/form-data">
+               <form class="pt-5" method="post" action="<?php echo Utility::myself(); ?>" onsubmit="register(event)" novalidate id="regForm" enctype="multipart/form-data">
                  <h6 class="font-weight-light font-weight-bold pb-1" id="headerInfo"><?php echo Utility::escape(ucfirst($user_type) . ' Registration') ?>.</h6>
                  <div class="backendMsg">
                    <?php
@@ -255,7 +261,7 @@
                   ?>
                    <div class="form-group">
                      <label for="title">Title</label>
-                     <select class="js-example-basic-single w-100 p-2" id="title" Title="title" name="title">
+                     <select class="js-example-basic-single w-100 p-2" id="title" Title="title" name="title" required>
                        <option>Mall</option>
                        <option>Mallama</option>
                        <option>Mr</option>
@@ -268,15 +274,15 @@
                   ?>
                  <div class="form-group">
                    <label for="fname">Firstname</label>
-                   <input type="text" class="form-control form-control-lg" id="fname" title="Firstname" required name="fname" value="<?php echo Utility::escape(Input::get('fname')) ?>">
+                   <input type="text" class="form-control form-control-lg" id="fname" title="Firstname" required name="fname" value="<?php echo Utility::escape(Input::get('fname')) ?>" pattern="^[a-zA-Z`]+$">
                  </div>
                  <div class="form-group">
                    <label for="lname">Lastname</label>
-                   <input type="text" class="form-control form-control-lg" id="lname" title="Lastname" required name="lname" value="<?php echo Utility::escape(Input::get('lname')) ?>">
+                   <input type="text" class="form-control form-control-lg" id="lname" title="Lastname" required name="lname" value="<?php echo Utility::escape(Input::get('lname')) ?>" pattern="^[a-zA-Z`]+$">
                  </div>
                  <div class="form-group">
                    <label for="oname">Othername</label>
-                   <input type="text" class="form-control form-control-lg" id="oname" title="Othername" required name="oname" value="<?php echo Utility::escape(Input::get('oname')) ?>">
+                   <input type="text" class="form-control form-control-lg" id="oname" title="Othername" name="oname" value="<?php echo Utility::escape(Input::get('oname')) ?>" pattern="^[a-zA-Z`]+$">
                  </div>
                  <div class="form-group">
                    <label for="dob">Date of birth</label>
@@ -285,7 +291,7 @@
 
                  <div class="form-group">
                    <label for="state">State</label>
-                   <select class="js-example-basic-single w-100 p-2" id="state" title="State" onchange="populateLGA(this)" name="state">
+                   <select class="js-example-basic-single w-100 p-2" id="state" title="State" onchange="populateLGA(this)" name="state" required>
                      <?php
                       $states = Utility::getStates();
                       echo '<option value="">:::Select State:::</option>';
@@ -298,7 +304,7 @@
 
                  <div class="form-group">
                    <label for="lga">LGA</label>
-                   <select class="js-example-basic-single w-100 p-2" id="lga" title="LGA" name="lga">
+                   <select class="js-example-basic-single w-100 p-2" id="lga" title="LGA" name="lga" required>
                      <option value="">:::Select State First:::</option>
                    </select>
                  </div>
@@ -329,7 +335,7 @@
                    </div>
                    <div class="form-group">
                      <label for="bank">Bank</label>
-                     <select class="js-example-basic-single w-100 p-2" id="bank" title="Bank" name="bank">
+                     <select class="js-example-basic-single w-100 p-2" id="bank" title="Bank" name="bank" required>
                        <?php
                         $banks = Utility::getBanks();
                         echo '<option value="">:::Select Bank:::</option>';

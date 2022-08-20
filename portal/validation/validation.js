@@ -71,6 +71,14 @@ function validate(formId, options = {}, customMessages = {}) {
     addEvents(selectInput);
     addEvents(otherTextInput);
     addEvents(otherTextInput, "keyup");
+
+    addEvents(textInput, "blur");
+    addEvents(numberInput, "blur");
+    addEvents(radioInput, "blur");
+    addEvents(checkInput, "blur");
+    addEvents(selectInput, "blur");
+    addEvents(otherTextInput, "blur");
+    addEvents(otherTextInput, "blur");
   }
 
   function addEvents(controls, event = "change") {
@@ -119,7 +127,7 @@ function validate(formId, options = {}, customMessages = {}) {
 
     if (element.tagName.toLowerCase() === "input") {
       //this would remove textarea from the elements
-      if (element.maxLength !== -1) {
+      if (element.maxLength !== -1 && userInput.length > 0) {
         const max = element.maxLength;
         if (userInput.length > max) {
           outputMessage(element, "failure", "maxlength", { ruleValue: max });
@@ -127,7 +135,7 @@ function validate(formId, options = {}, customMessages = {}) {
         }
       }
 
-      if (element.minLength !== -1) {
+      if (element.minLength !== -1 && userInput.length > 0) {
         const min = element.minLength;
         if (userInput.length < min) {
           outputMessage(element, "failure", "minlength", { ruleValue: min });
@@ -135,7 +143,7 @@ function validate(formId, options = {}, customMessages = {}) {
         }
       }
 
-      if (element.max.length > 0) {
+      if (element.max.length > 0 && userInput.length > 0) {
         const max = parseInt(element.max);
         if (parseInt(userInput) > max) {
           outputMessage(element, "failure", "max", { ruleValue: max });
@@ -143,7 +151,7 @@ function validate(formId, options = {}, customMessages = {}) {
         }
       }
 
-      if (element.min.length > 0) {
+      if (element.min.length > 0 && userInput.length > 0) {
         const min = parseInt(element.min);
         if (parseInt(userInput) < min) {
           outputMessage(element, "failure", "min", { ruleValue: min });
@@ -151,7 +159,7 @@ function validate(formId, options = {}, customMessages = {}) {
         }
       }
 
-      if (element.pattern.length > 0) {
+      if (element.pattern.length > 0 && userInput.length > 0) {
         if (!match(userInput, element.pattern)) {
           outputMessage(element, "failure", "pattern");
           return false;
@@ -168,6 +176,12 @@ function validate(formId, options = {}, customMessages = {}) {
           )
         ) {
           outputMessage(element, "failure", "email");
+          return false;
+        }
+        break;
+      case "phone":
+        if (!match(userInput, "^(080|070|090|081|091|071)[0-9]{8}$")) {
+          outputMessage(element, "failure", "phone");
           return false;
         }
         break;
@@ -237,6 +251,50 @@ function match(valuestring, pattern) {
 }
 
 function resetInputStyling(formId, firstClass, secondClass = "") {
+  const allElements = getAllElements(formId);
+  for (let element of allElements) {
+    element.classList.remove(firstClass);
+    element.classList.remove(secondClass);
+  }
+}
+
+
+
+function getFormData(formId, returnType = "str") {
+  let form = document.getElementById(formId);
+  const hiddenElements = form.querySelectorAll('input[type=hidden]');
+  const elements = getAllElements(formId);
+  const allElements = [...elements,...hiddenElements];
+  if (returnType == "obj") {
+    const outputObject = {};
+    for (let element of allElements) {
+      if(element.name !== undefined){
+        if (element.name in outputObject) {
+          if (Array.isArray(outputObject[element.name])) {
+            outputObject[element.name].push(element.value);
+          } else {
+            outputObject[element.name] = [element.value];
+          }
+        } else {
+          outputObject[element.name] = element.value;
+        }
+      }
+      
+    }
+     return outputObject;
+  } else {
+      let outputString = "";
+      for (let element of allElements) {
+        if(element.name !== undefined){
+          outputString += `${element.name}=${element.value}&`;
+        }
+      }
+      return outputString.substring(0,outputString.length-1);
+  }
+}
+
+
+function getAllElements(formId) {
   const form = document.getElementById(formId);
   const textInput = form.querySelectorAll(
     "input[type=text], textarea, input[type=number]"
@@ -248,6 +306,7 @@ function resetInputStyling(formId, firstClass, secondClass = "") {
   const otherTextInput = form.querySelectorAll(
     "input[type=email],[type=date],[type=number],[type=password],[type=month],[type=tel],[type=time],[type=url],[type=week]"
   );
+ 
   const allElements = [
     ...textInput,
     ...radioInput,
@@ -256,8 +315,5 @@ function resetInputStyling(formId, firstClass, secondClass = "") {
     ...otherTextInput,
     ...numberInput,
   ];
-  for(let element of allElements){
-    element.classList.remove(firstClass);
-    element.classList.remove(secondClass);
-  }
+  return allElements;
 }

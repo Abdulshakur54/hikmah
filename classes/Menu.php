@@ -179,9 +179,11 @@ class Menu
         $users_menu = Config::get('users/menu_table');
         $users_column = Config::get('users/username_column');
         $len = count($menusArray);
-        $db->query('insert into ' . $users_menu . ' ('.$users_column.',menu_id) values(?,?)', [$user_id, $menusArray[0]]);
-        for ($i = 1; $i < $len; $i++) {
-            $db->requery([$user_id, $menusArray[$i]]);
+        if($len){
+            $db->query('insert into ' . $users_menu . ' (' . $users_column . ',menu_id) values(?,?)', [$user_id, $menusArray[0]]);
+            for ($i = 1; $i < $len; $i++) {
+                $db->requery([$user_id, $menusArray[$i]]);
+            }
         }
     }
 

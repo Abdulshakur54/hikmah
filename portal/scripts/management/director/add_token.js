@@ -61,7 +61,6 @@ function addToken() {
         "</div>";
     } else {
       msgStyleClass = "failure m-2";
-      console.log('ran');
       msgDiv.innerHTML= '<div>' + rsp.message + '</div>';
     }
     _("token").value = rsp.token;

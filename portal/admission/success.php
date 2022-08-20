@@ -7,6 +7,7 @@
 	);
 	session_start(Config::get('session/options'));
     //end of initializatons
+    $url = new Url();
  ?>
     <!doctype html>
     <html>

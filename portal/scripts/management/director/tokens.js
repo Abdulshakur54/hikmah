@@ -1,7 +1,7 @@
 async function deleteToken(id){
      let token = _("token");
      let tableBody = document.querySelector("tbody");
-    if (await swalConfirm("Confirm you want to delete token", "warning")) {
+    if (await swalConfirm("This will delete the selected Token", "warning")) {
       ajaxRequest(
         "management/director/responses/delete_token.rsp.php",
         deleteTokenRsp,

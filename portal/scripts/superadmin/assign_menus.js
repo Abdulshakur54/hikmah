@@ -33,6 +33,7 @@ function populateMenuTable(event) {
     messageContainer.className = "failure text-center";
     messageContainer.innerHTML = "Select a role first";
   }
+
 }
 
 function menuSearchResponse() {

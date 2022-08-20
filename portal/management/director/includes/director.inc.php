@@ -6,7 +6,7 @@ spl_autoload_register(
     }
 );
 session_start(Config::get('session/options'));
-
+date_default_timezone_set('Africa/Lagos');
 //end of initializatons
 
 $url = new Url();
@@ -38,6 +38,10 @@ $tokenIndex = strpos($url, "page_token");
 $len = $tokenIndex - $index;
 $page_url = substr($url, $index, $len - 1);
 Session::setLastPage($page_url);
+
+$count_alert = 0;
+$count_request = 0;
+$url = new Url();
 
 //display alert
 if ($alert->hasAlerts($username) && basename(Utility::myself()) != 'notifications.php') {
