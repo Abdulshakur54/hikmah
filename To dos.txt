@@ -4,3 +4,5 @@
 # the search at the dashboard should be implemented as a search of menus
 
 # look at how to make the email functionality work
+
+# add functionality to  make a user retake an exam in the e-exam feature

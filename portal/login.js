@@ -14,9 +14,7 @@ function changeContent(tab) {
 function defaultTab(){
     if(localStorage.getItem('user_type')===null){
         changeContent('student');
-        console.log('I ran')
     }else{
-      console.log(localStorage.getItem("user_type"));
         changeContent(localStorage.getItem('user_type'));
     }
 }

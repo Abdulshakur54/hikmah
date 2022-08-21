@@ -96,7 +96,7 @@
 
             <a href="published_exams.php" <?php echo isActive('published_exams.php') ?>>Published Exams</a>
 
-            <a href="<?php echo $url->to('logout.php', $cat) ?>"><i class="fa fa-sign-out"></i> Logout</a>
+            <a href="<?php echo $url->to('logout.php', 0) ?>"><i class="fa fa-sign-out"></i> Logout</a>
 
         </div>
 
@@ -128,7 +128,7 @@
 
                 <a href="completed_exams.php" <?php echo isActive('completed_exams.php') ?>>Completed Exams</a>
 
-                <a href="<?php echo $url->to('logout.php', $cat) ?>"><i class="fa fa-sign-out"></i> Logout</a>
+                <a href="<?php echo $url->to('logout.php', 0) ?>"><i class="fa fa-sign-out"></i> Logout</a>
 
             </div>
 
@@ -148,7 +148,7 @@
 
             <a href="completed_exams.php">Completed Exams</a>
 
-            <a href="<?php echo $url->to('logout.php', $cat) ?>"><i class="fa fa-sign-out"></i> Logout</a>
+            <a href="<?php echo $url->to('logout.php', 0) ?>"><i class="fa fa-sign-out"></i> Logout</a>
 
         </div>
 
