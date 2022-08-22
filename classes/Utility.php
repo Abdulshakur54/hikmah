@@ -175,7 +175,7 @@ class Utility
             }
             return $output_string.' ago';
         }else if($difference_in_days > 0){
-            $output_string .= $$difference_in_days . ' day';
+            $output_string .= $difference_in_days . ' day';
             if ($difference_in_days > 1) {
                 $output_string .= 's';
             }

@@ -1,4 +1,4 @@
-const xmlhttp =  new XMLHttpRequest();
+var xmlhttp =  new XMLHttpRequest();
 
 function ajaxRequest(url,callBack,postData=null){
     xmlhttp.onreadystatechange = function(){ 

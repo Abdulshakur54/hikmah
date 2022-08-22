@@ -27,20 +27,4 @@ $rank = $apm->getRank();
 if ($rank !== 2) {
     exit(); // exits the page if the user is not the Apm
 }
-?>
-<!doctype html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title></title>
-    </head>
-    <body>
-        <main>
-            <?php
-                $transfer = ['tableName'=>'admission','tableColumn'=>'score','maxScore'=>100,'idColumn'=>'adm_id'];
-                Redirect::to($url->to('new_exam.php?transfer='. json_encode($transfer),4));
-            ?>
-            
-        </main>
-    </body>
-</html>
+Redirect::to($url->to('index.php', 4));

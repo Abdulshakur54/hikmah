@@ -1,4 +1,5 @@
 <?php
+require_once '../../error_reporting.php';
 //initializations
 spl_autoload_register(
     function ($class) {

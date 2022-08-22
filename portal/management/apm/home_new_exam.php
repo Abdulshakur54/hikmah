@@ -27,19 +27,4 @@ $rank = $apm->getRank();
 if ($rank !== 2) {
     exit(); // exits the page if the user is not the Apm
 }
-?>
-<!doctype html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title></title>
-    </head>
-    <body>
-        <main>
-            <?php
-                Redirect::to($url->to('index.php',4));
-            ?>
-            
-        </main>
-    </body>
-</html>
+Redirect::to($url->to('index.php', 4));

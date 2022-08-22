@@ -1,5 +1,5 @@
-let msgElement = "";
-const defaultOptions = {
+var msgElement = "";
+var defaultOptions = {
   validateOnSubmit: false,
   display: "block",
   instant: true,
@@ -12,7 +12,7 @@ const defaultOptions = {
   minCharForSuccessMessageText: 3,
   numberIncludedForMinCharForSuccessMessageText: false,
 };
-const defaultMessages = {
+var defaultMessages = {
   required: "val_Title is required",
   email: "Enter a valid Email",
   pattern: "Invalid val_Title entered",
@@ -165,27 +165,32 @@ function validate(formId, options = {}, customMessages = {}) {
           return false;
         }
       }
+
+       if (element.pattern.length == 0 && userInput.length > 0) {
+         //validate input type only when nothing is entered for pattern, this would help use the default form validation types in html to help fake filler fill appropriately
+         switch (inputType) {
+           case "email":
+             if (
+               !match(
+                 userInput,
+                 "/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$/"
+               )
+             ) {
+               outputMessage(element, "failure", "email");
+               return false;
+             }
+             break;
+           case "phone":
+             if (!match(userInput, "^(080|070|090|081|091|071)[0-9]{8}$")) {
+               outputMessage(element, "failure", "phone");
+               return false;
+             }
+             break;
+         }
+       }
     }
 
-    switch (inputType) {
-      case "email":
-        if (
-          !match(
-            userInput,
-            "/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$/"
-          )
-        ) {
-          outputMessage(element, "failure", "email");
-          return false;
-        }
-        break;
-      case "phone":
-        if (!match(userInput, "^(080|070|090|081|091|071)[0-9]{8}$")) {
-          outputMessage(element, "failure", "phone");
-          return false;
-        }
-        break;
-    }
+    
     if (!options.numberIncludedForMinCharForSuccessMessageText) {
       //this will help validate number input below minChar
       outputMessage(element, "success");

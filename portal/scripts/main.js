@@ -1,5 +1,5 @@
-let pageToken = document.getElementById("page_token");
-const dataTableOptions = {
+var pageToken = document.getElementById("page_token");
+var dataTableOptions = {
   pageLength: 10,
   lengthChange: true,
   lengthMenu: [

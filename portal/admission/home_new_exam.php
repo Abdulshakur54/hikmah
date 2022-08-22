@@ -29,22 +29,4 @@ if (!in_array($rank, $admRank)) {
     exit();
 }
 
-?>
-<!doctype html>
-<html>
-
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-
-<body>
-    <main>
-        <?php
-        Redirect::to($url->to('index.php', 4));
-        ?>
-
-    </main>
-</body>
-
-</html>
+Redirect::to($url->to('index.php', 4));

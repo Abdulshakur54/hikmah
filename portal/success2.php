@@ -36,7 +36,7 @@ if(Input::submitted('get')){
     p {
         color: #404F5E;
         font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
-        font-size: 20px;
+        font-size: 25px;
         margin: 0;
     }
 

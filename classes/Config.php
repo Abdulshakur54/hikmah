@@ -63,8 +63,8 @@ $GLOBALS['configuration'] = array(
 		'alert3' => 'ex_adm_alert'
 	),
 	'webmail' => [
-		'username' => 'info@hikmahschools.com',
-		'password' => 'hikmahPassword',
+		'username' => "info@hikmahschools.com", // SMTP account username
+		'password' => "cZ?gGG~I_cW_", // SMTP account password
 		'name' => 'Hikmah Group Of Schools'
 	],
 	'server' => array(
