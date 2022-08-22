@@ -1,6 +1,6 @@
-let ld_loader;
-let ld_interval;
-let ld_count = 1;
+var ld_loader;
+var ld_interval;
+var ld_count = 1;
 
 
 function ld_startLoading(conToDisable = '', loader=''){

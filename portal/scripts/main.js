@@ -1,5 +1,5 @@
-let pageToken = document.getElementById("page_token");
-const dataTableOptions = {
+var pageToken = document.getElementById("page_token");
+var dataTableOptions = {
   pageLength: 10,
   lengthChange: true,
   lengthMenu: [
@@ -12,19 +12,35 @@ const dataTableOptions = {
     return nRow;
   },
 };
-function getPage(url) {
-  if (url.indexOf("?") === -1) {
-    url += "?page_token=" + _("page_token").value;
-  } else {
-    url += "&page_token=" + _("page_token").value;
+function getPage(url, postData = null) {
+  if (postData == null) {
+    //get request
+    if (url.indexOf("?") === -1) {
+      url += "?page_token=" + _("page_token").value;
+    } else {
+      url += "&page_token=" + _("page_token").value;
+    }
+    ajaxRequest(url, loadPage);
+  }else{ //post request
+    postData += "&page_token=" + _("page_token").value;
+     ajaxRequest(url, loadPage, postData);
   }
-  ajaxRequest(url, loadPage);
 }
 
 function loadPage() {
   const rsp = xmlhttp.responseText;
- $('#page').html(rsp);
+  $("#page").html(rsp);
+  //  const notCountContainer = _('notificationCount');
+  //  const notCount = parseInt(_("notCount").value);
+  //  const requestCountContainer = _("requestCount");
+  //  const requestCount = parseInt(_("reqCount").value);
+  //  notCountContainer.innerHTML = notCount;
+  //  requestCountContainer.innerHTML = requestCount;
 }
+
+setTimeout(function () {
+  _("welcomeMessage").style.display = "none";
+}, 10000);
 
 function getAltPage(altPage) {
   getPage(altPage);
@@ -38,13 +54,13 @@ function swalNotify(message, icon) {
   });
 }
 
-function swalNotifyDismiss(message, icon) {
+function swalNotifyDismiss(message, icon, timer = 1700) {
   Swal.fire({
     text: message,
     icon: icon,
     showConfirmButton: false,
     allowOutsideClick: false,
-    timer: 1700,
+    timer,
   });
 }
 
@@ -72,16 +88,14 @@ function clearHTML(elementId) {
   _(elementId).innerHTML = "";
 }
 
-
 function typeheadInput(elementId, dataSource) {
- 
   const engine = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.whitespace,
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     local: dataSource,
   });
 
-  $("#"+elementId).typeahead(
+  $("#" + elementId).typeahead(
     {
       hint: true,
       highlight: true,
@@ -93,4 +107,3 @@ function typeheadInput(elementId, dataSource) {
     }
   );
 }
-

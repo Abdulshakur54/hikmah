@@ -79,7 +79,15 @@
 			'staff_portal'=>'portal/staff/',
 			'adm_portal'=>'portal/admission/',
 			'exam_portal'=>'exam/'
-		)
+		),
+	'menu' => [
+		'menu_table' => 'menu',
+		'role_table' => 'role',
+		'user_menu_table' => 'user_menu'
+	],
+	'audit' => [
+		'table' => 'audit'
+	]
 	);
 	
 	class Config{

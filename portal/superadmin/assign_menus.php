@@ -1,6 +1,6 @@
 <?php
 require_once 'superadmin.inc1.php';
-require_once '../includes/val_page_request.inc.php';
+require_once './includes/val_page_request.inc.php';
 ?>
 
 <div class="grid-margin stretch-card">
@@ -25,6 +25,7 @@ require_once '../includes/val_page_request.inc.php';
                         <tr>
                             <th>S/N</th>
                             <th>Menu</th>
+                            <th>Display Name</th>
                             <th>Url</th>
                             <th>Check</th>
                         </tr>

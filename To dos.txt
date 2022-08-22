@@ -1,0 +1,13 @@
+# You have to implement forgotten password for the users
+# You have to send email when a user signs in containing the username of the user
+# notification and confirmation should only show when the user has it, same with the welcome message 
+# the search at the dashboard should be implemented as a search of menus
+
+# look at how to make the email functionality work
+
+# add functionality to  make a user retake an exam in the e-exam feature
+# check if exists, if not add a functionality to the exam to prevent and examinee to see results immediately
+
+#you have not work on the profile (seen by anyone, by someone logged in), account profile(seen only by the owner when he is logged in)
+
+# integrate the forgot password feature;

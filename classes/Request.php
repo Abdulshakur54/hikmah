@@ -101,7 +101,7 @@ Request Categories
                 }
             }else{
                 if($this->requestExists($requester_id,$category)){
-                //return 1;
+                return 1;
                 }else{
                      return $this->_db->query('insert into request(requester_id,confirmer_rank,title,request,category) values(?,?,?,?,?)',[$requester_id,$confirmer_rank,$title,$request,$category]);
                 } 

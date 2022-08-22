@@ -1,59 +1,34 @@
 <?php
- //initializations
-    spl_autoload_register(
-            function($class){
-                    require_once'../../../classes/'.$class.'.php';
-            }
-    );
-    session_start(Config::get('session/options'));
-    //end of initializatons
-   require_once './apm.inc.php';
+require_once './includes/apm.inc.php';
+
+
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Notifications</title>
-    <link rel="stylesheet" type="text/css" href="<?php echo Utility::escape($url->to('styles/style.css',0))?>" />
-    <link rel="stylesheet" type="text/css" href="styles/notifications.css" />
-</head>
-<body>
-    <main>
-        <?php 
-            require_once '../nav.inc.php';
-            //echo welcome flash message
-            if(Session::exists('welcome')){
-                echo '<div class="message">Good '.ucfirst(Utility::getPeriod()).', '.$apm->getPosition($rank).'</div>';
-                Session::delete('welcome');
-                if(Session::exists('welcome back')){
-                    Session::delete('welcome back');
-                }
-            }else{
-                if(Session::exists('welcome back')){
-                    echo '<div class="message">Welcome '.$apm->getPosition($rank).'</div>';
-                    Session::delete('welcome back');
-                }
-            }
-        ?>
-        
-        <?php
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title text-primary">Notifications</h4>
+            <?php
             $alerts = $alert->getMyAlerts($username);
-            if(!empty($alerts)){
-                foreach ($alerts as $alertt){
-                    echo'<div>
-                            <div class="title">'.$alertt->title.'</div>
-                            <div class="message">'.$alertt->message.'</div>
-                         </div>';
+            if (!empty($alerts)) {
+                foreach ($alerts as $alertt) {
+            ?>
+
+                    <div class="card border border-1 rounded mb-3">
+                        <div class="card-header text-primary d-flex justify-content-between">
+                            <div class="font-weight-bold"><?php echo $alertt->title ?></div>
+                            <div class="text-muted font-italic "><?php echo Utility::get_past_time($alertt->created_at)?></div>
+                        </div>
+                        <div class="card-body"><?php echo $alertt->message; ?></div>
+                    </div>
+            <?php
                 }
                 $alert->seen($username);
-            }else{
+            } else {
                 echo '<div class="message">No notifications available</div>';
             }
-        ?>
-        
-    </main>
-</body>
-</html>
+
+            ?>
+
+        </div>
+    </div>
+</div>

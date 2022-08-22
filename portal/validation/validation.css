@@ -1,9 +1,11 @@
  .failure {
      color: #dc1d34;
+    padding: 3px;
  }
 
  .success {
      color: #168b3f;
+     padding: 3px;
  }
 
  .inputsuccess {

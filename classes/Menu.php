@@ -1,13 +1,34 @@
 <?php
 class Menu
 {
-    private $menu_table, $role_table, $user_menu_table, $db;
-    public function __construct()
-    {
-        $this->menu_table = Config::get('menu/menu_table');
-        $this->role_table = Config::get('menu/role_table');
-        $this->user_menu_table = Config::get('menu/user_menu_table');
+
+    public function get(string $user_id){
+        $db = DB::get_instance();
+        $users_menu = Config::get('users/menu_table');
+        $menu_table = Config::get('menu/menu_table');
+        $username_column = Config::get('users/username_column');
+        $db->query("select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1  and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = 0 order by $menu_table.parent_order asc", []);
+        if($db->row_count() > 0){
+            $first_level_parents = $db->get_result();
+        }else{
+            $first_level_parents = [];
+        }
+      
+        $output_menus = $first_level_parents;
+        foreach($output_menus as $menu){
+            $db->query("select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1  and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = $menu->id order by $menu_table.menu_order asc",[]);
+            if($db->row_count() > 0){
+                $childrenMenu = $db->get_result();
+                $menu->children = $childrenMenu;
+            }
+           
+        }
+
+        return $output_menus;
+
     }
+
+
 
     public static function get_roles()
     {
@@ -15,6 +36,7 @@ class Menu
         $db->query('select * from role order by role asc');
         return $db->get_result();
     }
+
 
     public static function get_menus()
     {
@@ -41,7 +63,7 @@ class Menu
     public static function get_available_menus($role_id)
     {
         $db = DB::get_instance();
-        $db->query('select * from menu where id not in(select menu_id from roles_menu where role_id = ?) order by menu asc',[$role_id]);
+        $db->query('select * from menu where id not in(select menu_id from roles_menu where role_id = ?)',[$role_id]);
         if($db->row_count()>0){
             return $db->get_result();
         }
@@ -116,14 +138,14 @@ class Menu
         $db = DB::get_instance();
         $users_menu = Config::get('users/menu_table');
         $users_table = Config::get('users/table_name');
-        $id_column = Config::get('users/username_column');
-        $users = $db->select($users_table,$id_column,'role_id='.$role_id);
+        $username_column = Config::get('users/username_column');
+        $users = $db->select($users_table,$username_column,'role_id='.$role_id);
         $users_count = count($users);
         if($users_count > 0){
             foreach ($menu__ids as $menu__id) {
-                $db->query('insert into ' . $users_menu . '(' . $id_column . ',menu_id) values(?,?)', [$users[0]->$id_column, $menu__id]);
+                $db->query('insert into ' . $users_menu . '(' . $username_column . ',menu_id) values(?,?)', [$users[0]->$username_column, $menu__id]);
                 for ($i = 1; $i < $users_count; $i++) {
-                    $db->requery([$users[$i]->$id_column, $menu__id]);
+                    $db->requery([$users[$i]->$username_column, $menu__id]);
                 }
             }
         }
@@ -134,18 +156,46 @@ class Menu
         $db = DB::get_instance();
         $users_menu = Config::get('users/menu_table');
         $users_table = Config::get('users/table_name');
-        $id_column = Config::get('users/username_column');
-        $users = $db->select($users_table, $id_column, 'role_id=' . $role_id);
+        $username_column = Config::get('users/username_column');
+        $users = $db->select($users_table, $username_column, 'role_id=' . $role_id);
         $users_array = [];
         foreach($users as $user){
-            $users_array[] = $user->$id_column;
+            $users_array[] = $user->$username_column;
         }
         $users_count = count($users);
         if ($users_count > 0) {
             foreach ($menu_ids as $menu_id) {
                 $users_string = implode("','", $users_array);
-                $db->delete($users_menu,'menu_id = '.$menu_id.' and '.$id_column.' in(\''.$users_string.'\')');
+                $db->delete($users_menu,'menu_id = '.$menu_id.' and '.$username_column.' in(\''.$users_string.'\')');
             }
         }
     }
+
+    public static function add_available_menus($user_id, $role_id)
+    {
+        $db = DB::get_instance();
+        $menus = self::get_role_menus($role_id);
+        $menusArray = Utility::convertToArray($menus, 'id');
+        $users_menu = Config::get('users/menu_table');
+        $users_column = Config::get('users/username_column');
+        $len = count($menusArray);
+        if($len){
+            $db->query('insert into ' . $users_menu . ' (' . $users_column . ',menu_id) values(?,?)', [$user_id, $menusArray[0]]);
+            for ($i = 1; $i < $len; $i++) {
+                $db->requery([$user_id, $menusArray[$i]]);
+            }
+        }
+    }
+
+    public static function delete_available_menus($user_id, $role_id)
+    {
+        $db = DB::get_instance();
+        $menus = self::get_role_menus($role_id);
+        $menusArray = Utility::convertToArray($menus, 'id');
+        $menu_string = implode("','", $menusArray);
+        $users_menu = Config::get('users/menu_table');
+        $users_id_column = Config::get('users/username_column');
+        $db->delete($users_menu, "$users_id_column='$$user_id' and id in('$menu_string')");
+    }
+
 }

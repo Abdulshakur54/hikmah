@@ -1,75 +1,40 @@
 <?php
-    //initializations
-    spl_autoload_register(
-            function($class){
-                    require_once'../../../classes/'.$class.'.php';
-            }
-    );
-    session_start(Config::get('session/options'));
-    //end of initializatons
-    require_once './director.inc.php';
+require_once './includes/director.inc.php';
+
+
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Requests</title>
-    <link rel="stylesheet" type="text/css" href="<?php echo Utility::escape($url->to('ld_loader/ld_loader.css',0))?>" />
-    <link rel="stylesheet" type="text/css" href="<?php echo Utility::escape($url->to('styles/style.css',0))?>" />
-    <link rel="stylesheet" type="text/css" href="styles/requests.css" />
-</head>
-<body>
-    <main>
-        <?php 
-            require_once '../nav.inc.php';
-            //echo welcome flash message
-            if(Session::exists('welcome')){
-                echo '<div class="message">Good '.ucfirst(Utility::getPeriod()).', '.$dir->getPosition($rank).'</div>';
-                Session::delete('welcome');
-                if(Session::exists('welcome back')){
-                    Session::delete('welcome back');
-                }
-            }else{
-                if(Session::exists('welcome back')){
-                    echo '<div class="message">Welcome '.$dir->getPosition($rank).'</div>';
-                    Session::delete('welcome back');
-                }
-            }
-        ?>
-        
-        <?php
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body" id="requestsContainer">
+            <h4 class="card-title text-primary">Requests</h4>
+            <?php
             $requests = $req->getMyRequests($rank);
-            if(!empty($requests)){
-                foreach ($requests as $rqst){
-                    echo'<div id="row'.$rqst->id.'">
-                            <div class="title">'.$rqst->title.'</div>
-                            <div class="message">'.$rqst->request.'</div>
-                            <div class="decision"><button class="acceptBtn" onclick="accept('.$rqst->id.',\''.$rqst->requester_id.'\','.$rqst->category.')">Accept</button><span id="ld_loader_'.$id.'"></span><button class="declineBtn" onclick="decline('.$rqst->id.',\''.$rqst->requester_id.'\','.$rqst->category.')">Decline</button></div>
-                         </div>';
+            if (!empty($requests)) {
+                foreach ($requests as $rqst) {
+            ?>
+
+                    <div class="card border border-1 rounded mb-3" id="row<?php echo $rqst->id ?>">
+                        <div class="card-header text-primary d-flex justify-content-between">
+                            <div class="font-weight-bold"><?php echo $rqst->title ?></div>
+                            <div class="text-muted font-italic "><?php echo Utility::get_past_time($rqst->created_at) ?></div>
+                        </div>
+                        <div class="card-body"><?php echo $rqst->request; ?></div>
+                        <div class="card-footer d-flex justify-content-end border-0" style="background-color:#fff;">
+                            <?php
+                            echo '<button class="btn btn-success btn-sm mr-3" onclick="accept(' . $rqst->id . ',\'' . $rqst->requester_id . '\',' . $rqst->category . ')">Accept</button><span id="ld_loader_' . $id . '"></span><button class="btn btn-danger btn-sm" onclick="decline(' . $rqst->id . ',\'' . $rqst->requester_id . '\',' . $rqst->category . ')">Decline</button>';
+                            ?>
+                        </div>
+                    </div>
+            <?php
                 }
-            }else{
-                echo '<div class="message">No request available</div>';
+            } else {
+                echo '<div class="message">No Requests available</div>';
             }
-            
-        ?>
-        <input type = "hidden" value = "<?php echo Token::generate() ?>" name="token" id="token" />
-        <div id="genMsg"></div>
-        <script>
-            window.addEventListener('load',function(){
-                appendScript('<?php echo Utility::escape($url->to('ld_loader/ld_loader.js',0))?>');
-                appendScript('<?php echo Utility::escape($url->to('scripts/script.js',0))?>'); 
-                appendScript('<?php echo Utility::escape($url->to('scripts/ajaxrequest.js',0))?>');  
-                appendScript('scripts/requests.js');  
-            });
-            function appendScript(source){
-                let script = document.createElement('script');
-                script.src=source;
-                document.body.appendChild(script);
-            }
-        </script>
-    </main>
-</body>
-</html>
+
+            ?>
+
+        </div>
+    </div>
+    <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
+</div>
+<script src="scripts/management/accountant/requests.js"></script>

@@ -1,6 +1,6 @@
 <?php
 require_once 'superadmin.inc1.php';
-require_once '../includes/val_page_request.inc.php';
+require_once './includes/val_page_request.inc.php';
 ?>
 
 <div class="grid-margin stretch-card">
@@ -22,15 +22,17 @@ require_once '../includes/val_page_request.inc.php';
                     <tbody>
                         <?php
                         $roles = Menu::get_roles();
-                        foreach ($roles as $role) {
-                            echo '
-                                     <tr id="row' . $role->id . '">
-                                        <td></td>
-                                        <td>' . $role->role . '</td>
-                                        <td><button class = "btn btn-success btn-sm" onclick="getPage(\'superadmin/role_edit.php?op=edit&role_id=' . $role->id . '\')">Edit</button></td>
-                                        <td><button class="btn btn-danger btn-sm" onclick="deleteRole(' . $role->id . ')">Delete</button></td>
-                                    </tr>
-                                ';
+                        if (!empty($roles)) {
+                            foreach ($roles as $role) {
+                                echo '
+                                         <tr id="row' . $role->id . '">
+                                            <td></td>
+                                            <td>' . $role->role . '</td>
+                                            <td><button class = "btn btn-success btn-sm" onclick="getPage(\'superadmin/role_edit.php?op=edit&role_id=' . $role->id . '\')">Edit</button></td>
+                                            <td><button class="btn btn-danger btn-sm" onclick="deleteRole(' . $role->id . ')">Delete</button></td>
+                                        </tr>
+                                    ';
+                            }
                         }
                         ?>
 
@@ -42,3 +44,5 @@ require_once '../includes/val_page_request.inc.php';
     <input type="hidden" name="page_token" id="page_token" value="<?php echo Token::generate(32, 'page_token') ?>">
 </div>
 <script src="scripts/superadmin/roles.js">
+
+    

@@ -1,6 +1,6 @@
 <?php
 require_once 'superadmin.inc1.php';
-require_once '../includes/val_page_request.inc.php';
+require_once './includes/val_page_request.inc.php';
 ?>
 
 <div class="grid-margin stretch-card">
@@ -14,6 +14,8 @@ require_once '../includes/val_page_request.inc.php';
                         <tr>
                             <th>S/N</th>
                             <th>Menu</th>
+                            <th>ID</th>
+                            <th>Display Name</th>
                             <th>Url</th>
                             <th>Order</th>
                             <th>Parent ID</th>
@@ -34,6 +36,8 @@ require_once '../includes/val_page_request.inc.php';
                                      <tr id="row' . $menu->id . '">
                                         <td></td>
                                         <td>' . $menu->menu . '</td>
+                                        <td>' . $menu->id . '</td>
+                                        <td>' . $menu->display_name . '</td>
                                         <td>' . $menu->url . '</td>
                                         <td>' . $menu->menu_order . '</td>
                                         <td>' . $menu->parent_id . '</td>
@@ -41,13 +45,13 @@ require_once '../includes/val_page_request.inc.php';
                                         <td>' . $menu->parent_order . '</td>
                                         <td>
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="shown_' . $menu->id . '" '.($menu->shown == 1 ?"checked":""). ' onchange="setChecked(this,' . $menu->id . ',\'shown\')"><span id="ld_loader_shown_'.$menu->id.'"></span>
-                                                <label class="custom-control-label" for="shown_'.$menu->id. '"></label>
+                                                <input type="checkbox" class="custom-control-input" id="shown_' . $menu->id . '" ' . ($menu->shown == 1 ? "checked" : "") . ' onchange="setChecked(this,' . $menu->id . ',\'shown\')"><span id="ld_loader_shown_' . $menu->id . '"></span>
+                                                <label class="custom-control-label" for="shown_' . $menu->id . '"></label>
                                             </div>
                                         </td>
                                          <td>
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="active_' . $menu->id . '" ' . ($menu->active== 1 ? "checked" : "" ). ' onchange="setChecked(this,'.$menu->id. ',\'active\')"><span id="ld_loader_active_' . $menu->id . '"></span>
+                                                <input type="checkbox" class="custom-control-input" id="active_' . $menu->id . '" ' . ($menu->active == 1 ? "checked" : "") . ' onchange="setChecked(this,' . $menu->id . ',\'active\')"><span id="ld_loader_active_' . $menu->id . '"></span>
                                                 <label class="custom-control-label" for="active_' . $menu->id . '"></label>
                                             </div>
                                         </td>

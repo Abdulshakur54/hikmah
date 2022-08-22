@@ -67,4 +67,7 @@ input,select,button,textarea{
 .cursor-hand{
     cursor: pointer;
 }
+#messageContainer{
+    text-align: center;
+}
 

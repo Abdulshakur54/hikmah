@@ -7,4 +7,5 @@ spl_autoload_register(
     }
 );
 session_start(Config::get('session/options'));
+
     //end of initializatons
