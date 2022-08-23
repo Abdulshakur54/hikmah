@@ -107,3 +107,9 @@ function typeheadInput(elementId, dataSource) {
     }
   );
 }
+
+
+function getPostPage(formId){
+  let formvalues = getFormData(formId);
+  getPage("management/apm/schedules.php", formvalues);
+}

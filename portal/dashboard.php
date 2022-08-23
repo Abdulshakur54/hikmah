@@ -13,7 +13,7 @@ spl_autoload_register(
 
 session_start(Config::get('session/options'));
 //end of initializatons
-if(!empty(Input::get('page'))){
+if (!empty(Input::get('page'))) {
   Session::setLastPage(Input::get('page'));
 }
 $last_page = (Session::lastPageExists()) ? Session::getLastPage() : '';
@@ -234,6 +234,22 @@ if (Session::exists('user')) {
 
           </li>
 
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#ui-roles" aria-expanded="false" aria-controls="ui-roles">
+              <i class="icon-layout menu-icon"></i>
+              <span class="menu-title">Roles Management</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-roles">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/role_list.php')" href="#">Roles</a></li>
+                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/menu_list.php')" href="#">Menus</a></li>
+                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/assign_menus.php')" href="#">Assign Menus</a></li>
+                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/unassign_menus.php')" href="#">Unassign Menus</a></li>
+              </ul>
+            </div>
+          </li>
+
           <?php
 
           $counter  = 1;
@@ -412,7 +428,6 @@ if (Session::exists('user')) {
 
   <script>
     var lastPage = document.getElementById('lastpage').value;
-          console.log(lastPage);
     if (lastPage.length > 0) {
 
       getPage(lastPage);

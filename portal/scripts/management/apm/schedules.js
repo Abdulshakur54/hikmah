@@ -37,8 +37,6 @@ async function saveChanges() {
       console.log(error.message);
     }
 
-    //  let formvalues = getFormData("schedulesForm");
-    //  getPage("management/apm/schedules.php", formvalues);
   }
 }
 
