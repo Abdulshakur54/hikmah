@@ -1,7 +1,8 @@
-position.addEventListener("change", function () {
+
+function changeSchool(event) {
   let genHtml = "";
   let schools = "";
-  switch (position.value) {
+  switch (event.value) {
     case "5":
       schools = getConvectionalSchools();
       for (let school in schools) {
@@ -19,8 +20,8 @@ position.addEventListener("change", function () {
     default:
       genHtml += "<option value='All'>All</option>";
   }
-  $('#school').html(genHtml);
-});
+  $("#school").html(genHtml);
+}
 
 function addToken() {
   if (validate("tokenForm", { validateOnSubmit: true })) {
@@ -71,3 +72,5 @@ function addToken() {
   }
   
 }
+
+  $(".js-example-basic-single").select2();

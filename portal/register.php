@@ -61,7 +61,8 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
   $pin = Utility::escape(Input::get('pin'));
   $agg = new Aggregate();
   if ($val->check($formvalues) && $val->checkFile($fileValues) && Utility::noScript(Input::get('address'))) {
-    if (Utility::equals($pin, $agg->lookUp('token', 'token', 'token,=,' . $pin))) { //confirm the token
+    $pin_from_table = $agg->lookUp('token', 'token', 'token,=,' . $pin);
+    if (!empty($pin_from_table) && Utility::equals($pin, $pin_from_table)) { //confirm the token
       switch ($user_type) {
         case 'admission':
           $user = new Admission();

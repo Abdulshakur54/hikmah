@@ -6,12 +6,23 @@ var dataTableOptions = {
     [10, 25, 50, -1],
     [10, 25, 50, "All"],
   ],
+  dom: "Bfrtip",
+  buttons: {
+    buttons: [
+      { extend: "excel", className: "btn btn-secondary btn-sm mb-3" },
+      { extend: "pdf", className: "btn btn-secondary btn-sm mb-3" },
+    ],
+  },
   responsive: true,
+   columnDefs: [
+        { responsivePriority: 1, targets: 1 },
+    ],
   fnRowCallback: function (nRow, aData, iDisplayIndex) {
     $("td:first", nRow).html(iDisplayIndex + 1);
     return nRow;
   },
 };
+
 function getPage(url, postData = null) {
   if (postData == null) {
     //get request
@@ -21,9 +32,10 @@ function getPage(url, postData = null) {
       url += "&page_token=" + _("page_token").value;
     }
     ajaxRequest(url, loadPage);
-  }else{ //post request
+  } else {
+    //post request
     postData += "&page_token=" + _("page_token").value;
-     ajaxRequest(url, loadPage, postData);
+    ajaxRequest(url, loadPage, postData);
   }
 }
 
@@ -48,7 +60,7 @@ function getAltPage(altPage) {
 
 function swalNotify(message, icon) {
   Swal.fire({
-    text: message,
+    html: message,
     icon: icon,
     allowOutsideClick: false,
   });
@@ -56,7 +68,7 @@ function swalNotify(message, icon) {
 
 function swalNotifyDismiss(message, icon, timer = 1700) {
   Swal.fire({
-    text: message,
+    html: message,
     icon: icon,
     showConfirmButton: false,
     allowOutsideClick: false,
@@ -66,7 +78,7 @@ function swalNotifyDismiss(message, icon, timer = 1700) {
 
 async function swalConfirm(message, icon) {
   const resp = await Swal.fire({
-    text: message,
+    html: message,
     icon: icon,
     showCancelButton: true,
     allowOutsideClick: false,
@@ -108,8 +120,7 @@ function typeheadInput(elementId, dataSource) {
   );
 }
 
-
-function getPostPage(formId){
+function getPostPage(formId, url) {
   let formvalues = getFormData(formId);
-  getPage("management/apm/schedules.php", formvalues);
+  getPage(url, formvalues);
 }
