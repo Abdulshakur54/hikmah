@@ -13,7 +13,7 @@ require_once './includes/director.inc.php';
                 </div>
                 <div class="form-group">
                     <label for="position">Position</label>
-                    <select class="js-example-basic-single w-100 p-2" id="position" title="Position" name="position" required onchange="changeSchool(this)">
+                    <select class="js-example-basic-single w-100 p-2" id="position" title="Position" name="position" required>
                         <option value="">:::Select Position:::</option>
                         <?php
                         foreach (Management::getPositions(3) as $pos => $rank) {

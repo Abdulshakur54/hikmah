@@ -13,7 +13,7 @@ spl_autoload_register(
 
 session_start(Config::get('session/options'));
 //end of initializatons
-if(!empty(Input::get('page'))){
+if (!empty(Input::get('page'))) {
   Session::setLastPage(Input::get('page'));
 }
 $last_page = (Session::lastPageExists()) ? Session::getLastPage() : '';
@@ -64,7 +64,12 @@ if (Session::exists('user')) {
 
   <link rel="stylesheet" type="text/css" href="js/select.dataTables.min.css" />
 
+
+
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css" rel="stylesheet" />
+  <link href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+  <link href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap4.min.css" rel="stylesheet" />
 
   <!-- End plugin css for this page -->
 
@@ -234,6 +239,22 @@ if (Session::exists('user')) {
 
           </li>
 
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#ui-roles" aria-expanded="false" aria-controls="ui-roles">
+              <i class="icon-layout menu-icon"></i>
+              <span class="menu-title">Roles Management</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-roles">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/role_list.php')" href="#">Roles</a></li>
+                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/menu_list.php')" href="#">Menus</a></li>
+                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/assign_menus.php')" href="#">Assign Menus</a></li>
+                <li class="nav-item"> <a class="nav-link" onclick="getPage('superadmin/unassign_menus.php')" href="#">Unassign Menus</a></li>
+              </ul>
+            </div>
+          </li>
+
           <?php
 
           $counter  = 1;
@@ -390,6 +411,34 @@ if (Session::exists('user')) {
 
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap4.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap4.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   <!--Div to hold custom JS -->
 
 
@@ -412,7 +461,6 @@ if (Session::exists('user')) {
 
   <script>
     var lastPage = document.getElementById('lastpage').value;
-          console.log(lastPage);
     if (lastPage.length > 0) {
 
       getPage(lastPage);

@@ -362,7 +362,7 @@
        
        //this function returns some basic details for a class
        function getClassDetail($classId){
-           $this->_db->query('select sch_abbr,level,class,teacher_id,nos from class where id=?',[$classId]);
+           $this->_db->query('select class.*, staff.title, staff.fname, staff.lname, staff.oname from class left join staff on class.teacher_id = staff.staff_id where class.id=?',[$classId]);
            return $this->_db->one_result();
        }
        

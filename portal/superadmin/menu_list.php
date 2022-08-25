@@ -9,7 +9,7 @@ require_once './includes/val_page_request.inc.php';
             <div class="text-right"> <button type="submit" class="btn btn-info btn-sm mr-2" onclick="getPage('superadmin/menu_edit.php?op=add')">Add Menu</button></div>
             <h4 class="card-title text-primary">Menus</h4>
             <div class="table-responsive">
-                <table class="table table-hover display" id="menusTable">
+                <table class="table table-striped table-bordered nowrap" style="width:100%" id="menusTable">
                     <thead>
                         <tr>
                             <th>S/N</th>

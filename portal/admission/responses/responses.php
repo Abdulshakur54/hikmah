@@ -105,6 +105,12 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 
             if ($db->trans_query([[$sql1, $val1], [$sql2, $val2], [$sql3, [$newId]], [$sql4, [$newId]], [$sql5, [$id]]])) {
 
+                /*for hikmah only to help use the role and menu functionality*/
+                $role_id = $adm->get_role_id($newRank, 0);
+                $db->insert(Config::get('users/table_name'), ['user_id' => $newId, 'role_id' => $role_id]);
+                Menu::add_available_menus($newId, $role_id);
+              /*for hikmah only to help use the role and menu functionality*/
+
                 if (!empty($newPicture)) {
                     $oldPicDtn = '../uploads/passports/' . $data->picture;
                     $newPicDtn = '../../student/uploads/passports/' . $newPicture;
