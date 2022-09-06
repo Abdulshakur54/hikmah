@@ -8,7 +8,7 @@ require_once './includes/hos.inc.php';
             <div class="text-right"> <button type="submit" class="btn btn-info btn-sm mr-2" onclick="getPage('management/hos/add_class.php?operation=add')">Add Class</button></div>
             <h4 class="card-title text-primary">Classes</h4>
             <div class="table-responsive">
-                <table class="table table-hover display responsive" id="classesTable">
+                <table class="table table-striped table-bordered nowrap responsive" id="classesTable">
                     <thead>
                         <tr>
                             <th>S/N</th>
@@ -24,19 +24,19 @@ require_once './includes/hos.inc.php';
                     </thead>
                     <tbody>
                         <?php
-                        $db->query('select * from class where sch_abbr = ? order by level asc', [$sch_abbr]);
-                        $res = $db->get_result();
+
+                        $res = School::getClassDetail($sch_abbr);
                         if (!empty($res)) {
                             foreach ($res as $val) {
                                 echo '<tr id="row' . $val->id . '">
                             <td></td>
                             <td>' . School::getLevelName(Utility::escape($val->sch_abbr), (int)$val->level) . ' ' . Utility::escape(ucwords($val->class)) . '</td>
-                            <td>kjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjhkjkjhjhjh</td>
+                            <td>' . (int) $val->level . '</td>
                             <td>' . Utility::escape($val->sch_abbr) . '</td>
-                            <td>' . $val->teacher_id . '</td>
+                            <td>' . Utility::escape($val->title . '. ' . Utility::formatName($val->fname, $val->oname, $val->lname)) . '</td>
                             <td>' . Utility::escape($val->nos) . '</td>
                             <td>' . Utility::escape($val->petname) . '</td> 
-                             <td><button class="btn btn-success btn-sm" onclick="getPage(\'management/hos/add_class.php?operation=edit&classid='.$val->id.'\')">Edit</button></td>                          
+                             <td><button class="btn btn-success btn-sm" onclick="getPage(\'management/hos/add_class.php?operation=edit&classid=' . $val->id . '\')">Edit</button></td>                          
                             <td><button class="btn btn-danger btn-md" onclick="deleteClass(' . $val->id . ')">Delete</button></td>
                          </tr>';
                             }

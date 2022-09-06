@@ -3,14 +3,14 @@ var form = _('form');
 var submitType = _('submittype');
 var subjectIds = _('subjectIds');
 
- function confirmSubmission(){
-    if(confirm('Do you want to proceed with Registeration')){
+ async function confirmSubmission(){
+    if(await swalConfirm('Do you want to proceed to register selected subjects','question')){
         subjectIds.value = popId().toString();
         submitType.value = 'register';
         if(subjectIds.value.length === 0){
             swalNotify('Make a selection first','warning');
         }else{
-           getPostPage('subRegForm');
+           getPostPage('subRegForm','student/sub_reg.php');
         }
         
     }
@@ -40,4 +40,8 @@ function popId(){
     }
     return valObj;
 }
+
+$(document).ready(function () {
+  $("#subjectTable").DataTable(dataTableOptions);
+});
 

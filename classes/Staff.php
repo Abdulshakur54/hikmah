@@ -22,11 +22,12 @@
                 $this->_db->query('select class,id,level from class where teacher_id=?',[$staffId]);
                 return ($this->_db->row_count()) ? $this->_db->one_result():'';
             }
+
             
             //this method returns all the subject a teacher is taking
             public function getSubjectsWithIds($staffId){
-                $this->_db->query('select subject.id,subject.subject,subject.class_id,subject.level,subject.teacher_id,class.class from subject inner join class '
-                        . 'on subject.class_id = class.id where subject.teacher_id = ? order by subject.subject',[$staffId]);
+                $this->_db->query('select subject.subject,subject2.id,subject2.class_id,subject.level,subject2.teacher_id,class.class from subject inner join subject2 on subject.id = subject2.subject_id inner join class '
+                        . 'on subject2.class_id = class.id where subject2.teacher_id = ? order by subject.subject',[$staffId]);
                 return ($this->_db->row_count()) ? $this->_db->get_result():'';
             }
             
@@ -40,6 +41,15 @@
                     return $this->_db->query('update class_psy set psy1=?,psy2=?,psy3=?,psy4=?,psy5=?,psy6=?,psy7=?,psy8=?,psy9=?,psy10=?,psy11=?,psy12=?,psy13=?,psy14=?,psy15=?,psy16=?,psy17=?,psy18=?,psy19=?,psy20=?,a1=?,b2=?,b3=?,c4=?,c5=?,c6=?,d7=?,e8=?,f9=?,height_beg=?,height_end=?,weight_beg=?,weight_end=?,signature=? where class_id=?',[$punc,$hon,$dhw,$rap,$sot,$rwp,$ls,$atw,$ho,$car,$con,$wi,$ob,$hea,$vs,$pig,$pis,$ac,$pama,$ms,$a1,$b2,$b3,$c4,$c5,$c6,$d7,$e8,$f9,$height_beg,$height_end,$weight_beg,$weight_end,$signature,$classId]);
                 }
                 return $this->_db->query('update class_psy set psy1=?,psy2=?,psy3=?,psy4=?,psy5=?,psy6=?,psy7=?,psy8=?,psy9=?,psy10=?,psy11=?,psy12=?,psy13=?,psy14=?,psy15=?,psy16=?,psy17=?,psy18=?,psy19=?,psy20=?,a1=?,b2=?,b3=?,c4=?,c5=?,c6=?,d7=?,e8=?,f9=?,height_beg=?,height_end=?,weight_beg=?,weight_end=? where class_id=?',[$punc,$hon,$dhw,$rap,$sot,$rwp,$ls,$atw,$ho,$car,$con,$wi,$ob,$hea,$vs,$pig,$pis,$ac,$pama,$ms,$a1,$b2,$b3,$c4,$c5,$c6,$d7,$e8,$f9,$height_beg,$height_end,$weight_beg,$weight_end,$classId]);
+            }
+
+            function isASubjectTeacher($username) :bool{
+                $this->_db->query('select count(id) as counter from subject2 where teacher_id=?',[$username]);
+                return ($this->_db->one_result()->counter > 0)?true:false;
+            }
+            function isAClassTeacher($username) :bool{
+                $this->_db->query('select count(id) as counter from class where teacher_id=?',[$username]);
+                return ($this->_db->one_result()->counter > 0)?true:false;
             }
             
             
@@ -100,7 +110,7 @@
             
             //this function returns true if a staff is a subject teacher of the provided subject
             function isSubjectTeacher($staffId, $subId) :bool{
-                $this->_db->query('select count(id) as counter from subject where teacher_id=? and id=?',[$staffId,$subId]);
+                $this->_db->query('select count(id) as counter from subject2 where teacher_id=? and id=?',[$staffId,$subId]);
                 return ($this->_db->one_result()->counter > 0)?true:false;
             }
             

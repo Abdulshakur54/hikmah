@@ -30,16 +30,20 @@ if ($rank !== 6) {
     exit(); // exits the page if the user is not the Hrm
 }
 
-if (!Input::submitted('get') || !Token::check(Input::get('page_token'), 'page_token')) {
+if ((Input::submitted('post') || Input::submitted('get')) && Token::check(Input::get('page_token'), 'page_token')) {
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $url = trim(Utility::escape($_SERVER['REQUEST_URI']));
+        $url = str_replace('&amp;', '&', $url);
+        $index = strpos($url, 'portal') + 7;
+        $tokenIndex = strpos($url, "page_token");
+        $len = $tokenIndex - $index;
+        $page_url = substr($url, $index, $len - 1);
+        Session::setLastPage($page_url);
+    }
+} else {
     exit('Kindly Access this page properly');
 }
-$url = trim(Utility::escape($_SERVER['REQUEST_URI']));
-$url = str_replace('&amp;', '&', $url);
-$index = strpos($url, 'portal') + 7;
-$tokenIndex = strpos($url, "page_token");
-$len = $tokenIndex - $index;
-$page_url = substr($url, $index, $len - 1);
-Session::setLastPage($page_url);
+
 
 $count_alert = 0;
 $count_request = 0;

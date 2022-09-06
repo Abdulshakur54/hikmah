@@ -309,80 +309,32 @@ class User
 		$role_table = Config::get('menu/role_table');
 		switch ($rank) {
 			case 1:
-				switch ($asst) {
-					case 0:
-						return $this->_db->get($role_table,'id',"role='director'")->id;
-					case 1:
-						return $this->_db->get($role_table, 'id', "role='Deputy Director'")->id;
-					case 2:
-						return $this->_db->get($role_table, 'id', "role='Secretary Director'")->id;
-				}
+				return $this->_db->get($role_table, 'id', "role='director'")->id;
 			case 2:
-				switch ($asst) {
-					case 0:
-						return $this->_db->get($role_table, 'id', "role='Academic Planning Manager'")->id;
-					case 2:
-						return $this->_db->get($role_table, 'id', "role='Secretary APM'")->id;
-				}
+				return $this->_db->get($role_table, 'id', "role='Academic Planning Manager'")->id;
 			case 3:
-				switch ($asst) {
-					case 0:
-						return $this->_db->get($role_table, 'id', "role='Accountant'")->id;
-					case 2:
-						return $this->_db->get($role_table, 'id', "role='Secretary Accountant'")->id;
-				}
+				return $this->_db->get($role_table, 'id', "role='Accountant'")->id;
 			case 4:
-				switch ($asst) {
-					case 0:
-						return $this->_db->get($role_table, 'id', "role='Islamiyyah Coordinator'")->id;
-					case 2:
-						return $this->_db->get($role_table, 'id', "role='Secretary IC'")->id;
-				}
+				return $this->_db->get($role_table, 'id', "role='Islamiyyah Coordinator'")->id;
 			case 5:
-				switch ($asst) {
-					case 0:
-						return $this->_db->get($role_table, 'id', "role='Head of School'")->id;
-					case 1:
-						return $this->_db->get($role_table, 'id', "role='Deputy HOS'")->id;
-					case 2:
-						return $this->_db->get($role_table, 'id', "role='Secretary HOS'")->id;
-				}
+			case 17:
+				return $this->_db->get($role_table, 'id', "role='Head of School'")->id;
 			case 6:
-				switch ($asst) {
-					case 0:
-						return $this->_db->get($role_table, 'id', "role='Human Resource Manager'")->id;
-					case 2:
-						return $this->_db->get($role_table, 'id', "role='Secretary HRM'")->id;
-				}
+				return $this->_db->get($role_table, 'id', "role='Human Resource Manager'")->id;
 			case 7:
-				return $this->_db->get($role_table, 'id', "role='Teaching Staff'")->id;
 			case 8:
-				return $this->_db->get($role_table, 'id', "role='Non Teaching Staff'")->id;
+			case 15:
+			case 16:
+				return $this->_db->get($role_table, 'id', "role='Teaching Staff'")->id;
 			case 9:
-				return $this->_db->get($role_table, 'id', "role='Student'")->id;
 			case 10:
 				return $this->_db->get($role_table, 'id', "role='Student'")->id;
 			case 11:
-				return $this->_db->get($role_table, 'id', "role='Admission Student'")->id;
 			case 12:
 				return $this->_db->get($role_table, 'id', "role='Admission Student'")->id;
 			case 13:
-				return $this->_db->get($role_table, 'id', "role='Alumni'")->id;
 			case 14:
 				return $this->_db->get($role_table, 'id', "role='Alumni'")->id;
-			case 15:
-				return $this->_db->get($role_table, 'id', "role='Teaching Staff'")->id;
-			case 16:
-				return $this->_db->get($role_table, 'id', "role='Non Teaching Staff'")->id;
-			case 17: //Islamiyah head of school
-				switch ($asst) {
-					case 0:
-						return $this->_db->get($role_table, 'id', "role='Head of School'")->id;
-					case 1:
-						return $this->_db->get($role_table, 'id', "role='Deputy HOS'")->id;
-					case 2:
-						return $this->_db->get($role_table, 'id', "role='Secretary HOS'")->id;
-				}
 		}
 	}
 
@@ -431,10 +383,10 @@ class User
 	//this method checks if the user has an account and if his password matches the password stored in the database
 	public function pass_match($username, $password): bool
 	{
+
 		if ($this->find($username)) { //checks if the user exist
 			$pwd_col = $this->_pwd_col;
 			return password_verify($password, $this->data()->$pwd_col); //verifty the password
-			exit();
 		}
 		return false;
 	}

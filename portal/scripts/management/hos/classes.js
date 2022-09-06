@@ -1,11 +1,12 @@
-$(".js-example-basic-single").select2();
-
 function saveClass() {
   getPostPage("classForm", "management/hos/add_class.php");
 }
 
 $(document).ready(function () {
   $("#classesTable").DataTable(dataTableOptions);
+  if ($(".js-example-basic-single").length) {
+    $(".js-example-basic-single").select2();
+  }
 });
 
 async function deleteClass(id) {
@@ -17,7 +18,12 @@ async function deleteClass(id) {
     ajaxRequest(
       "management/hos/responses/responses.php",
       deleteClassRsp,
-      "classid=" + id + "&op=delete_class&school="+school.value +"&token="+ token.value
+      "classid=" +
+        id +
+        "&op=delete_class&school=" +
+        school.value +
+        "&token=" +
+        token.value
     );
   }
 
@@ -34,3 +40,22 @@ async function deleteClass(id) {
   }
 }
 
+async function confirmSubmission(param) {
+  let submitType = _('submitType');
+  if (param === "assign") {
+    if (
+      await swalConfirm(
+        "This will assign the selected class to the selected teacher",
+        "info"
+      )
+    ) {
+      submitType.value = "assign";
+      getPostPage("classForm", "management/hos/assign_class.php");
+    }
+  } else {
+    if (await swalConfirm("This will proceed with Unassignment", "info")) {
+      submitType.value = "unassign";
+      getPostPage("classForm", "management/hos/assign_class.php");
+    }
+  }
+}

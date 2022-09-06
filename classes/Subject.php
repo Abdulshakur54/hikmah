@@ -46,7 +46,76 @@ class Subject {
         return [];
         
     }
-    
+
+    //returns the minimun number of subject for a class
+    function getMinNoSub($classID): int
+    {
+        $this->_db->query('select nos from class where id = ?', [$classID]);
+        return $this->_db->one_result()->nos;
+    }
+
+
+    //this functtion returns the subject list available for registration for a class which a student belongs to as an associative array
+
+    function getRegistrationList($classId): array
+    {
+        $this->_db->query('select subject.subject, subject2.id from subject inner join subject2 on subject.id = subject2.subject_id where subject2.class_id=?', [$classId]);
+        if($this->_db->row_count() > 0){
+            return $this->_db->get_result();
+        }
+        return [];
+    }
+
+
+    //this function register subjects for a particular student
+    function registerSubjects($stdId, $subIds, $classId, $sch_abbr)
+    {
+        //insert rows into score table
+        $this->insertScore($stdId, $subIds, $classId, $sch_abbr);
+    }
+
+    //this function inserts a record into the score table, instantUtil method has to be called to use this method, this is to help instantiate util Class
+    private function insertScore($stdId, $subIds, $classId, $sch_abbr)
+    {
+        $util = new Utils();
+        $currScoreTable = $util->getFormatedSession($sch_abbr) . '_score';
+        if (count($subIds) > 1) { //prepare and requery if entries will be more than one
+            $start = false;
+            foreach ($subIds as $subId) {
+                if ($start) {
+                    $this->_db->requery([$classId, $stdId, $subId]);
+                } else {
+                    $this->_db->query('insert into ' . $currScoreTable . '(class_id,std_id,subject_id) values(?,?,?)', [$classId, $stdId, $subId]);
+                    $start = true;
+                }
+            }
+        } else { //entry is expected to be one
+            $this->_db->query('insert into ' . $currScoreTable . '(class_id,std_id,subject_id) values(?,?,?)', [$classId, $stdId, $subIds[0]]);
+        }
+    }
+
+
+    //this function returns the registered subject ids for a particular student as an associative array
+    public function getRegisteredSubjectsId($table, $stdId): array
+    {
+        $this->_db->query("select subject.subject, subject2.id from subject inner join subject2 on subject.id = subject2.subject_id inner join $table on subject2.id = $table.subject_id where $table.std_id=?",[$stdId]);
+        if($this->_db->row_count() > 0){
+            return $this->_db->get_result();
+        }
+        return [];
+    }
+
+
+    //this function returns an associative array of subjects with the id being the key and the name being the value
+    function getSubjectNames(array $subIds): array
+    {
+        $this->_db->query('select subject.subject, subject2.id from subject inner join subject2 on subject.id = subject2.subject_id where subject2.id in(' . "'" . implode("','", $subIds) . "')");
+        if($this->_db->row_count() > 0){
+            return $this->_db->get_result();
+        }
+        return [];
+    }
+
     function getScores($table,$term){
         switch($term){
             case 'ft':
@@ -314,5 +383,40 @@ class Subject {
     //this method resets the prepared statement used for isRegistered method();
     function resetIsRegistered(){
         $this->_isRegisteredPreparedStatement = false;
+    }
+
+    //this function deregister subjects for a particular student
+    function deregisterSubjects($stdId, $subIds, $sch_abbr)
+    {
+        //delete rows from score table
+        $this->deleteScore($stdId, $subIds, $sch_abbr);
+    }
+
+
+    //this function deletes a record from the score table, instantUtil method has to be called to use this method, this is to help instantiate util Class
+    private function deleteScore($stdId, $subIds, $sch_abbr)
+    {
+        $util = new Utils();
+        $currScoreTable = $util->getFormatedSession($sch_abbr) . '_score';
+        if (count($subIds) > 1) { //prepare and requery if entries will be more than one
+            $start = false;
+            foreach ($subIds as $subId) {
+                if ($start) {
+                    $this->_db->requery([$stdId, $subId]);
+                } else {
+                    $this->_db->query('delete from ' . $currScoreTable . ' where std_id=? and subject_id = ?', [$stdId, $subId]);
+                    $start = true;
+                }
+            }
+        } else { //entry is expected to be one
+            $this->_db->query('delete from ' . $currScoreTable . ' where std_id=? and subject_id = ?', [$stdId, $subIds[0]]);
+        }
+    }
+
+
+
+    function updateCompSubReg($stdId, $complete = true)
+    {
+        $this->_db->query('update student set sub_reg_comp=? where std_id = ?', [$complete, $stdId]);
     }
 }

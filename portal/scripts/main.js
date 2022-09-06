@@ -124,3 +124,23 @@ function getPostPage(formId, url) {
   let formvalues = getFormData(formId);
   getPage(url, formvalues);
 }
+
+async function getPostPageWithUpload(formId, url,op) {
+  let form = _(formId);
+   let formData = new FormData(form);
+   formData.append('page_token',_('page_token').value);
+      formData.append("op", "update_schedules");
+   let rsp = await fetch(url,{
+    method:"POST",
+    body:formData,
+   });
+
+   rsp = await rsp.json();
+   let status = rsp.status;
+   if(status == 200 || status==201  || status==204){
+    swalNotifyDismiss(rsp.message, "success");
+   }else{
+    swalNotifyDismiss(rsp.message, "warning");
+   }
+
+}

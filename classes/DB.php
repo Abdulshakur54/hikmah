@@ -81,6 +81,7 @@ class DB
 	public function query(string $sql, $val = array(), $audit_options = []): bool
 	{
 		$this->_sql = $sql;
+		
 		if ($this->_query = $this->_pdo->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL))) {
 			return $this->insert_val($val, $audit_options);
 		}
