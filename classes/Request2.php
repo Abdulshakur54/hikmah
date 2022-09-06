@@ -26,21 +26,22 @@ Request Categories
         public function requstConfirm($id,$requester_id,$category,$other){
             switch ($category){
                 case 1: // allow deregistration of some subject
-                    $std = new Student();
+                    $sub = new Subject();
                     //get the school and classid of the student
                     $this->_db->query('select student.sch_abbr, student.class_id, student.sub_reg_comp, class.nos from student inner join class on student.class_id = class.id where student.std_id =?',[$requester_id]);
                     $res = $this->_db->one_result();
-                    $std->instantUtil(); //this would help instantiate a util object in the student object
-                    $std->deregisterSubjects($requester_id, array_keys($other),$res->class_id,$res->sch_abbr);
+                    $sub->deregisterSubjects($requester_id, array_keys($other),$res->sch_abbr);
                     $minNoSub = $res->nos;
-                    $regSubArr = $std->getRegisteredSubjectsId($requester_id);
+                    $util = new Utils();
+                    $scoreTable = $util->getFormatedSession($res->sch_abbr).'_score';
+                    $regSubArr = $sub->getRegisteredSubjectsId($scoreTable,$requester_id);
                     $subRegComp = $res->sub_reg_comp;
                     if(($minNoSub <= count($regSubArr)) && !$subRegComp){
                         //update table indicating that the minimum no of subjects has been registered
-                        $std->updateCompSubReg($requester_id);
+                        $sub->updateCompSubReg($requester_id);
                     }else{
                         //update indicating otherwise, i.e turn sub_reg_com to false
-                        $std->updateCompSubReg($requester_id,false);
+                        $sub->updateCompSubReg($requester_id,false);
                     }       
                 break;
                     
@@ -52,7 +53,7 @@ Request Categories
         }
         
         //this method is used to send a notification to a requester after his request have been accepted or rejected
-        private function requestResponseNotification($requester_id,$category, $accepted,$other=false){
+        private function requestResponseNotification($requester_id,$category, $accepted,$other=[]){
             $alert = new Alert();
             switch ($category){
                 case 1:

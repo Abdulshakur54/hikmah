@@ -115,6 +115,20 @@
                     ];
             }
         }
+
+
+    //this function returns some basic details for all class in a school
+    public static function getClassDetail($sch_abbr)
+    {
+        $db = DB::get_instance();
+        $db->query('select class.*, staff.title, staff.fname, staff.lname, staff.oname from class left join staff on class.teacher_id = staff.staff_id where class.sch_abbr=?', [$sch_abbr]);
+        if($db->row_count() > 0){
+           return $db->get_result();
+        }else{
+            return [];
+        }
+    
+    }
         
         
         //this return the level name of any  level

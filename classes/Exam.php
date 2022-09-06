@@ -145,8 +145,12 @@
        
        //this function is used to get data of students that are eligible for a teacher exam initiated via the school portal not the exam portal
        public function chooseTeacherExamineeData($scoreTable, $usernameCol,$subId){
-           $this->_db->query('select student.fname,student.oname,student.lname,'.$scoreTable.'.'.$usernameCol.' from student inner join '.$scoreTable.' on student.'.$usernameCol.'='.$scoreTable.'.'.$usernameCol.' where subject_id=?',[$subId]);
-           return $this->_db->get_result();
+           $this->_db->query('select student.fname,student.oname,student.lname,student.'.$usernameCol.' from student inner join '.$scoreTable.' on student.'.$usernameCol.'='.$scoreTable.'.'.$usernameCol.' where '.$scoreTable.'.subject_id=?',[$subId]);
+           if($this->_db->row_count() > 0){
+            return $this->_db->get_result();
+           }
+           return [];
+          
        }
 
 

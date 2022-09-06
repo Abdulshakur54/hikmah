@@ -42,7 +42,7 @@ class Utils {
     }
     
     public function getSubDetails($subId){
-        $this->_db->query('select subject.subject, subject.level, class.class from subject inner join class on subject.class_id = class.id where subject.id=?',[$subId]);
+        $this->_db->query('select subject.subject, subject.level, class.class from subject inner join subject2 on subject.id = subject2.subject_id inner join class on subject2.class_id = class.id where subject2.id=?',[$subId]);
         return $this->_db->one_result();
     }
     

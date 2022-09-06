@@ -17,8 +17,6 @@ function rolesResponse() {
   _("token").value = rsp.token;
 }
 
-$(".js-example-basic-single").select2();
-
 var roleElement = _("role");
 function populateMenuTable(event) {
   if (event.value.length > 0) {
@@ -35,6 +33,8 @@ function populateMenuTable(event) {
   }
 
 }
+
+$(".js-example-basic-single").select2();
 
 function menuSearchResponse() {
   ld_stopLoading("role", "ld_loader_browse");

@@ -33,7 +33,7 @@ if (!empty($operation)) {
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title text-primary">Add Class</h4>
+            <h4 class="card-title text-primary"><?php echo ucfirst($operation) ?> Class</h4>
             <form class="forms-sample" id="classForm" onsubmit="return false" novalidate>
                 <?php
                 $level = null; //this will only change when form is submitted via post
@@ -144,7 +144,7 @@ if (!empty($operation)) {
                     <label for="petname">Petname</label>
                     <input type="text" class="form-control" id="petname" onfocus="clearHTML('messageContainer')" title="Petname" required pattern="^[a-zA-Z]+$" value="<?php echo $petname; ?>" name="petname">
                 </div>
-          
+
                 <div class="form-group">
                     <label for="petname">Min No of Subjects</label>
                     <input type="number" class="form-control" id="nos" onfocus="clearHTML('messageContainer')" title="Min No of Subjects" required min="1" value="<?php echo $nos; ?>" name="nos" <?php echo ($operation == 'edit') ? 'disabled' : '' ?>>

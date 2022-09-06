@@ -86,10 +86,16 @@ $GLOBALS['configuration'] = array(
 	'menu' => [
 		'menu_table' => 'menu',
 		'role_table' => 'role',
-		'user_menu_table' => 'user_menu'
+		'user_menu_table' => 'user_menu',
+		'role_menu_table'=>'roles_menu'
 	],
 	'audit'=>[
 		'table'=>'audit'
+	],
+	'hikmah'=>[
+		'subject_teacher_role'=>23,
+		'class_teacher_role'=>24,
+		'staff_role'=>6
 	]
 );
 

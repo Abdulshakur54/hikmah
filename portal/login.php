@@ -34,10 +34,10 @@
       switch ($user_type) {
         case 'student':
           $user = new Student();
-          $id_col = Config::get('users/username_column2');
           break;
         case 'staff':
           $user = new Staff();
+          break;
         case 'management':
           $user = new Management();
           break;
@@ -45,8 +45,10 @@
           $user = new Admission();
           break;
       }
+     
       if ($user->pass_match(Input::get('username'), Input::get('password'))) {
         if ($user->login($remember)) {
+          session_regenerate_id();
           $data = $user->data();
           Session::set('user_type', $user_type);
           Session::set('user', Input::get('username'));

@@ -3,9 +3,14 @@ class Utility
 {
 
     //this method sanitizes a string value and returns it
-    public static function escape($input)
+    public static function escape($input):string
     {
-        return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+        if(is_null($input)){
+            return '';
+        }else{
+            return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+        }
+       
     }
 
 

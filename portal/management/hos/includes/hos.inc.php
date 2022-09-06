@@ -33,10 +33,10 @@ $sch_abbr = Utility::escape($data->sch_abbr);
 //checks if students needed to be assigned a class
 $noStdNeedClass = $hos->getNoStudentsNeedsClass($sch_abbr);
 if ($noStdNeedClass > 0 && basename(Utility::myself()) !== 'assign_student.php') { //checks if some students are not assigned classes and if it is not the assign class page
-    echo '<p style="font-weight: bold" class="text-right">' . $noStdNeedClass . ' students needs to be assigned a class. <a href="assign_student.php">Assign Here</a></p>';
+    echo '<p style="font-weight: bold" class="text-right">' . $noStdNeedClass . ' students needs to be assigned a class. <a onclick="getPage(\'management/hos/assign_student.php\')" href="#">Assign Here</a></p>';
 }
 if (!$hos->isStdsSubRegComplete($sch_abbr) && basename(Utility::myself()) !== 'need_to_reg_sub.php') {
-    echo '<p style="font-weight: bold" class="text-right">Some students are yet to complete their Subject Registration. <a href="need_to_reg_sub.php">View Here</a></p>';
+    echo '<p style="font-weight: bold" class="text-right">Some students are yet to complete their Subject Registration. <a onclick="getPage(\'management/hos/need_to_reg_sub.php\')" href="#">View Here</a></p>';
 }
 $utils = new Utils();
 $currTerm = $utils->getCurrentTerm($sch_abbr);

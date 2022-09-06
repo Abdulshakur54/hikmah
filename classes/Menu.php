@@ -2,30 +2,29 @@
 class Menu
 {
 
-    public function get(string $user_id){
+    public function get(string $user_id)
+    {
         $db = DB::get_instance();
         $users_menu = Config::get('users/menu_table');
         $menu_table = Config::get('menu/menu_table');
         $username_column = Config::get('users/username_column');
-        $db->query("select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1  and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = 0 order by $menu_table.parent_order asc", []);
-        if($db->row_count() > 0){
+        $sql = "select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1  and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = 0 order by $menu_table.parent_order asc";
+        $db->query($sql);
+        if ($db->row_count() > 0) {
             $first_level_parents = $db->get_result();
-        }else{
+        } else {
             $first_level_parents = [];
         }
-      
         $output_menus = $first_level_parents;
-        foreach($output_menus as $menu){
-            $db->query("select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1  and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = $menu->id order by $menu_table.menu_order asc",[]);
-            if($db->row_count() > 0){
+        foreach ($output_menus as $menu) {
+            $db->query("select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1  and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = $menu->id order by $menu_table.menu_order asc", []);
+            if ($db->row_count() > 0) {
                 $childrenMenu = $db->get_result();
                 $menu->children = $childrenMenu;
             }
-           
         }
 
         return $output_menus;
-
     }
 
 
@@ -63,8 +62,8 @@ class Menu
     public static function get_available_menus($role_id)
     {
         $db = DB::get_instance();
-        $db->query('select * from menu where id not in(select menu_id from roles_menu where role_id = ?)',[$role_id]);
-        if($db->row_count()>0){
+        $db->query('select * from menu where id not in(select menu_id from roles_menu where role_id = ?)', [$role_id]);
+        if ($db->row_count() > 0) {
             return $db->get_result();
         }
         return [];
@@ -121,16 +120,16 @@ class Menu
     {
         $db = DB::get_instance();
 
-        foreach($menu__ids as $menu__id){
-            $db->insert('roles_menu', ['role_id' => $role_id, 'menu_id' => $menu__id],true);
+        foreach ($menu__ids as $menu__id) {
+            $db->insert('roles_menu', ['role_id' => $role_id, 'menu_id' => $menu__id], true);
         }
     }
 
     public static function remove_menu_from_roles($role_id, array $menu__ids)
     {
         $db = DB::get_instance();
-        $menu__ids_string = implode("','",$menu__ids);
-        $db->delete('roles_menu','role_id='.$role_id.' and menu_id in(\''.$menu__ids_string.'\')',true);
+        $menu__ids_string = implode("','", $menu__ids);
+        $db->delete('roles_menu', 'role_id=' . $role_id . ' and menu_id in(\'' . $menu__ids_string . '\')', true);
     }
 
     public static function add_menu_to_users($role_id, array $menu__ids)
@@ -139,9 +138,9 @@ class Menu
         $users_menu = Config::get('users/menu_table');
         $users_table = Config::get('users/table_name');
         $username_column = Config::get('users/username_column');
-        $users = $db->select($users_table,$username_column,'role_id='.$role_id);
+        $users = $db->select($users_table, $username_column, 'role_id=' . $role_id);
         $users_count = count($users);
-        if($users_count > 0){
+        if ($users_count > 0) {
             foreach ($menu__ids as $menu__id) {
                 $db->query('insert into ' . $users_menu . '(' . $username_column . ',menu_id) values(?,?)', [$users[0]->$username_column, $menu__id]);
                 for ($i = 1; $i < $users_count; $i++) {
@@ -149,6 +148,52 @@ class Menu
                 }
             }
         }
+
+        //for subject teachers and class teacher for hikmah
+        $subject_teacher_role = Config::get('hikmah/subject_teacher_role');
+        $class_teacher_role = Config::get('hikmah/class_teacher_role');
+        $users_menu = Config::get('users/menu_table');
+        $role_menu_table = Config::get('menu/role_menu_table');
+        if ($role_id == $class_teacher_role) { //user is a staff
+            $db->query('select class.teacher_id from class inner join staff on class.teacher_id = staff.staff_id');
+            if ($db->row_count() > 0) { //assign class teacher menus because  user is a class teacher
+                $teacher_ids = $db->get_result();
+                $teacher_menus = $db->select($role_menu_table, 'menu_id', "role_id='$class_teacher_role'");
+                $start = false;
+                foreach ($teacher_ids as $teacher_id) {
+                    foreach ($teacher_menus as $teacher_menu) {
+                        if ($start) {
+                            $db->requery([$teacher_id->teacher_id, $teacher_menu->menu_id]);
+                        } else {
+                            $db->query("insert into $users_menu(user_id,menu_id) values(?,?)", [$teacher_id->teacher_id, $teacher_menu->menu_id]);
+                            $start = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($role_id == $subject_teacher_role) {
+            $db->query('select distinct subject2.teacher_id from subject2 inner join staff on subject2.teacher_id = staff.staff_id');
+            if ($db->row_count() > 0) { //assign subject teacher menus because user is a subject teacher
+                $teacher_ids = $db->get_result();
+                $teacher_menus = $db->select($role_menu_table, 'menu_id', "role_id='$subject_teacher_role'");
+                $start = false;
+                foreach ($teacher_ids as $teacher_id) {
+                    foreach ($teacher_menus as $teacher_menu) {
+                        if ($start) {
+                            $db->requery([$teacher_id->teacher_id, $teacher_menu->menu_id]);
+                        } else {
+                            $db->query("insert into $users_menu(user_id,menu_id) values(?,?)", [$teacher_id->teacher_id, $teacher_menu->menu_id]);
+                            $start = true;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        //end of for subject teachers and class teacher for hikmah
     }
 
     public static function remove_menu_from_users($role_id, array $menu_ids)
@@ -159,16 +204,60 @@ class Menu
         $username_column = Config::get('users/username_column');
         $users = $db->select($users_table, $username_column, 'role_id=' . $role_id);
         $users_array = [];
-        foreach($users as $user){
+        foreach ($users as $user) {
             $users_array[] = $user->$username_column;
         }
         $users_count = count($users);
         if ($users_count > 0) {
             foreach ($menu_ids as $menu_id) {
                 $users_string = implode("','", $users_array);
-                $db->delete($users_menu,'menu_id = '.$menu_id.' and '.$username_column.' in(\''.$users_string.'\')');
+                $db->delete($users_menu, 'menu_id = ' . $menu_id . ' and ' . $username_column . ' in(\'' . $users_string . '\')');
             }
         }
+
+
+        //for subject teachers and class teacher for hikmah
+        $subject_teacher_role = Config::get('hikmah/subject_teacher_role');
+        $class_teacher_role = Config::get('hikmah/class_teacher_role');
+        $users_menu = Config::get('users/menu_table');
+        $role_menu_table = Config::get('menu/role_menu_table');
+        if ($role_id == $class_teacher_role) { //user is a staff
+            $db->query('select class.teacher_id from class inner join staff on class.teacher_id = staff.staff_id');
+            if ($db->row_count() > 0) { //assign class teacher menus because  user is a class teacher
+                $teacher_ids = $db->get_result();
+                $teacher_menus = $menu_ids;
+                $teacher_menus_string = implode(",", $teacher_menus);
+                $start = false;
+                foreach ($teacher_ids as $teacher_id) {
+                    if ($start) {
+                        $db->requery([$teacher_id->teacher_id]);
+                    } else {
+                        $db->query("delete from $users_menu where user_id=? and menu_id in($teacher_menus_string)", [$teacher_id->teacher_id]);
+                    }
+                }
+            }
+        }
+
+        if ($role_id == $subject_teacher_role) {
+            $db->query('select distinct subject2.teacher_id from subject2 inner join staff on subject2.teacher_id = staff.staff_id');
+            if ($db->row_count() > 0) { //assign subject teacher menus because user is a subject teacher
+                $teacher_ids = $db->get_result();
+                $teacher_menus = $db->select($role_menu_table, 'menu_id', "role_id='$subject_teacher_role'");
+                $teacher_menus = Utility::convertToArray($teacher_menus, 'menu_id');
+                $teacher_menus_string = implode(",", $teacher_menus);
+                $start = false;
+                foreach ($teacher_ids as $teacher_id) {
+                    if ($start) {
+                        $db->requery([$teacher_id->teacher_id]);
+                    } else {
+                        $db->query("delete from $users_menu where user_id=? and menu_id in($teacher_menus_string)", [$teacher_id->teacher_id]);
+                    }
+                }
+            }
+        }
+
+
+        //end of for subject teachers and class teacher for hikmah
     }
 
     public static function add_available_menus($user_id, $role_id)
@@ -179,7 +268,7 @@ class Menu
         $users_menu = Config::get('users/menu_table');
         $users_column = Config::get('users/username_column');
         $len = count($menusArray);
-        if($len){
+        if ($len) {
             $db->query('insert into ' . $users_menu . ' (' . $users_column . ',menu_id) values(?,?)', [$user_id, $menusArray[0]]);
             for ($i = 1; $i < $len; $i++) {
                 $db->requery([$user_id, $menusArray[$i]]);
@@ -198,4 +287,47 @@ class Menu
         $db->delete($users_menu, "$users_id_column='$$user_id' and id in('$menu_string')");
     }
 
+    public static function assign_class_teacher_menus($user_id)
+    {
+        $users_menu = Config::get('users/menu_table');
+        $menu_table = Config::get('menu/menu_table');
+        $role_menu_table = Config::get('menu/role_menu_table');
+        $class_teacher_role = Config::get('hikmah/class_teacher_role');
+        $db = DB::get_instance();
+        $db->query("select $menu_table.id from $menu_table inner join $role_menu_table on $menu_table.id = $role_menu_table.role_id where $role_menu_table.role_id = $class_teacher_role");
+        if ($db->row_count() > 0) {
+            $menus = $db->get_result();
+            $start = false;
+            foreach ($menus as $menu) {
+                if ($start) {
+                    $db->requery([$user_id, $menu->id]);
+                } else {
+                    $db->query("insert into $users_menu(user_id,menu_id) values (?,?)", [$user_id, $menu->id]);
+                    $start = true;
+                }
+            }
+        }
+    }
+
+    public static function assign_subject_teacher_menus($user_id)
+    {
+        $users_menu = Config::get('users/menu_table');
+        $menu_table = Config::get('menu/menu_table');
+        $role_menu_table = Config::get('menu/role_menu_table');
+        $subject_teacher_role = Config::get('hikmah/subject_teacher_role');
+        $db = DB::get_instance();
+        $db->query("select $menu_table.id from $menu_table inner join $role_menu_table on $menu_table.id = $role_menu_table.role_id where $role_menu_table.role_id = $subject_teacher_role");
+        if ($db->row_count() > 0) {
+            $menus = $db->get_result();
+            $start = false;
+            foreach ($menus as $menu) {
+                if ($start) {
+                    $db->requery([$user_id, $menu->id]);
+                } else {
+                    $db->query("insert into $users_menu(user_id,menu_id) values (?,?)", [$user_id, $menu->id]);
+                    $start = true;
+                }
+            }
+        }
+    }
 }

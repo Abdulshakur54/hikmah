@@ -1,107 +1,111 @@
 <?php
-    //initializations
-    spl_autoload_register(
-            function($class){
-                    require_once'../../../classes/'.$class.'.php';
-            }
-    );
-    session_start(Config::get('session/options'));
-    //end of initializatons
-    require_once './hos.inc.php';
-    function selectLevel($lev){
-        global $level;
-        if($level !== null and $lev == $level){
-            return 'selected';
-        }
+require_once './includes/hos.inc.php';
+
+function selectLevel($lev)
+{
+    global $level;
+    if ($level !== null and $lev == $level) {
+        return 'selected';
     }
+}
+$hos = new HOS();
+$operation = Utility::escape(Input::get('operation'));
+
+if (Input::submitted('get') && !empty($operation)) {
+    if ($operation == 'edit') {
+        $subject = Utility::escape(Input::get('subject_name'));
+        $subject_id = Utility::escape(Input::get('subject_id'));
+        $level = (int)Input::get('levelid');
+    } else {
+        $subject = '';
+        $subject_id = '';
+        $level = '';
+    }
+}
+
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Add Subject</title>
-    <link rel="stylesheet" type="text/css" href="<?php echo Utility::escape($url->to('styles/style.css',0))?>" />
-    <link rel="stylesheet" type="text/css" href="styles/add_subject.css" />
-</head>
-<body>
-    <main>
-        <?php 
-            require_once '../nav.inc.php';
-            //echo welcome flash message
-            if(Session::exists('welcome')){
-                echo '<div class="message">Good '.ucfirst(Utility::getPeriod()).', '.$hos->getPosition($rank).'</div>';
-                Session::delete('welcome');
-                if(Session::exists('welcome back')){
-                    Session::delete('welcome back');
-                }
-            }else{
-                if(Session::exists('welcome back')){
-                    echo '<div class="message">Welcome '.$hos->getPosition($rank).'</div>';
-                    Session::delete('welcome back');
-                }
-            }
-        ?>
-        <form method="post" action = "<?php echo Utility::myself() ?>">
-            <div class="formhead">Add Subject</div>
-            <?php 
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title text-primary"><?php echo ucfirst($operation) ?> Subject</h4>
+            <form class="forms-sample" id="subjectForm" onsubmit="return false" novalidate>
+                <?php
                 $level = null; //this will only change when form is submitted via post
-                if(Input::submitted() && Token::check(Input::get('token'))){
+                if (Input::submitted() && Token::check(Input::get('token'))) {
+
+                    $operation = Utility::escape(Input::get('operation'));
+                    $subject_id = Utility::escape(Input::get('subject_id'));
                     $subject = Utility::escape(Input::get('subject'));
                     $subject = ucwords($subject);
                     $level = (int)Input::get('levelid');
-                    if(preg_match('/^[a-zA-Z ]{3,50}$/', $subject)){
-                        if($hos->subjectExists($sch_abbr,$level,$subject)){
-                            $msg = '<div class="failure">'.$subject.' already exist for '.School::getLevelName($sch_abbr, $level).'</div>';
-                        }else{
-                            $classIds = $hos->getLevelClasses($level);
-                            
-                            if(!empty($classIds)){
-                            foreach($classIds as $id){
-                                //insert into subject table
-                                $hos->addSubject($sch_abbr,$subject,$id->id,$level);
-                                $msg = '<div class="success">Successfully Added '.$subject.' for '.School::getLevelName($sch_abbr, $level).'</div>';
-                            }
-                            }else{
-                                $msg = '<div class="failure">No class has been added to '.School::getLevelName($sch_abbr, $level).' yet</div>';
-                            }
+                  
+                    if ($operation == 'edit') {
+                        if (preg_match('/^[a-zA-Z` ]{3,50}$/', $subject)) {
+                            $hos->editSubject($subject_id, $subject);
+                            $msg = '<div class="success">Successfully updated ' . $subject . ' for ' . School::getLevelName($sch_abbr, $level) . '</div>';
+                        } else {
+                            $msg = '<div class="failure">Invalid Subject Name</div>';
                         }
-                     
-                    }else{
-                        $msg = '<div class="failure">Invalid Subject Name</div>';
-                    }
-                    Session::set_flash('message',$msg);
-                }
-            ?>
-            <div><?php echo Session::get_flash('message')?></div>
-            <div>
-                 <label for="school">Select Level</label>
-                 <div>
-                    <select name="levelid">
-                        <?php
-                            $schLevels = School::getLevels($sch_abbr);
-                            foreach ($schLevels as $levName=>$lev){
-                                echo '<option value="'.$lev.'"'.selectLevel($lev).'>'.$levName.'</option>';
+                    } else {
+                        if (preg_match('/^[a-zA-Z` ]{3,50}$/', $subject)) {
+                            if ($hos->subjectExists($sch_abbr, $level, $subject)) {
+                                $msg = '<div class="failure">' . $subject . ' already exist for ' . School::getLevelName($sch_abbr, $level) . '</div>';
+                            } else {
+
+                                if ($hos->addSubject($sch_abbr, $subject, $level)) {
+
+                                    $msg = '<div class="success">Successfully Added ' . $subject . ' for ' . School::getLevelName($sch_abbr, $level) . '</div>';
+                                    $subject = '';
+                                } else {
+                                    $msg = '<div class="failure">No class has been added to ' . School::getLevelName($sch_abbr, $level) . ' yet</div>';
+                                }
                             }
+                        } else {
+                            $msg = '<div class="failure">Invalid Subject Name</div>';
+                        }
+                    }
+                }
+                ?>
+                <div class="form-group">
+                    <label for="level">Level</label>
+                    <select class="js-example-basic-single w-100 p-2" id="level" title="Level" name="levelid" required <?php echo ($operation == 'edit') ? 'disabled' : '' ?>>
+                        <?php
+                        $schLevels = School::getLevels($sch_abbr);
+                        foreach ($schLevels as $levName => $lev) {
+                            echo '<option value="' . $lev . '"' . selectLevel($lev) . '>' . $levName . '</option>';
+                        }
                         ?>
-                        
                     </select>
-                 </div>
-            </div>
-            
-            <div>
-                 <label for="subject">Subject Name</label>
-                 <div>
-                     <input type="text" name="subject" />
-                 </div>
-            </div>
-            
-            <input type = "hidden" value = "<?php echo Token::generate() ?>" name="token" id="token" />
-            <button name="addclass">Add</button>
-        </form>
-        
-    </main>
-</body>
-</html>
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" class="form-control" id="subject" onfocus="clearHTML('messageContainer')" title="Subject" required pattern="^[a-zA-Z` ]{3,50}$" value="<?php echo $subject; ?>" name="subject">
+                </div>
+
+                <div id="messageContainer">
+                    <?php
+                    if (!empty($msg)) {
+                    ?>
+                        <script>
+                            swalNotifyDismiss('<?php echo $msg ?>', 'info', 2000);
+                        </script>
+                    <?php
+                    }
+                    ?>
+
+                </div>
+                <button type="button" class="btn btn-primary mr-2" id="addBtn" onclick="saveSubject()">Save</button><span id="ld_loader"></span>
+                <button type="button" class="btn btn-light" onclick="getAltPage('<?php echo Utility::escape(Session::getAltLastPage()) ?>')" id="returnBtn">Return</button>
+                <input type="hidden" value="<?php echo $operation ?>" name="operation" id="operation" />
+                <input type="hidden" value="<?php echo $subject_id ?>" name="subject_id" id="subject_id" />
+                <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
+            </form>
+        </div>
+    </div>
+</div>
+<script src="scripts/management/hos/subjects.js"></script>
+<script>
+    validate('subjectForm');;
+</script>

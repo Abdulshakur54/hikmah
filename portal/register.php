@@ -110,6 +110,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
           $title = Utility::escape(Input::get('title'));
           $valid_ranks = [7, 8, 15, 16];
           $valid_rank = (in_array($rank, $valid_ranks));
+          break;
         case 'management':
           $salary = $res->salary;
           $asst = $res->asst;
@@ -201,15 +202,15 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                   $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registeration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong></div>';
                   $mail->send($email, 'Registration Completion', $message);
 
-                  Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $$user_id . '</strong><br><em>use it to login, it has also be sent to your email for backup</em></div>');
-                  Redirect::to('success2.php?user_type=staff');
+                  Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>use it to login, it has also be sent to your email for backup</em></div>');
+                Redirect::to('success2.php?user_type=staff');
                 }
               }
             } else {
               $errors[] = 'Registration Not Successful';
             }
             break;
-        }
+          }
       } else {
         $errors[] = 'Use the proper tab to register';
       }

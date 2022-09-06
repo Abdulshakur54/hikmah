@@ -1,58 +1,38 @@
 <?php
-    //initializations
-    spl_autoload_register(
-            function($class){
-                    require_once'../../../classes/'.$class.'.php';
-            }
-    );
-    session_start(Config::get('session/options'));
-    //end of initializatons
-    require_once './hos.inc.php';
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Students that haven't complete subject registration</title>
-    <link rel="stylesheet" type="text/css" href="<?php echo Utility::escape($url->to('styles/style.css',0))?>" />
-    <link rel="stylesheet" type="text/css" href="styles/std_sub_reg.css" />
-</head>
-<body>
-    <main>
-       <?php 
-            require_once '../nav.inc.php';
-            //echo welcome flash message
-            if(Session::exists('welcome')){
-                echo '<div class="message">Good '.ucfirst(Utility::getPeriod()).', '.$hos->getPosition($rank).'</div>';
-                Session::delete('welcome');
-                if(Session::exists('welcome back')){
-                    Session::delete('welcome back');
-                }
-            }else{
-                if(Session::exists('welcome back')){
-                    echo '<div class="message">Welcome '.$hos->getPosition($rank).'</div>';
-                    Session::delete('welcome back');
-                }
-            }
-        ?>
-        <?php
+    require_once './includes/hos.inc.php';
+
+    ?>
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title text-primary">Students that have not completed subject registration</h4>
+            <?php
             $stds = $hos->getStdsNotCompSubReg($sch_abbr);
-            if(!empty($stds)){
+            if (!empty($stds)) {
                 $numRows = count($stds);
-                echo'<div class="message">'.$numRows.' records found</div>';
-                echo '<table><thead><th>Student ID</th><th>Fullname</th><td>Class</td></thead><tbody>';
-                foreach($stds as $std){
-                    echo '<tr><td>'.Utility::escape($std->std_id).'</td><td>'.Utility::formatName(Utility::escape($std->fname), Utility::escape($std->oname), Utility::escape($std->lname)).'</td><td>'.School::getLevelName($sch_abbr, (int)$std->level).' '. Utility::escape($std->class).'</td></tr>';
+                echo '<div class="message  mb-2 text-right">' . $numRows . ' records found</div>';
+                echo '<table class="table table-striped table-bordered nowrap responsive" id="studentsTable"><thead><th>S/N</th><th>Student ID</th><th>Fullname</th><td>Class</td></thead><tbody>';
+                foreach ($stds as $std) {
+                    echo '<tr><td></td><td>' . Utility::escape($std->std_id) . '</td><td>' . Utility::formatName(Utility::escape($std->fname), Utility::escape($std->oname), Utility::escape($std->lname)) . '</td><td>' . School::getLevelName($sch_abbr, (int)$std->level) . ' ' . Utility::escape($std->class) . '</td></tr>';
                 }
                 echo '</tbody></table>';
-                echo '<button onclick="alert(\'Students have been persistently notified\')">Notify Students</button>';
-            }else{
-                echo'<div class="message">No record found</div>';
+                echo '<div class="text-center p-3"><button onclick="notify()" class="btn btn-md btn-primary">Notify Students</button></div>';
+            } else {
+                echo '<div class="message">No record found</div>';
             }
-        ?>
-    </main>
-</body>
-</html>
+            ?>
+        </div>
+    </div>
+</div>
+<script>
+    function notify() {
+        swalNotify('Students have been persistently notified', 'info');
+    }
+
+    $(document).ready(function() {
+        $("#studentsTable").DataTable(dataTableOptions);
+        if ($(".js-example-basic-single").length) {
+            $(".js-example-basic-single").select2();
+        }
+    });
+</script>
