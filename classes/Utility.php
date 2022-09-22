@@ -62,10 +62,13 @@ class Utility
     }
 
     //this method helps format name in the form 'Abdulshakur J. Muhammed'
-    public static function formatName($fname, $oname, $lname)
+    public static function formatName($fname, $oname, $lname,$shorten_other_name =true)
     {
         if (!empty($oname)) {
-            return ucwords($fname . ' ' . substr($oname, 0, 1) . '. ' . $lname);
+            if($shorten_other_name){
+                return ucwords($fname . ' ' . substr($oname, 0, 1) . '. ' . $lname);
+            }
+            return ucwords($fname . ' ' . $oname . ' ' . $lname);
         }
         return ucwords($fname . ' ' . $lname);
     }
@@ -110,6 +113,9 @@ class Utility
         switch ($formatType) {
             case 0:
                 return date('l, ', $date) . $day . date(' F, Y', $date);
+                break;
+            case 1:
+                return $day . date(' F, Y', $date);
                 break;
         }
     }
@@ -277,5 +283,10 @@ class Utility
             }
         }
         return $res;
+    }
+
+    public static function format_student_id(string $student_id){
+        $arr = explode('/',$student_id);
+        return implode('',$arr);
     }
 }

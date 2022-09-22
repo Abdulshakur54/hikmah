@@ -22,7 +22,6 @@ if (Session::exists('user')) {
   $username = Session::get('user');
   $menu = new Menu();
   $menus = $menu->get($username);
- 
 } else {
 
   Redirect::to('login.php');
@@ -53,6 +52,8 @@ if (Session::exists('user')) {
   <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css" />
 
   <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css" />
+
+  <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
 
   <!-- endinject -->
 
@@ -360,7 +361,37 @@ if (Session::exists('user')) {
 
   </div>
 
+
+  <!-- inject:js -->
   <script src="vendors/js/vendor.bundle.base.js"></script>
+  <script src="js/off-canvas.js"></script>
+
+  <script src="js/hoverable-collapse.js"></script>
+
+  <script src="js/template.js"></script>
+
+  <script src="js/settings.js"></script>
+
+  <script src="js/todolist.js"></script>
+
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="validation/validation.js" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+  <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap4.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap4.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+
+  <!-- endinject -->
 
   <!-- endinject -->
 
@@ -378,19 +409,7 @@ if (Session::exists('user')) {
 
   <!-- End plugin js for this page -->
 
-  <!-- inject:js -->
 
-  <script src="js/off-canvas.js"></script>
-
-  <script src="js/hoverable-collapse.js"></script>
-
-  <script src="js/template.js"></script>
-
-  <script src="js/settings.js"></script>
-
-  <script src="js/todolist.js"></script>
-
-  <!-- endinject -->
 
   <!-- Custom js for this page-->
 
@@ -402,22 +421,7 @@ if (Session::exists('user')) {
 
 
 
-  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <script src="validation/validation.js" type="text/javascript"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
-  <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap4.min.js"></script>
-  <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
-  <script src="https://cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap4.min.js"></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
   <!-- 
 
  -->

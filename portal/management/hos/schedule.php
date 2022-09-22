@@ -6,11 +6,12 @@ if (empty($schedule)) {
     exit(); // some data needs to be inserted for initials in table schedule2;
 }
 
-function get_file(){
+function get_file()
+{
     global $schedule;
     $url = new Url();
-    if(!empty(Utility::escape($schedule->signature))){
-        return $url->to('hos/uploads/signatures/' . Utility::escape($schedule->signature),1);
+    if (!empty(Utility::escape($schedule->signature))) {
+        return $url->to('hos/uploads/signatures/' . Utility::escape($schedule->signature), 1);
     }
     return;
 }
@@ -29,32 +30,32 @@ function get_file(){
                     <div class="card-body">
                         <div class="form-group">
                             <label for="fa" class="form-label">First Assignment</label>
-                            <input type="number" name="fa" value="<?php echo Utility::escape($schedule->fa) ?>" id="fa" max="100" min="0" required class="form-control" title="First Assignment" />
+                            <input type="number" name="fa" value="<?php echo Utility::escape($schedule->fa) ?>" id="fa" max="100" min="0" required class="form-control" title="First Assignment" onchange="scoreChanged()" />
                         </div>
 
                         <div class="form-group">
                             <label for="sa" class="form-label">Second Assignment</label>
-                            <input type="number" name="sa" value="<?php echo Utility::escape($schedule->sa) ?>" id="sa" max="100" min="0" required class="form-control" title="Second Assignment"/>
+                            <input type="number" name="sa" value="<?php echo Utility::escape($schedule->sa) ?>" id="sa" max="100" min="0" required class="form-control" title="Second Assignment" />
                         </div>
 
                         <div class="form-group">
                             <label for="ft" class="form-label">First Test</label>
-                            <input type="number" name="ft" value="<?php echo Utility::escape($schedule->ft) ?>" id="ft" max="100" min="0" required class="form-control" title="First Test"/>
+                            <input type="number" name="ft" value="<?php echo Utility::escape($schedule->ft) ?>" id="ft" max="100" min="0" required class="form-control" title="First Test" />
                         </div class="form-group">
 
                         <div class="form-group">
                             <label for="st" class="form-label">Second Test</label>
-                            <input type="number" name="st" value="<?php echo Utility::escape($schedule->st) ?>" id="st" max="100" min="0" required class="form-control" title="Second Test"/>
+                            <input type="number" name="st" value="<?php echo Utility::escape($schedule->st) ?>" id="st" max="100" min="0" required class="form-control" title="Second Test" />
                         </div>
 
                         <div class="form-group">
                             <label for="pro" class="form-label">Project</label>
-                            <input type="number" name="pro" value="<?php echo Utility::escape($schedule->pro) ?>" id="pro" max="100" min="0" required class="form-control" title="Project"/>
+                            <input type="number" name="pro" value="<?php echo Utility::escape($schedule->pro) ?>" id="pro" max="100" min="0" required class="form-control" title="Project" />
                         </div>
 
                         <div class="form-group">
                             <label for="exam" class="form-label">Exam</label>
-                            <input type="number" name="exam" value="<?php echo Utility::escape($schedule->exam) ?>" id="exam" max="100" min="0" required class="form-control" title="Exam"/>
+                            <input type="number" name="exam" value="<?php echo Utility::escape($schedule->exam) ?>" id="exam" max="100" min="0" required class="form-control" title="Exam" onchange="scoreChanged()" />
                         </div>
                     </div>
 
@@ -73,7 +74,7 @@ function get_file(){
 
                             <div class="form-group">
                                 <label for="ftto" class="form-label">Times Opened</label>
-                                <input type="number" name="ftto" value="<?php echo Utility::escape($schedule->ft_times_opened) ?>" id="ftto" max="200" min="0" required class="form-control" title="Times Opened"/>
+                                <input type="number" name="ftto" value="<?php echo Utility::escape($schedule->ft_times_opened) ?>" id="ftto" max="200" min="0" required class="form-control" title="Times Opened" />
                             </div>
 
                             <div class="form-group">
@@ -83,7 +84,7 @@ function get_file(){
 
                             <div class="form-group">
                                 <label for="ftcd" class="form-label">Closing Date(Appears on result)</label>
-                                <input type="date" name="ftcd" value="<?php echo Utility::escape($schedule->ft_close_date) ?>" id="ftcd" required class="form-control" title="Closing Date"/>
+                                <input type="date" name="ftcd" value="<?php echo Utility::escape($schedule->ft_close_date) ?>" id="ftcd" required class="form-control" title="Closing Date" />
                             </div>
                         </section>
                         <section class="card-body">
@@ -100,7 +101,7 @@ function get_file(){
 
                             <div class="form-group">
                                 <label for="ftcd" class="form-label">Closing Date(Appears on result)</label>
-                                <input type="date" name="stcd" value="<?php echo Utility::escape($schedule->st_close_date) ?>" id="stcd" required class="form-control" title="Closing Date"/>
+                                <input type="date" name="stcd" value="<?php echo Utility::escape($schedule->st_close_date) ?>" id="stcd" required class="form-control" title="Closing Date" />
                             </div>
 
                         </section>
@@ -109,17 +110,17 @@ function get_file(){
                             <h4>Third Term Schedules</h4>
                             <div class="form-group">
                                 <label for="ttto" class="form-label">Times Opened</label>
-                                <input type="number" name="ttto" value="<?php echo Utility::escape($schedule->tt_times_opened) ?>" id="ttto" max="200" min="0" required class="form-control" title="Times Opened"/>
+                                <input type="number" name="ttto" value="<?php echo Utility::escape($schedule->tt_times_opened) ?>" id="ttto" max="200" min="0" required class="form-control" title="Times Opened" />
                             </div>
 
                             <div class="form-group">
                                 <label for="ttrd" class="form-label">Resumption Date(Appears on result)</label>
-                                <input type="date" name="ttrd" value="<?php echo Utility::escape($schedule->tt_res_date) ?>" id="ttrd" required  class="form-control"  title="Resumption Date"/>
+                                <input type="date" name="ttrd" value="<?php echo Utility::escape($schedule->tt_res_date) ?>" id="ttrd" required class="form-control" title="Resumption Date" />
                             </div>
 
                             <div class="form-group">
                                 <label for="ttcd" class="form-label">Closing Date(Appears on result)</label>
-                                <input type="date" name="ttcd" value="<?php echo Utility::escape($schedule->tt_close_date) ?>" id="ttcd" required  class="form-control"title="Closing Date" />
+                                <input type="date" name="ttcd" value="<?php echo Utility::escape($schedule->tt_close_date) ?>" id="ttcd" required class="form-control" title="Closing Date" />
                             </div>
                         </section>
                     </div>
@@ -134,7 +135,7 @@ function get_file(){
                     <div class="card-body">
                         <div class="form-group">
                             <label for="a1" class="form-label">A1(75-100)</label>
-                            <input type="text" name="a1" value="<?php echo Utility::escape($schedule->a1) ?>" id="a1" required class="form-control" title="A1 Commentary"/>
+                            <input type="text" name="a1" value="<?php echo Utility::escape($schedule->a1) ?>" id="a1" required class="form-control" title="A1 Commentary" />
                         </div>
 
                         <div class="form-group">
@@ -190,10 +191,11 @@ function get_file(){
                         <div>
                             <label for="signature" id="uploadTrigger" style="cursor: pointer; color:blue;">Upload Signature</label>
                             <div>
-                                <?php $file = get_file();?>
+                                <?php $file = get_file(); ?>
                                 <input type="file" name="signature" id="signature" style="display: none" onchange="showImage(this)" accept="image/jpg, image/jpeg, image/png" />
-                                <img id="image" width="100" height="100" src="<?php echo !empty($file)?$file:''; ?>" />
+                                <img id="image" width="100" height="100" src="<?php echo !empty($file) ? $file : ''; ?>" />
                                 <input type="hidden" name="hiddenPic" value="" id="hiddenPic" />
+                                <input type="hidden" name="resetScores" value="" id="resetScores" />
                                 <div id="picMsg" class="errMsg"></div>
                             </div>
                         </div>
@@ -209,6 +211,17 @@ function get_file(){
         </div>
     </div>
 </div>
+
+<?php
+$msg = Session::get_flash('post_method_success_message');
+if (!empty($msg)) {
+?>
+    <script>
+        swalNotifyDismiss('<?php echo $msg ?>', 'success', 2000);
+    </script>
+<?php
+}
+?>
 <script src="scripts/management/hos/schedule.js"></script>
 <script>
     validate('scheduleForm');;

@@ -97,12 +97,12 @@ async function uploadFile() {
                "&token=" +
                token.value);
            }else{
-            swalNotify(rsp.message,'danger');
+            swalNotify(rsp.message,'error');
            }
            
          }
     }catch(error){
-        swalNotify(error.message,'danger');
+        swalNotify(error.message,'error');
     }
 }
 
