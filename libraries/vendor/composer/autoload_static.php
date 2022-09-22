@@ -4,19 +4,14 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit767f40d489acf5f803b3d7ad328f97c1
+class ComposerStaticInit63ce3d228f353905846231a5da7e7b3a
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        's' => 
-        array (
-            'setasign\\Fpdi\\' => 14,
-        ),
         'Z' => 
         array (
             'ZipStream\\' => 10,
@@ -28,7 +23,6 @@ class ComposerStaticInit767f40d489acf5f803b3d7ad328f97c1
         'P' => 
         array (
             'Psr\\SimpleCache\\' => 16,
-            'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
@@ -37,12 +31,7 @@ class ComposerStaticInit767f40d489acf5f803b3d7ad328f97c1
         'M' => 
         array (
             'MyCLabs\\Enum\\' => 13,
-            'Mpdf\\' => 5,
             'Matrix\\' => 7,
-        ),
-        'D' => 
-        array (
-            'DeepCopy\\' => 9,
         ),
         'C' => 
         array (
@@ -51,10 +40,6 @@ class ComposerStaticInit767f40d489acf5f803b3d7ad328f97c1
     );
 
     public static $prefixDirsPsr4 = array (
-        'setasign\\Fpdi\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/setasign/fpdi/src',
-        ),
         'ZipStream\\' => 
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
@@ -67,14 +52,10 @@ class ComposerStaticInit767f40d489acf5f803b3d7ad328f97c1
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
-        'Psr\\Log\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/log/src',
-        ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -92,17 +73,9 @@ class ComposerStaticInit767f40d489acf5f803b3d7ad328f97c1
         array (
             0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
         ),
-        'Mpdf\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
-        ),
         'Matrix\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
-        ),
-        'DeepCopy\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
         ),
         'Complex\\' => 
         array (
@@ -122,15 +95,16 @@ class ComposerStaticInit767f40d489acf5f803b3d7ad328f97c1
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Stringable' => __DIR__ . '/..' . '/myclabs/php-enum/stubs/Stringable.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit767f40d489acf5f803b3d7ad328f97c1::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit767f40d489acf5f803b3d7ad328f97c1::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit767f40d489acf5f803b3d7ad328f97c1::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit767f40d489acf5f803b3d7ad328f97c1::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit63ce3d228f353905846231a5da7e7b3a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit63ce3d228f353905846231a5da7e7b3a::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit63ce3d228f353905846231a5da7e7b3a::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit63ce3d228f353905846231a5da7e7b3a::$classMap;
 
         }, null, ClassLoader::class);
     }

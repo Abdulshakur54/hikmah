@@ -83,19 +83,6 @@ if (Input::submitted('get') && !empty($operation)) {
                     <label for="subject">Subject</label>
                     <input type="text" class="form-control" id="subject" onfocus="clearHTML('messageContainer')" title="Subject" required pattern="^[a-zA-Z` ]{3,50}$" value="<?php echo $subject; ?>" name="subject">
                 </div>
-
-                <div id="messageContainer">
-                    <?php
-                    if (!empty($msg)) {
-                    ?>
-                        <script>
-                            swalNotifyDismiss('<?php echo $msg ?>', 'info', 2000);
-                        </script>
-                    <?php
-                    }
-                    ?>
-
-                </div>
                 <button type="button" class="btn btn-primary mr-2" id="addBtn" onclick="saveSubject()">Save</button><span id="ld_loader"></span>
                 <button type="button" class="btn btn-light" onclick="getAltPage('<?php echo Utility::escape(Session::getAltLastPage()) ?>')" id="returnBtn">Return</button>
                 <input type="hidden" value="<?php echo $operation ?>" name="operation" id="operation" />

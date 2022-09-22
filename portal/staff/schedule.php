@@ -395,7 +395,7 @@ function selectedParam($param, $selParam)
                         <label for="signature" id="uploadTrigger" style="cursor: pointer; color:blue;">Upload Signature</label>
                         <div>
                             <input type="file" name="signature" id="signature" style="display: none" onchange="showImage(this)" accept="image/jpg, image/jpeg, image/png" />
-                            <img id="image" width="100" height="100" src="<?php echo $url->to('uploads/signatures/' . Utility::escape($schedule->signature),2) ?>" />
+                            <img id="image" width="100" height="100" src="<?php echo $url->to('uploads/signatures/' . Utility::escape($schedule->signature), 2) ?>" />
                             <input type="hidden" name="hiddenPic" value="" id="hiddenPic" />
                             <div id="picMsg" class="errMsg"></div>
                         </div>
@@ -412,6 +412,16 @@ function selectedParam($param, $selParam)
         </div>
     </div>
 </div>
+<?php
+$msg = Session::get_flash('post_method_success_message');
+if (!empty($msg)) {
+?>
+    <script>
+        swalNotifyDismiss('<?php echo $msg ?>', 'success', 2000);
+    </script>
+<?php
+}
+?>
 <script src="scripts/staff/schedule.js"></script>
 <script>
     validate('scheduleForm');;

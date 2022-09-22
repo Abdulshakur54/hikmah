@@ -75,8 +75,9 @@ if (Input::submitted()) {
                             $stdIdsString = "'" . implode("','", $stdIds) . "'";
                             $staff->populateStdPsy($classId, $stdIdsString); //update psycometry
                         }
-                        $genMsg = '<div class="success">Changes has been successfully updated</div>';
-                        echo response(201, $genMsg);
+                        $genMsg = 'Changes has been successfully updated';
+                        Session::set_flash('post_method_success_message', $genMsg);
+                        echo response(201);
                     } else {
                         $genMsg = '<div class="failure">Problem encountered while trying to save changes</div>';
                         echo response(400, $genMsg);
@@ -91,8 +92,9 @@ if (Input::submitted()) {
                             $stdIdsString = "'" . implode("','", $stdIds) . "'";
                             $staff->populateStdPsy($classId, $stdIdsString); //update psycometry
                         }
-                        $genMsg = '<div class="success">Changes has been successfully updated</div>';
-                        echo response(201, $genMsg);
+                        $genMsg = 'Changes has been successfully updated';
+                        Session::set_flash('post_method_success_message', $genMsg);
+                        echo response(201);
                     } else {
                         $genMsg = '<div class="failure">Problem encountered while trying to save changes</div>';
                         echo response(400, $genMsg);

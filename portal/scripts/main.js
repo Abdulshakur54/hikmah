@@ -137,10 +137,16 @@ async function getPostPageWithUpload(formId, url,op) {
 
    rsp = await rsp.json();
    let status = rsp.status;
-   if(status == 200 || status==201  || status==204){
-    swalNotifyDismiss(rsp.message, "success");
+   if(!(status == 200 || status==201  || status==204)){
+     swalNotifyDismiss(rsp.message, "warning");
    }else{
-    swalNotifyDismiss(rsp.message, "warning");
+      location.reload();
    }
 
+}
+
+function convertStringToHTML(text){
+  let domObj = new DOMParser();
+  let htmlDoc = domObj.parseFromString(text,'text/html');
+  return htmlDoc.body.childNodes[0];
 }

@@ -11,3 +11,8 @@
 #you have not work on the profile (seen by anyone, by someone logged in), account profile(seen only by the owner when he is logged in)
 
 # integrate the forgot password feature;
+
+
+student-school2-score-subject-subject2-class-student_psy
+address,phone_contacts and email were added to school table
+hijra_session was added to school2

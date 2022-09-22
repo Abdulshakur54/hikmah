@@ -468,18 +468,18 @@ class Hos extends Management
     }
 
     //this function helps reset the score table for a particular school after the score settings have been changed
-    function updateScore($scoreTable, $currTerm, $sch_abbr)
+    function updateScore($scoreTable, $currTerm)
     {
         switch ($currTerm) {
             case 'ft':
-                $this->_db->query("update $scoreTable inner join subject2 on $scoreTable.subject_id = subject2.id set $scoreTable.ft_fa=?,$scoreTable.ft_sa=?,$scoreTable.ft_ft=?,$scoreTable.ft_st=?,$scoreTable.ft_pro=?,$scoreTable.ft_ex=?,$scoreTable.ft_tot=? where subject.sch_abbr=?", [null, null, null, null, null, null, null, $sch_abbr]);
+                $this->_db->query("update $scoreTable inner join subject2 on $scoreTable.subject_id = subject2.id set $scoreTable.ft_fa=?,$scoreTable.ft_sa=?,$scoreTable.ft_ft=?,$scoreTable.ft_st=?,$scoreTable.ft_pro=?,$scoreTable.ft_ex=?,$scoreTable.ft_tot=?", [null, null, null, null, null, null, null]);
                 break;
             case 'st':
-                $this->_db->query("update $scoreTable inner join subject2 on $scoreTable.subject_id = subject2.id set $scoreTable.st_fa=?,$scoreTable.st_sa=?,$scoreTable.st_ft=?,$scoreTable.st_st=?,$scoreTable.st_pro=?,$scoreTable.st_ex=?,$scoreTable.st_tot=? where subject.sch_abbr=?", [null, null, null, null, null, null, null, $sch_abbr]);
+                $this->_db->query("update $scoreTable inner join subject2 on $scoreTable.subject_id = subject2.id set $scoreTable.st_fa=?,$scoreTable.st_sa=?,$scoreTable.st_ft=?,$scoreTable.st_st=?,$scoreTable.st_pro=?,$scoreTable.st_ex=?,$scoreTable.st_tot=?", [null, null, null, null, null, null, null]);
                 break;
             case 'tt':
-                $this->_db->query('update ' . $scoreTable . ' set tt_fa=?,tt_sa=?,tt_ft=?,tt_st=?,tt_pro=?,tt_ex=?,tt_tot=? where sch_abbr=?', [null, null, null, null, null, null, null, $sch_abbr]);
-                $this->_db->query("update $scoreTable inner join subject2 on $scoreTable.subject_id = subject2.id set $scoreTable.ft_fa=?,$scoreTable.ft_sa=?,$scoreTable.ft_ft=?,$scoreTable.tt_st=?,$scoreTable.tt_pro=?,$scoreTable.tt_ex=?,$scoreTable.tt_tot=? where subject.sch_abbr=?", [null, null, null, null, null, null, null, $sch_abbr]);
+                $this->_db->query('update ' . $scoreTable . ' set tt_fa=?,tt_sa=?,tt_ft=?,tt_st=?,tt_pro=?,tt_ex=?,tt_tot=? where sch_abbr=?', [null, null, null, null, null, null, null]);
+                $this->_db->query("update $scoreTable inner join subject2 on $scoreTable.subject_id = subject2.id set $scoreTable.ft_fa=?,$scoreTable.ft_sa=?,$scoreTable.ft_ft=?,$scoreTable.tt_st=?,$scoreTable.tt_pro=?,$scoreTable.tt_ex=?,$scoreTable.tt_tot=?", [null, null, null, null, null, null, null]);
         }
     }
 }
