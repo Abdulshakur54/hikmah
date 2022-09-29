@@ -7,6 +7,7 @@ spl_autoload_register(
   }
 );
 session_start(Config::get('session/options'));
+$util = new Utils();
 
 // //redirect user
 // if (Session::exists('user')) {
@@ -101,6 +102,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
           $level = (int) $res->level;
           $valid_ranks = [11, 12];
           $valid_rank = (in_array($rank, $valid_ranks));
+          $user_id = $util->getSession($sch_abbr).'/'.$user_id;
           break;
         case 'staff':
           $salary = $res->salary;
