@@ -91,12 +91,11 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             }
 
 
-            $sql1 = 'insert into student(std_id,adm_id,password,fname,lname,oname,rank,active,sch_abbr,level,picture,date_of_admission)' .
-                'values(?,?,?,?,?,?,?,?,?,?,?,?)';
+            $sql1 = 'insert into student(std_id,adm_id,password,fname,lname,oname,rank,active,sch_abbr,level,picture,date_of_admission)values(?,?,?,?,?,?,?,?,?,?,?,?)';
             $val1 = [$newId,$adm_id, $hashedNewPwd, Utility::escape($data->fname), Utility::escape($data->lname), Utility::escape($data->oname), $newRank,true, $sch_abbr, $data->level, $newPicture,$data->date_of_admission];
             $email =  Utility::escape($data->email);
-            $sql2 = 'insert into student2(std_id,fathername,mothername,dob,address,phone,email) values(?,?,?,?,?,?,?)';
-            $val2 = [$newId, Utility::escape($data->fathername), Utility::escape($data->mothername), $data->dob, Utility::escape($data->address), Utility::escape($data->phone), $email];
+            $sql2 = 'insert into student2(std_id,fathername,mothername,dob,address,phone,email,state,lga) values(?,?,?,?,?,?,?,?,?)';
+            $val2 = [$newId, Utility::escape($data->fathername), Utility::escape($data->mothername), $data->dob, Utility::escape($data->address), Utility::escape($data->phone), $email,$data->state,$data->lga];
             $sql3 = 'insert into student3(std_id) values(?)';
             $sql4 = 'insert into student_psy(std_id) values(?)';
             //delete data from admission table
