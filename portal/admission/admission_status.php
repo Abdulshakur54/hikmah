@@ -1,31 +1,6 @@
 <?php
 require_once './includes/adm.inc.php';
-
-if (Input::submitted() && Token::check(Input::get('token'))) {
-    $decision = Utility::escape(Input::get('decision'));
-    if ($decision === 'download') {
-        $body = '
-                <main>
-                   <h2>OFFER OF ADMISSION</h2>
-                   <p>Congratulations! ' . Utility::formatName($data->fname, $data->oname, $data->lname) . ' with Applicant ID: ' . $data->adm_id . '</p><p>You have been offered admission into ' . School::getLevelName($sch_abbr, $level) . ', ' . School::getFullName($sch_abbr) . '</p>
-                </main>
-               ';
-
-        require_once '../../libraries/vendor/autoload.php';
-        $mpdf = new \Mpdf\Mpdf();
-        $mpdf->WriteHTML($body);
-        $mpdf->SetDisplayMode('fullpage');
-        $mpdf->list_indent_first_level = 0;
-
-        //call watermark content and image
-        $mpdf->SetWatermarkText(School::getFullName($sch_abbr));
-        $mpdf->showWatermarkText = true;
-        $mpdf->watermarkTextAlpha = 0.1;
-        //output in browser
-        $mpdf->Output();
-    }
-}
-
+$download_link = $url->to('students_admission.php?adm_id=' . $data->adm_id . '&school=' . $data->sch_abbr . '&token=' . Token::generate(), 0);
 ?>
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
@@ -58,7 +33,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                         </div>
                         <div class="card-footer d-flex justify-content-center flex-wrap">
                             <?php
-                            echo '<button id="acceptBtn" class="btn btn-md btn-success m-2" onclick ="acceptAdmission()" name="acceptBtn">Accept</button> <button id="declineBtn" class="btn btn-md btn-danger m-2" onclick ="declineAdmission()" name="declineBtn">Decline</button> <span id="ld_loader"></span> <button class="btn btn-md btn-secondary m-2" onclick ="downloadAdmission()" name="downloadBtn" id="downloadBtn">Download</button>';
+                            echo '<button id="acceptBtn" class="btn btn-md btn-success m-2" onclick ="acceptAdmission()" name="acceptBtn">Accept</button> <button id="declineBtn" class="btn btn-md btn-danger m-2" onclick ="declineAdmission()" name="declineBtn">Decline</button> <span id="ld_loader"></span> <a href="'.$download_link.'" class="m-2"><button class="btn btn-md btn-secondary" name="downloadBtn" id="downloadBtn">Download</button></a>';
                             ?>
                         </div>
                     </div>

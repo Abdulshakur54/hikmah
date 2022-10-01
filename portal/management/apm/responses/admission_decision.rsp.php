@@ -23,7 +23,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         if (count($idArr)) {
             foreach ($idArr as $id) {
                 if (!$start) {
-                    $db->query('update admission set status = 1 where adm_id=?', [$id]); //prepare the query so it can be requeried
+                    $db->query('update admission set status = ?, date_of_admission = ? where adm_id=?', [1,date('Y-m-d H:i:s',time()),$id]); //prepare the query so it can be requeried
                     /*get Applicant Email */
                     $db2->query('select email,fname,oname,lname,sch_abbr,level from admission where adm_id=?', [$id]);
                     $appData = $db2->one_result();
@@ -73,7 +73,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 $start = false;
                 foreach ($idArr as $id) {
                     if (!$start) {
-                        $db->query('update admission set status = 4 where adm_id=?', [$id]); //prepare the query so it can be requeried
+                        $db->query('update admission set status = ? where adm_id=?', [4,$id]); //prepare the query so it can be requeried
                         /*get Applicant Email */
                         $db2->query('select email,fname,oname,lname,sch_abbr,level from admission where adm_id=?', [$id]);
                         $appData = $db2->one_result();

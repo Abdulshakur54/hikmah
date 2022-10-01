@@ -75,6 +75,10 @@ class Utility
 
     public static function numSuffix(string $char): string
     {
+        $num = (int)$char;
+        if(floor($num/10) == 1){
+            return 'th';
+        }
         $lastLetter = substr($char, -1, 1);
         switch ($lastLetter) {
             case '0':
@@ -100,7 +104,7 @@ class Utility
         }
     }
 
-    private static function formatDay($date): string
+    public static function formatDay($date): string
     {
         $day = date('j', $date);
         return $day .= self::numSuffix($day);

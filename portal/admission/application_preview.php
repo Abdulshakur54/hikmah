@@ -1,6 +1,6 @@
 <?php
 require_once './includes/adm.inc.php';
-
+$download_link = $url->to('students_admission.php?adm_id=' . $data->adm_id . '&school=' . $data->sch_abbr . '&token=' . Token::generate(), 0);
 function getStatus()
 {
     global $data;
@@ -20,103 +20,6 @@ function getStatus()
 
 $msg = '';
 $admId = $username;
-
-
-if (Input::submitted('get') && Input::get('download') === 'true') {
-    $school = Utility::escape($data->sch_abbr);
-    //store the body content in a variable
-    $body = '
-           
-                <main>
-                    <div>
-                        <div>Bio Details</div>
-                        <div>
-                            <img src="' . $url->to('uploads/passports/' . Utility::escape($data->picture), 5) . '" alt="picture" width="100" height="100"/>
-                        </div>
-                        <div>
-                            <div class="label">First Name</div>
-                            <div class="value">' . ucfirst(Utility::escape($data->fname)) . '</div>
-                        </div>
-                        <div>
-                            <div class="label">Last Name</div>
-                            <div class="value">' . ucfirst(Utility::escape($data->lname)) . '</div>
-                        </div>
-                        <div>
-                            <div class="label">Other Name</div>
-                            <div class="value">' . ucfirst(Utility::escape($data->oname)) . '</div>
-                        </div>
-                        <div>
-                            <div class="label">Date Of Birth</div>
-                            <div class="value">' . Utility::formatDate($data->dob) . '</div>
-                        </div>
-                    </div>
-                    <div>
-                        <div>Contacts</div>
-                        <div>
-                            <div class="label">Phone</div>
-                            <div class="value">' . Utility::escape($data->phone) . '</div>
-                        </div>
-                        <div>
-                            <div class="label">Email</div>
-                            <div class="value">' . Utility::escape($data->email) . '</div>
-                        </div>
-                        <div>
-                            <div class="label">Address</div>
-                            <div class="value">' . Utility::escape($data->address) . '</div>
-                        </div>
-                    </div>
-        <div>
-            <div>Application Information</div>
-            <div>
-                <div class="label">Application ID</div>
-                <div class="value">' . strtoupper($admId) . '</div>
-            </div>
-            <div>
-                <div class="label">School</div>
-                <div class="value">' . School::getFullName($school) . '</div>
-            </div>
-            <div>
-                <div class="label">Level</div>
-                <div class="value">' . School::getLevelName($school, $data->level) . '</div>
-            </div>
-            
-            <div>
-                <div class="label">Screening Score</div>
-                <div class="value">' . $data->score . '</div>
-            </div>
-           
-            <div>
-                <div class="label">Admission Status</div>
-                <div class="value">' . getStatus() . '</div>
-            </div>
-        </div>
-        <div>
-            <div>Guardians Information</div>
-            <div>
-                <div class="label">Father Name</div>
-                <div class="value">' . Utility::escape($data->fathername) . '</div>
-            </div>
-            <div>
-                <div class="label">Mother Name</div>
-                <div class="value">' . Utility::escape($data->mothername) . '</div>
-            </div>
-        </div>
-    </main>
-               ';
-
-    require_once '../../libraries/vendor/autoload.php';
-    $mpdf = new \Mpdf\Mpdf();
-    $mpdf->WriteHTML($body);
-    $mpdf->SetDisplayMode('fullpage');
-    $mpdf->list_indent_first_level = 0;
-
-    //call watermark content and image
-    $mpdf->SetWatermarkText(School::getFullName($sch_abbr));
-    $mpdf->showWatermarkText = true;
-    $mpdf->watermarkTextAlpha = 0.1;
-    //output in browser
-    $mpdf->Output();
-}
 ?>
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
@@ -222,7 +125,7 @@ if (Input::submitted('get') && Input::get('download') === 'true') {
                 </div>
             </div>
             <div>
-                <button onclick="getPag"><a href="<?php echo Utility::myself() . '?adm_id=' . $data->adm_id . '&download=true' ?>">Download</a></button>
+                <a href="<?php echo $download_link ?>" class="d-block text-center"><button type="button" class="btn btn-primary">Download</button></a>
             </div>
         </div>
 

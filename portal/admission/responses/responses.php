@@ -75,7 +75,8 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             $std = new Student();
             $newId = $std->genId($sch_abbr, $data->level);
             $newPwd = Token::create(5);
-            switch ($data->rank) {
+            $rank = $data->rank;
+            switch ($rank) {
                 case 11:
                     $newRank = 9;
                 case 12:
@@ -90,12 +91,11 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             }
 
 
-            $sql1 = 'insert into student(std_id,password,fname,lname,oname,rank,active,sch_abbr,level,picture)' .
-                'values(?,?,?,?,?,?,?,?,?,?)';
-            $val1 = [$newId, $hashedNewPwd, Utility::escape($data->fname), Utility::escape($data->lname), Utility::escape($data->oname), $newRank,true, $sch_abbr, $data->level, $newPicture];
+            $sql1 = 'insert into student(std_id,adm_id,password,fname,lname,oname,rank,active,sch_abbr,level,picture,date_of_admission)values(?,?,?,?,?,?,?,?,?,?,?,?)';
+            $val1 = [$newId,$adm_id, $hashedNewPwd, Utility::escape($data->fname), Utility::escape($data->lname), Utility::escape($data->oname), $newRank,true, $sch_abbr, $data->level, $newPicture,$data->date_of_admission];
             $email =  Utility::escape($data->email);
-            $sql2 = 'insert into student2(std_id,fathername,mothername,dob,address,phone,email) values(?,?,?,?,?,?,?)';
-            $val2 = [$newId, Utility::escape($data->fathername), Utility::escape($data->mothername), $data->dob, Utility::escape($data->address), Utility::escape($data->phone), $email];
+            $sql2 = 'insert into student2(std_id,fathername,mothername,dob,address,phone,email,state,lga) values(?,?,?,?,?,?,?,?,?)';
+            $val2 = [$newId, Utility::escape($data->fathername), Utility::escape($data->mothername), $data->dob, Utility::escape($data->address), Utility::escape($data->phone), $email,$data->state,$data->lga];
             $sql3 = 'insert into student3(std_id) values(?)';
             $sql4 = 'insert into student_psy(std_id) values(?)';
             //delete data from admission table
@@ -107,8 +107,10 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 
                 /*for hikmah only to help use the role and menu functionality*/
                 $role_id = $adm->get_role_id($newRank, 0);
+                $old_role_id = $adm->get_role_id($rank,0);
                 $db->insert(Config::get('users/table_name'), ['user_id' => $newId, 'role_id' => $role_id]);
-                Menu::add_available_menus($newId, $role_id);
+                Menu::add_available_menus($newId, $role_id); //add menus for real students
+                Menu::delete_available_menus($adm_id,$old_role_id); //delete menus as an admission student
               /*for hikmah only to help use the role and menu functionality*/
 
                 if (!empty($newPicture)) {

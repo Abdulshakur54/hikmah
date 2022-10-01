@@ -68,7 +68,7 @@ class User
 				break;
 		}
 		if ($user_id) {
-			$this->find($id); //populate the $_data instance variable                    
+			$this->find($user_id); //populate the $_data instance variable                    
 		}
 		$this->_pwd_col = Config::get('users/password_column'); //gets password column
 		$this->_id_col = Config::get('users/id_column');
@@ -223,7 +223,7 @@ class User
 
 
 	//a getter for the postion
-	public function getPosition($rank, $asst = 0)
+	public function getPosition($rank, $asst = 0,$fullPosition=false)
 	{
 		switch ($rank) {
 			case 1:
@@ -233,44 +233,44 @@ class User
 					case 1:
 						return 'Deputy Director';
 					case 2:
-						return 'Secretary';
+						return 'Secretary to Director';
 				}
 			case 2:
 				switch ($asst) {
 					case 0:
 						return 'A.P.M';
 					case 2:
-						return 'Secretary';
+						return 'Secretary to A.P.M';
 				}
 			case 3:
 				switch ($asst) {
 					case 0:
 						return 'Accountant';
 					case 2:
-						return 'Secretary';
+						return 'Secretary to Accountant';
 				}
 			case 4:
 				switch ($asst) {
 					case 0:
 						return 'I.C';
 					case 2:
-						return 'Secretary';
+						return 'Secretary to I.C';
 				}
 			case 5:
 				switch ($asst) {
 					case 0:
-						return 'Principal';
+						return 'H.O.S';
 					case 1:
-						return 'Vice Principal';
+						return 'Deputy H.O.S';
 					case 2:
-						return 'Secretary';
+						return 'Secretary to H.O.S';
 				}
 			case 6:
 				switch ($asst) {
 					case 0:
 						return 'H.R.M';
 					case 2:
-						return 'Secretary';
+						return 'Secretary to H.R.M';
 				}
 			case 7:
 				return 'Teacher';
@@ -281,9 +281,9 @@ class User
 			case 10:
 				return 'Student';
 			case 11:
-				return 'AS';
+				return 'Admission Student';
 			case 12:
-				return 'AS';
+				return 'Admission Student';
 			case 13:
 				return 'Alumni';
 			case 14:
@@ -299,7 +299,7 @@ class User
 					case 1:
 						return 'Vice Mudir';
 					case 2:
-						return 'Secretary';
+						return 'Secretary to Mudir';
 				}
 		}
 	}
@@ -364,9 +364,9 @@ class User
 			case 10:
 				return 'Student';
 			case 11:
-				return 'AS';
+				return 'Admission Student';
 			case 12:
-				return 'AS';
+				return 'Admission Student';
 			case 13:
 				return 'Alumni';
 			case 14:
@@ -497,5 +497,66 @@ class User
 			return $db->select($table, '*', '', $user_column);
 		}
 		return $db->get($table, '*', 'role_id = ' . $role_id, $user_column);
+	}
+
+	public static function get_profile(string $username) {
+		$first_letter = substr($username, 0, 1);
+		$db = DB::get_instance();
+		$data = [];
+		switch (strtoupper($first_letter)) {
+			case 'H':
+				$db->query('select student.*,student2.*,class.class,states.name as state_of_origin,local_governments.name as lga_of_origin from student inner join student2 on student.std_id=student2.std_id inner join class on student.class_id = class.id inner join states on states.id = student2.state inner join local_governments on local_governments.id = student2.lga where student.std_id = ?',[$username]);
+				if($db->row_count() > 0){
+					$data = $db->one_result();
+				}
+				break;
+			case 'A':
+				$db->query('select admission.*,states.name as state_of_origin,local_governments.name as lga_of_origin from admission inner join states on states.id = admission.state inner join local_governments on local_governments.id = admission.lga where admission.adm_id = ?', [$username]);
+				if ($db->row_count() > 0) {
+					$data = $db->one_result();
+				}
+				break;
+			case 'M':
+				$db->query('select management.*,states.name as state_of_origin,local_governments.name as lga_of_origin from management inner join states on states.id = management.state inner join local_governments on local_governments.id = management.lga where management.mgt_id = ?', [$username]);
+				if ($db->row_count() > 0) {
+					$data = $db->one_result();
+				}
+				break;
+			case 'S':
+				$db->query('select staff.*,states.name as state_of_origin,local_governments.name as lga_of_origin from staff inner join states on states.id = staff.state inner join local_governments on local_governments.id = staff.lga where staff.staff_id = ?', [$username]);
+				if ($db->row_count() > 0) {
+					$data = $db->one_result();
+				}
+		}
+		return $data;
+	}
+
+	public static function get_specifics($username,$rank,$position){
+		$specifics = [];
+		$user = new User();
+		$db = DB::get_instance();
+		$url = new Url();
+		$specifics['rank'] = $user->getPosition($rank,$position);
+		$specifics['role'] = $user->getFullPosition($rank);
+		$first_letter = substr($username,0,1);
+
+		switch (strtoupper($first_letter)) {
+			case 'H':
+				$specifics['profile_photo_path'] = $url->to('uploads/passports/',3);
+				$specifics['show_parents'] = true;
+				break;
+			case 'A':
+				$specifics['profile_photo_path'] = $url->to('uploads/passports/',5);
+				$specifics['show_parents'] = false;
+				break;
+			case 'M':
+				$specifics['profile_photo_path'] = $url->to('uploads/passports/',1);
+				$specifics['show_parents'] = false;
+				break;
+			case 'S':
+				$specifics['profile_photo_path'] = $url->to('uploads/passports/',2);
+				$specifics['show_parents'] = false;
+		}
+		return $specifics;
 	}
 }

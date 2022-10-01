@@ -284,7 +284,7 @@ class Menu
         $menu_string = implode("','", $menusArray);
         $users_menu = Config::get('users/menu_table');
         $users_id_column = Config::get('users/username_column');
-        $db->delete($users_menu, "$users_id_column='$$user_id' and id in('$menu_string')");
+        $db->delete($users_menu, "$users_id_column='$user_id' and id in('$menu_string')");
     }
 
     public static function assign_class_teacher_menus($user_id)
