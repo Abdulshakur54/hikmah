@@ -16,7 +16,7 @@ if (Input::submitted('get')) {
         $other_data = QRC::get_other_data($identifier);
         $adm_id = $other_data['adm_id'];
         $sch_abbr = $other_data['school'];
-    } else if (Token::check($token)) {
+    } else if (Token::check($token,null,true)) {
         $adm_id = Utility::escape(Input::get('adm_id'));
         $sch_abbr = Utility::escape(Input::get('school'));
     } else {
@@ -104,5 +104,5 @@ $adm_message = 'We are pleased to congratulate and inform you that <strong>'.Uti
 ';
 $pdf->WriteHTML($adm_message);
 $y = $pdf->GetY();
-$pdf->Image('barcodes/' . $title, 185, $y, 15, 15);
-$pdf->Output('I', 'admission_letter.pdf');
+$pdf->Image('barcodes/' . $title, 185, $y-15+5, 15, 15);
+$pdf->Output('D', 'admission_letter.pdf');

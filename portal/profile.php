@@ -57,7 +57,7 @@ $profile_photo = $specifics['profile_photo_path'] . $profile_data->picture;
                 </div>
             </div>
 
-            <div class="row d-flex align-items-stretch flex-row px-2">
+            <div class="row d-flex align-items-stretch flex-row px-2 mt-3">
                 <div class="col-lg-4 d-flex align-items-center py-3" style="background-color: #7db9fb;">
                     <div class="w-100">
                         <div class="card-body text-center">

@@ -42,7 +42,7 @@ if (Input::submitted('get')) {
         $student_ids = [$other_data['student_id']];
         $term = $other_data['term'];
         $sch_abbr = $other_data['school'];
-    } else if (Token::check($token)) {
+    } else if (Token::check($token,null,true)) {
         $session = Utility::escape(Input::get('session'));
         $term = Utility::escape(Input::get('term'));
         $sch_abbr = Utility::escape(Input::get('school'));
@@ -193,7 +193,7 @@ foreach ($student_ids as $std_id) {
     $pdf->Cell(16, 4, $times_absent, 1, 1, 'L');
 
     //output student passport
-    $pdf->Image('student/uploads/passports/' . $agg_data->picture, 100, $imgY + 4 - 15, 15, 15);
+    $pdf->Image('student/uploads/passports/' . $agg_data->picture, 100, $imgY + 4 - 20, 20, 20);
     //output student passport
 
     $pdf->SetFont('Lusitana-Bold', '', 6);
@@ -406,4 +406,4 @@ foreach ($student_ids as $std_id) {
     $pdf->Image('barcodes/' . $title, 185, $imgY + 1, 15, 15);
     //end of images
 }
-$pdf->Output('I', 'results.pdf');
+$pdf->Output('D', 'results.pdf');

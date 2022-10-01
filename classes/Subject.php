@@ -133,12 +133,12 @@ class Subject
     function getScoreSettings($sch_abbr, $session = '')
     {
         if ($session != '') {
-            $school_table = Utility::getFormatedSession($session).'_school2';
+            $school_table = Utility::getFormatedSession($session) . '_school2';
         } else {
             $school_table = 'school2';
         }
 
-        $this->_db->query('select fa,sa,ft,st,pro,exam from '.$school_table.' where sch_abbr=?', [$sch_abbr]);
+        $this->_db->query('select fa,sa,ft,st,pro,exam from ' . $school_table . ' where sch_abbr=?', [$sch_abbr]);
         $res = $this->_db->one_result();
         $scoreSetting = [];
         $scoreSetting['fa'] = $res->fa;
@@ -155,7 +155,7 @@ class Subject
       */
     function getNeededColumns($sch_abbr, $session = '')
     {
-        $scoreSettings = $this->getScoreSettings($sch_abbr,$session);
+        $scoreSettings = $this->getScoreSettings($sch_abbr, $session);
         $columns = [];
         if ($scoreSettings['fa'] > 0) {
             $columns[] = 'fa';
@@ -429,5 +429,34 @@ class Subject
     function updateCompSubReg($stdId, $complete = true)
     {
         $this->_db->query('update student set sub_reg_comp=? where std_id = ?', [$complete, $stdId]);
+    }
+
+    public static function add_scheme($sub_id, $title, $scheme, $term, $order)
+    {
+        $db = DB::get_instance();
+        $db->insert('scheme_of_work', ['subject_id' => $sub_id, 'title' => $title, 'scheme' => $scheme, 'term' => $term, 'scheme_order' => $order]);
+    }
+
+    public static function edit_scheme($scheme_id, $title, $scheme, $term, $order)
+    {
+        $db = DB::get_instance();
+        $db->update('scheme_of_work', ['title' => $title, 'scheme' => $scheme, 'term' => $term, 'scheme_order' => $order], "id = $scheme_id");
+    }
+
+    public static function delete_scheme($scheme_id)
+    {
+        $db = DB::get_instance();
+        $db->delete('scheme_of_work', "id=$scheme_id");
+    }
+
+    public static function get_scheme($scheme_id, $term)
+    {
+        $db = DB::get_instance();
+        return $db->get('scheme_of_work', '*', "subject_id = $scheme_id and term = '$term'", 'scheme_order');
+    }
+    public static function get_schemes($sub_id, $term)
+    {
+        $db = DB::get_instance();
+        return $db->select('scheme_of_work', '*', "subject_id = $sub_id and term = '$term'", 'scheme_order');
     }
 }
