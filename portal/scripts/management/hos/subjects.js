@@ -1,13 +1,11 @@
+var table = $("#subjectsTable").DataTable(dataTableOptions);
 function saveSubject() {
   getPostPage("subjectForm", "management/hos/add_subject.php");
 }
 
-$(document).ready(function () {
-  $("#subjectsTable").DataTable(dataTableOptions);
-  if ($(".js-example-basic-single").length) {
-      $(".js-example-basic-single").select2();
-  }
-});
+if ($(".js-example-basic-single").length) {
+  $(".js-example-basic-single").select2();
+}
 
 
 

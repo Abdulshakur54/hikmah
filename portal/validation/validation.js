@@ -1,4 +1,4 @@
-var msgElement = "";
+var msgElement = "block";
 var defaultOptions = {
   validateOnSubmit: false,
   display: "block",

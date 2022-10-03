@@ -1,3 +1,4 @@
+var table = $("#rolesTable").DataTable(dataTableOptions);
 function saveRole(op) {
   const role = _("role").value;
   const roleId = _("role_id").value;
@@ -47,18 +48,17 @@ async function deleteRole(roleId) {
     //ld_stopLoading("deleteBtn");
     const rsp = JSON.parse(xmlhttp.responseText);
      _("token").value = rsp.token;
-     _("row" + roleId).style.display = "none";
     if (rsp.status != 204) {
       swalNotifyDismiss(rsp.message, "error");
     } else {
+      table
+        .row("#row" + roleId)
+        .remove()
+        .draw();
       swalNotifyDismiss(rsp.message, "success");
     }
   }
 }
-
- $(document).ready(function () {
-   $("#rolesTable").DataTable(dataTableOptions);
- });
 
 
 

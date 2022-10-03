@@ -1,13 +1,11 @@
+var table = $("#classesTable").DataTable(dataTableOptions);
 function saveClass() {
   getPostPage("classForm", "management/hos/add_class.php");
 }
 
-$(document).ready(function () {
-  $("#classesTable").DataTable(dataTableOptions);
-  if ($(".js-example-basic-single").length) {
-    $(".js-example-basic-single").select2();
-  }
-});
+if ($(".js-example-basic-single").length) {
+  $(".js-example-basic-single").select2();
+}
 
 async function deleteClass(id) {
   let token = _("token");
@@ -31,8 +29,10 @@ async function deleteClass(id) {
     let rsp = JSON.parse(xmlhttp.responseText);
     token.value = rsp.token;
     if (rsp.status === 204) {
-      let tableRow = _("row" + id);
-      tableBody.removeChild(tableRow);
+      table
+        .row()
+        .remove("#row" + id)
+        .draw();
       swalNotifyDismiss("Successfully deleted class", "success");
     } else {
       swalNotifyDismiss("Unable to delete class", "error");

@@ -269,6 +269,7 @@ class DB
 		if ($limit !== 0) {
 			$sql .= ' limit ' . $limit;
 		}
+	
 		$this->query($sql);
 		if ($this->row_count() > 0) {
 			return $this->get_result();

@@ -437,10 +437,10 @@ class Subject
         $db->insert('scheme_of_work', ['subject_id' => $sub_id, 'title' => $title, 'scheme' => $scheme, 'term' => $term, 'scheme_order' => $order]);
     }
 
-    public static function edit_scheme($scheme_id, $title, $scheme, $term, $order)
+    public static function edit_scheme($scheme_id, $title, $scheme, $order)
     {
         $db = DB::get_instance();
-        $db->update('scheme_of_work', ['title' => $title, 'scheme' => $scheme, 'term' => $term, 'scheme_order' => $order], "id = $scheme_id");
+        $db->update('scheme_of_work', ['title' => $title, 'scheme' => $scheme, 'scheme_order' => $order], "id = $scheme_id");
     }
 
     public static function delete_scheme($scheme_id)
@@ -449,10 +449,10 @@ class Subject
         $db->delete('scheme_of_work', "id=$scheme_id");
     }
 
-    public static function get_scheme($scheme_id, $term)
+    public static function get_scheme($scheme_id)
     {
         $db = DB::get_instance();
-        return $db->get('scheme_of_work', '*', "subject_id = $scheme_id and term = '$term'", 'scheme_order');
+        return $db->get('scheme_of_work', '*', "id = $scheme_id", 'scheme_order');
     }
     public static function get_schemes($sub_id, $term)
     {

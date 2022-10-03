@@ -101,33 +101,33 @@ $title = $subName . ' ' . School::getLevName($sch_abbr, $subLevel) . $subClass .
                         if ($faSet) {
                             $col = $currTerm . '_fa';
                             $scr = $score->$col;
-                            $tr .= '<td class="p-1" id="td_fa_' . $score->id . '"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['fa'] . '" value="' . $scr . '" onchange="update(' . $score->id . ')" id="fa_' . $score->id . '" title="FA" /></td>';
+                            $tr .= '<td class="p-1" id="td_fa_' . $score->id . '"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['fa'] . '" value="' . $scr . '" onchange="update(' . $score->id . ',this)" id="fa_' . $score->id . '"/></td>';
                         }
                         if ($saSet) {
                             $col = $currTerm . '_sa';
                             $scr = $score->$col;
-                            $tr .= '<td class="p-1"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['sa'] . '" value="' . $scr . '" onchange="update(' . $score->id . ')" id="sa_' . $score->id . '" /></td>';
+                            $tr .= '<td class="p-1" id="td_sa_' . $score->id . '"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['sa'] . '" value="' . $scr . '" onchange="update(' . $score->id . ',this)" id="sa_' . $score->id . '" /></td>';
                         }
                         if ($ftSet) {
                             $col = $currTerm . '_ft';
                             $scr = $score->$col;
-                            $tr .= '<td class="p-1"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['ft'] . '" value="' . $scr . '" onchange="update(' . $score->id . ')" id="ft_' . $score->id . '" /></td>';
+                            $tr .= '<td class="p-1" id="td_ft_' . $score->id . '"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['ft'] . '" value="' . $scr . '" onchange="update(' . $score->id . ',this)" id="ft_' . $score->id . '" /></td>';
                         }
                         if ($stSet) {
                             $col = $currTerm . '_st';
                             $scr = $score->$col;
-                            $tr .= '<td class="p-1"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['st'] . '" value="' . $scr . '" onchange="update(' . $score->id . ')" id="st_' . $score->id . '" /></td>';
+                            $tr .= '<td class="p-1" id="td_st_' . $score->id . '"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['st'] . '" value="' . $scr . '" onchange="update(' . $score->id . ',this)" id="st_' . $score->id . '" /></td>';
                         }
                         if ($proSet) {
                            
                             $col = $currTerm . '_pro';
                             $scr = $score->$col;
-                            $tr .= '<td class="p-1"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['pro'] . '" value="' . $scr . '" onchange="update(' . $score->id . ')" id="pro_' . $score->id . '" /></td>';
+                            $tr .= '<td class="p-1" id="td_pro_' . $score->id . '"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['pro'] . '" value="' . $scr . '" onchange="update(' . $score->id . ',this)" id="pro_' . $score->id . '" /></td>';
                         }
                         if ($examSet) {
                             $col = $currTerm . '_ex';
                             $scr = $score->$col;
-                            $tr .= '<td class="p-1"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['exam'] . '" value="' . $scr . '" onchange="update(' . $score->id . ')" id="ex_' . $score->id . '" /></td>';
+                            $tr .= '<td class="p-1" id="td_ex_' . $score->id . '"><input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="' . $scoreSettings['exam'] . '" value="' . $scr . '" onchange="update(' . $score->id . ',this)" id="ex_' . $score->id . '" /></td>';
                         }
                         $tr .= '</tr>';
                         echo $tr;
@@ -164,6 +164,3 @@ if (!empty($msg)) {
 }
 ?>
 <script src="scripts/staff/scores.js"></script>
-<script>
-    validate('scoresForm');
-</script>

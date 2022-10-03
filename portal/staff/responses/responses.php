@@ -94,7 +94,7 @@ if (Input::submitted()) {
                         }
                         $genMsg = 'Changes has been successfully updated';
                         Session::set_flash('post_method_success_message', $genMsg);
-                        echo response(201);
+                        echo response(201,$genMsg);
                     } else {
                         $genMsg = '<div class="failure">Problem encountered while trying to save changes</div>';
                         echo response(400, $genMsg);
@@ -102,6 +102,55 @@ if (Input::submitted()) {
                 }
             }
             break;
+        case 'edit_scheme':
+            $title = Utility::escape(Input::get('title'));
+            $scheme = trim(Utility::escape(Input::get('scheme')));
+            $scheme_id = Utility::escape(Input::get('scheme_id'));
+            $scheme_order = Utility::escape(Input::get('order'));
+            $rules = [
+                'title' => ['name' => 'Title', 'required' => true],
+                'scheme' => ['name' => 'Scheme', 'required' => true],
+                'order' => ['name' => 'Order', 'required' => true],
+            ];
+            $val = new Validation();
+            if (!$val->check($rules)) {
+                echo response(406, implode('<br />', $val->errors()));
+                exit();
+            }
+
+            Subject::edit_scheme($scheme_id,$title,$scheme,$scheme_order);
+             echo response(201,'Changes have been saved');
+            break;
+
+        case 'add_scheme':
+            $term = Utility::escape(Input::get('term'));
+            $title = Utility::escape(Input::get('title'));
+            $scheme = trim(Utility::escape(Input::get('scheme')));
+            $scheme_id = Utility::escape(Input::get('scheme_id'));
+            $scheme_order = Utility::escape(Input::get('order'));
+            $sub_id = Utility::escape(Input::get('subid'));
+            $rules = [
+                'term' => ['name' => 'Term', 'required' => true],
+                'title' => ['name' => 'Title', 'required' => true],
+                'scheme' => ['name' => 'Scheme', 'required' => true],
+                'order' => ['name' => 'Order', 'required' => true],
+            ];
+            $val = new Validation();
+            if (!$val->check($rules)) {
+                echo response(406, implode('<br />', $val->errors()));
+                exit();
+            }
+
+           Subject::add_scheme($sub_id,$title,$scheme,$term,$scheme_order);
+            echo response(201, 'Scheme has been added');
+            break;
+        case 'delete_scheme':
+            $scheme_id = Utility::escape(Input::get('scheme_id'));
+            Subject::delete_scheme($scheme_id);
+            echo response(204, 'menu was successfully deleted');
+            break;
+        
+        
 
     }
 } else {

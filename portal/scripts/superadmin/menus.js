@@ -1,3 +1,4 @@
+var table = $("#menusTable").DataTable(dataTableOptions);;
 function saveMenu(op) {
   const menu = _("menu").value;
   const display_name = _('display_name').value;
@@ -38,8 +39,8 @@ function saveMenu(op) {
 
 async function deleteMenu(menuId) {
   const token = _("token");
-  ld_startLoading("delete_" + menuId, "ld_loader_delete_" + menuId);
   if (await swalConfirm("Confirm you want to delete menu", "warning")) {
+     ld_startLoading("delete_" + menuId, "ld_loader_delete_" + menuId);
     ajaxRequest(
       "superadmin/responses/responses.php",
       handleDeleteMenuReq,
@@ -51,18 +52,18 @@ async function deleteMenu(menuId) {
     ld_stopLoading("delete_" + menuId, "ld_loader_delete_" + menuId);
     const rsp = JSON.parse(xmlhttp.responseText);
     _("token").value = rsp.token;
-    _("row" + menuId).style.display = "none";
     if (rsp.status != 204) {
       swalNotifyDismiss(rsp.message, "error");
     } else {
+      table
+        .row("#row" + menuId)
+        .remove()
+        .draw();
       swalNotifyDismiss(rsp.message, "success");
     }
   }
 }
 
-$(document).ready(function () {
-  $("#menusTable").DataTable(dataTableOptions);
-});
 
 function setChecked(event, menuId, type) {
   const checked = event.checked ? 1 : 0;
