@@ -82,6 +82,7 @@ Request Categories
             switch($category){
                 case 1: 
                     $title = 'Salary Confirmation';
+                    break;
             }
                     
             if($requery){

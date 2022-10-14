@@ -43,31 +43,27 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             $sqlStdString = "'" . str_replace(",", "','", $stdIdsString) . "'";
             $db->query('update student3 inner join student on student3.std_id = student.std_id set student3.class_id = ?, student.class_id=? where student3.std_id in(' . $sqlStdString . ')', [$classId, $classId]);
             //populate student_psy table
-            if ($hos->populateStdPsy($classId, $sqlStdString)) {
-                //notify the students
-                $cD = $hos->getClassDetail($classId);
-                $level = (int)$cD->level;
-                $teaId = Utility::escape($cD->teacher_id);
+            //notify the students
+            $cD = $hos->getClassDetail($classId);
+            $level = (int)$cD->level;
+            $teaId = Utility::escape($cD->teacher_id);
 
-                $notMsg = '<p>You have been Admitted into ' . School::getLevelName(Utility::escape($cD->sch_abbr), $level) . ' ' . Utility::escape($cD->class) . '.</p>';
-                if (!empty($teaId)) { //this ensures that the class already has a Form Teacher so as to avoid error
-                    $teaDetail = $hos->getTeacherDetail($teaId);
-                    $teaName = Utility::escape($teaDetail->title) . '. ' . Utility::formatName(Utility::escape($teaDetail->fname), Utility::escape($teaDetail->oname), Utility::escape($teaDetail->lname));
-                    $notMsg .= '.</p><p>Your Form Teacher is ' . $teaName . '. <a href="' . $url->to('profile.php?id=' . $teaId, 0) . '">View Form Teacher\'s Profile</a></p>';
-                } 
-
-                $alert = new Alert(true);
-                if ($rank == 5) {
-                    $alert->sendToRank(9, "Class Assignment", $notMsg, "std_id in(" . $sqlStdString . ")", false);
-                }
-
-                if ($rank == 17) { //when mudir are the HOS
-                    $alert->sendToRank(10, "Class Assignment", $notMsg, "std_id in(" . $sqlStdString . ")", false);
-                }
-                $msg = '<div class="success">Assignment was successful</div>';
-            } else {
-                $msg .= '<div class="failure">Assignment not successful, something went wrong</div>';
+            $notMsg = '<p>You have been Admitted into ' . School::getLevelName(Utility::escape($cD->sch_abbr), $level) . ' ' . Utility::escape($cD->class) . '.</p>';
+            if (!empty($teaId)) { //this ensures that the class already has a Form Teacher so as to avoid error
+                $teaDetail = $hos->getTeacherDetail($teaId);
+                $teaName = Utility::escape($teaDetail->title) . '. ' . Utility::formatName(Utility::escape($teaDetail->fname), Utility::escape($teaDetail->oname), Utility::escape($teaDetail->lname));
+                $notMsg .= '.</p><p>Your Form Teacher is ' . $teaName . '. <a href="' . $url->to('profile.php?id=' . $teaId, 0) . '">View Form Teacher\'s Profile</a></p>';
             }
+
+            $alert = new Alert(true);
+            if ($rank == 5) {
+                $alert->sendToRank(9, "Class Assignment", $notMsg, "std_id in(" . $sqlStdString . ")", false);
+            }
+
+            if ($rank == 17) { //when mudir are the HOS
+                $alert->sendToRank(10, "Class Assignment", $notMsg, "std_id in(" . $sqlStdString . ")", false);
+            }
+            $msg = '<div class="success">Assignment was successful</div>';
         }
     }
 }

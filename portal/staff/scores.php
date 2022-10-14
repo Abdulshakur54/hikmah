@@ -9,7 +9,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory as IOObj;
 $msg = '';
 $utils = new Utils();
 $table = $utils->getFormatedSession($sch_abbr) . '_score';
-$scoreSettings = $staff->getScoreSettings($sch_abbr);
+$scoreSettings = Subject::getScoreSettings($sch_abbr);
 $subject = new Subject($subId, $table, $scoreSettings);
 $scores = $subject->getScores($table, $currTerm);
 //initialize some settings to false to help determine if it would be displayed on the screen

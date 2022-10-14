@@ -3,14 +3,13 @@ class Utility
 {
 
     //this method sanitizes a string value and returns it
-    public static function escape($input):string
+    public static function escape($input): string
     {
-        if(is_null($input)){
+        if (is_null($input)) {
             return '';
-        }else{
+        } else {
             return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
         }
-       
     }
 
 
@@ -62,10 +61,10 @@ class Utility
     }
 
     //this method helps format name in the form 'Abdulshakur J. Muhammed'
-    public static function formatName($fname, $oname, $lname,$shorten_other_name =true)
+    public static function formatName($fname, $oname, $lname, $shorten_other_name = true)
     {
         if (!empty($oname)) {
-            if($shorten_other_name){
+            if ($shorten_other_name) {
                 return ucwords($fname . ' ' . substr($oname, 0, 1) . '. ' . $lname);
             }
             return ucwords($fname . ' ' . $oname . ' ' . $lname);
@@ -76,7 +75,7 @@ class Utility
     public static function numSuffix(string $char): string
     {
         $num = (int)$char;
-        if(floor($num/10) == 1){
+        if (floor($num / 10) == 1) {
             return 'th';
         }
         $lastLetter = substr($char, -1, 1);
@@ -169,27 +168,27 @@ class Utility
         $difference = $current_time - $past_time;
         $difference_in_days = (int)floor($difference / (60 * 60 * 24));
         $difference_for_hours = $difference - $difference_in_days * 60 * 60 * 24;
-        $hours_remaining = (int)floor(($difference_for_hours) / (60*60));
-        $minutes_remaining = (int)floor(($difference_for_hours - $hours_remaining * 60 * 60)/60);
+        $hours_remaining = (int)floor(($difference_for_hours) / (60 * 60));
+        $minutes_remaining = (int)floor(($difference_for_hours - $hours_remaining * 60 * 60) / 60);
         $count = 0;
         $output_string = '';
-        if($difference_in_days > 29){
-            if($difference_in_days == 30){
-            $output_string = 'A month';
-            }else{
+        if ($difference_in_days > 29) {
+            if ($difference_in_days == 30) {
+                $output_string = 'A month';
+            } else {
                 $month = (int) floor($difference_in_days / 30);
-                $output_string = $month.' month ';
-                if($month > 1){
-                    $output_string = $month . ' months '; 
+                $output_string = $month . ' month ';
+                if ($month > 1) {
+                    $output_string = $month . ' months ';
                 }
                 $rem_days = $difference_in_days - $month * 30;
-                $output_string.= $rem_days.' day';
-                if($rem_days > 1){
+                $output_string .= $rem_days . ' day';
+                if ($rem_days > 1) {
                     $output_string .= 's';
                 }
             }
-            return $output_string.' ago';
-        }else if($difference_in_days > 0){
+            return $output_string . ' ago';
+        } else if ($difference_in_days > 0) {
             $output_string .= $difference_in_days . ' day';
             if ($difference_in_days > 1) {
                 $output_string .= 's';
@@ -197,14 +196,14 @@ class Utility
             $count++;
         }
 
-        if($hours_remaining > 0){
-            if($count == 1){
-                $output_string.= ' '.$hours_remaining.'hr';
-                if($hours_remaining > 1){
-                    $output_string.='s';
+        if ($hours_remaining > 0) {
+            if ($count == 1) {
+                $output_string .= ' ' . $hours_remaining . 'hr';
+                if ($hours_remaining > 1) {
+                    $output_string .= 's';
                 }
                 return $output_string . ' ago';
-            }else{
+            } else {
                 $output_string = $hours_remaining . 'hr';
                 if ($hours_remaining > 1) {
                     $output_string .= 's';
@@ -213,23 +212,22 @@ class Utility
             }
         }
 
-        if($minutes_remaining > 0){
-            if($count == 1){
-                $output_string.= ' '.$minutes_remaining.'min';
-                if($minutes_remaining > 1){
-                    $output_string.='s';
+        if ($minutes_remaining > 0) {
+            if ($count == 1) {
+                $output_string .= ' ' . $minutes_remaining . 'min';
+                if ($minutes_remaining > 1) {
+                    $output_string .= 's';
                 }
-            }else{
+            } else {
                 $output_string = $minutes_remaining . 'min';
                 if ($minutes_remaining > 1) {
                     $output_string .= 's';
                 }
             }
             return $output_string . ' ago';
-        }else{
+        } else {
             return 'just now';
         }
-
     }
 
     public static function altValue($val, $altVal)
@@ -270,6 +268,25 @@ class Utility
         return $sum;
     }
 
+    public static function getColumnDisplayName(string $col):string
+    {
+        switch ($col) {
+            case 'fa':
+                return 'First Assignment';
+            case 'sa':
+                return 'Second Assignment';
+            case 'ft':
+                return 'First Test';
+            case 'st':
+                return 'Second Test';
+            case 'pro':
+                return 'Project';
+            case 'ex':
+            case 'exam':
+                return 'Exam';
+        }
+    }
+
     public static function convertToArray(array $result, $columns): array
     {
         $res = [];
@@ -289,8 +306,9 @@ class Utility
         return $res;
     }
 
-    public static function format_student_id(string $student_id){
-        $arr = explode('/',$student_id);
-        return implode('',$arr);
+    public static function format_student_id(string $student_id)
+    {
+        $arr = explode('/', $student_id);
+        return implode('', $arr);
     }
 }

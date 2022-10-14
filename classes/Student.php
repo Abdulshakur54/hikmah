@@ -74,4 +74,20 @@ class Student extends User
         $this->_db->query('select count(id) as counter from subject where class_id = ?', [$classId]);
         return ($this->_db->one_result()->counter > 0) ? true : false;
     }
+
+    public static function getStudentsWithComments($classId, $term, $std_id = '')
+    {
+        $db = DB::get_instance();
+        if ($std_id === '') {
+           $db->query('select student.std_id,student.fname,student.lname,student.oname, student_psy.' . $term . '_com, student_psy.' . $term . '_p_com from student inner join student_psy on student_psy.std_id = student.std_id where student.class_id=?', [$classId]);
+        } else {
+
+           $db->query('select student.std_id,student.fname,student.lname,student.oname, student_psy.' . $term . '_com, student_psy.' . $term . '_p_com from student inner join student_psy on student_psy.std_id = student.std_id where student.class_id=? and student.std_id=?', [$classId, $std_id]);
+        }
+        if ($db->row_count() > 0) {
+            return$db->get_result();
+        }
+        return [];
+    }
+
 }

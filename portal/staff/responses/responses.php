@@ -12,7 +12,7 @@ $message = '';
 $status = 400;
 $data = [];
 $db = DB::get_instance();
-$staff= new Staff();
+$staff = new Staff();
 $url = new Url();
 if (Input::submitted()) {
     $op = Input::get('op');
@@ -69,12 +69,7 @@ if (Input::submitted()) {
                     //update schedule
                     if ($staff->updateSchedule($classId, $punc, $hon, $dhw, $rap, $sot, $rwp, $ls, $atw, $ho, $car, $con, $wi, $ob, $hea, $vs, $pig, $pis, $ac, $pama, $ms, $a1, $b2, $b3, $c4, $c5, $c6, $d7, $e8, $f9, $height_beg, $height_end, $weight_beg, $weight_end, $signatureName)) {
                         $file->move('../uploads/signatures/' . $signatureName); //move picture to the destination folder
-                        //update psycometry for students
-                        $stdIds = $staff->getStudentsIds($classId);
-                        if (!empty($stdIds)) {
-                            $stdIdsString = "'" . implode("','", $stdIds) . "'";
-                            $staff->populateStdPsy($classId, $stdIdsString); //update psycometry
-                        }
+
                         $genMsg = 'Changes has been successfully updated';
                         Session::set_flash('post_method_success_message', $genMsg);
                         echo response(201);
@@ -82,19 +77,13 @@ if (Input::submitted()) {
                         $genMsg = '<div class="failure">Problem encountered while trying to save changes</div>';
                         echo response(400, $genMsg);
                     }
-
                 } else {
                     //update schedule
                     if ($staff->updateSchedule($classId, $punc, $hon, $dhw, $rap, $sot, $rwp, $ls, $atw, $ho, $car, $con, $wi, $ob, $hea, $vs, $pig, $pis, $ac, $pama, $ms, $a1, $b2, $b3, $c4, $c5, $c6, $d7, $e8, $f9, $height_beg, $height_end, $weight_beg, $weight_end)) {
-                        //update psycometry for students
-                        $stdIds = $staff->getStudentsIds($classId);
-                        if (!empty($stdIds)) {
-                            $stdIdsString = "'" . implode("','", $stdIds) . "'";
-                            $staff->populateStdPsy($classId, $stdIdsString); //update psycometry
-                        }
+
                         $genMsg = 'Changes has been successfully updated';
                         Session::set_flash('post_method_success_message', $genMsg);
-                        echo response(201,$genMsg);
+                        echo response(201);
                     } else {
                         $genMsg = '<div class="failure">Problem encountered while trying to save changes</div>';
                         echo response(400, $genMsg);
@@ -118,8 +107,8 @@ if (Input::submitted()) {
                 exit();
             }
 
-            Subject::edit_scheme($scheme_id,$title,$scheme,$scheme_order);
-             echo response(201,'Changes have been saved');
+            Subject::edit_scheme($scheme_id, $title, $scheme, $scheme_order);
+            echo response(201, 'Changes have been saved');
             break;
 
         case 'add_scheme':
@@ -141,7 +130,7 @@ if (Input::submitted()) {
                 exit();
             }
 
-           Subject::add_scheme($sub_id,$title,$scheme,$term,$scheme_order);
+            Subject::add_scheme($sub_id, $title, $scheme, $term, $scheme_order);
             echo response(201, 'Scheme has been added');
             break;
         case 'delete_scheme':
@@ -149,9 +138,44 @@ if (Input::submitted()) {
             Subject::delete_scheme($scheme_id);
             echo response(204, 'menu was successfully deleted');
             break;
-        
-        
+        case 'update_student_psy':
+            $current_term = Utility::escape(Input::get('current_term'));
+            $std_id = Utility::escape(Input::get('std_id'));
+            $values = [];
+            for ($i = 1; $i <= 20; $i++) {
+                $values[$current_term . '_psy' . $i] = Utility::escape(Input::get('psy' . $i));
+            }
+            $values[$current_term . '_height_beg'] = Utility::escape(Input::get('height_beg'));
+            $values[$current_term . '_height_end'] = Utility::escape(Input::get('height_end'));
+            $values[$current_term . '_weight_beg'] = Utility::escape(Input::get('weight_beg'));
+            $values[$current_term . '_weight_end'] = Utility::escape(Input::get('weight_end'));
+            $values[$current_term . '_com'] = Utility::escape(Input::get('comment'));
 
+            $staff->updateStdPsy($std_id, $values);
+            $genMsg = 'Changes has been successfully updated';
+            Session::set_flash('post_method_success_message', $genMsg);
+            echo response(201);
+            break;
+        case 'update_comment':
+            $updated_data = json_decode(Input::get('updated_data'), true);
+            $term = Utility::escape(Input::get('term'));
+            $start = false;
+            foreach ($updated_data as $upd_data) {
+                if ($start) {
+                    $db->requery([Utility::escape($upd_data[1]), Utility::escape($upd_data[0])]);
+                } else {
+                    $db->query('update student_psy set ' . $term . '_com =? where std_id = ?', [Utility::escape($upd_data[1]), Utility::escape($upd_data[0])]);
+                    $start = true;
+                }
+            }
+            echo response(201, 'Changes have been saved');
+            break;
+        case 'view_results':
+            $classId = Utility::escape(Input::get('class_id'));
+            $school = Utility::escape(Input::get('school'));
+            $students = Result::get_ids($classId, $school);
+            echo response(200, '', $students);
+            break;
     }
 } else {
     echo response(400, 'Invalid request method');

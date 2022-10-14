@@ -47,56 +47,52 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         $utils = new Utils();
         $formSession = $utils->getFormatedSession($sch_abbr);
         $db->query('update ' . $formSession . '_score set class_id =? where std_id in(' . $sqlStdString . ')', [$classIdTo]);
-        if ($hos->populateStdPsy($classIdTo, $sqlStdString)) {
-            //notify the students
-            $level = (int)$cDTo->level;
-            $teaId = Utility::escape($cDTo->teacher_id);
-            if (!empty($teaId)) { //this ensures that the class already has a Form Teacher so as to avoid error
-                $teaDetail = $hos->getTeacherDetail($teaId);
-                $teaName = Utility::escape($teaDetail->title) . '. ' . Utility::formatName(Utility::escape($teaDetail->fname), Utility::escape($teaDetail->oname), Utility::escape($teaDetail->lname));
-                $notMsg = '<p>You have been transfered to ' . School::getLevelName(Utility::escape($cD->sch_abbr), $level) . ' ' . Utility::escape($cDTo->class) .
-                    '.</p><p>Your Form Teacher is now ' . $teaName . '. <a href="' . $url->to('profile.php?staffId=' . $teaId, 2) . '">View Form Teacher\'s Profile</a></p>';
-            } else {
-                $notMsg = '<p>You have been transferred to ' . School::getLevelName(Utility::escape($cDTo->sch_abbr), $level) . ' ' . Utility::escape($cDTo->class) . '.</p>';
-            }
-
-            //ensures the student have registered the necessary subjects for their class
-            $minNoSub = (int)$cDTo->nos;
-            $stdIds = explode(',', $stdIdsString);
-            $db2 = DB::get_instance2();
-            $res = $db->get_result();
-            $stdIdsWithMinNoSub = [];
-            $start = false;
-           
-            foreach ($stdIds as $stdId){
-                if(!$start){
-                    $db->query('select count(id) as counter from '.$formSession.'_score where std_id=?',[$stdId]);
-                    $start = true;
-                }else{
-                    $db->requery([$stdId]);
-                }
-                $no_of_sub_registered = $db->one_result()->counter;
-                if ($no_of_sub_registered < $minNoSub) {
-                    $stdIdsWithMinNoSub[] = $stdId;
-                }
-            }
-            //update student table for those that need to complete subject registration
-            $stdIdsWithMinNoSubString = "'" . implode("','", $stdIdsWithMinNoSub) . "'"; //formatting so it can be used in query
-            $db->query('update student set sub_reg_comp = false where id in(' . $stdIdsWithMinNoSubString . ')');
-            //notify all students that have been transferred
-            $alert = new Alert(true);
-            if ($rank == 5) {
-                $alert->sendToRank(9, "Class Transfer", $notMsg, "std_id in(" . $sqlStdString . ")", false);
-            }
-
-            if ($rank == 17) { //when mudir are the HOS
-                $alert->sendToRank(10, "Class Transfer", $notMsg, "std_id in(" . $sqlStdString . ")", false);
-            }
-            $msg = '<div class="success">Transfer was successful</div>';
-            Session::set_flash('message', $msg);
+        //notify the students
+        $level = (int)$cDTo->level;
+        $teaId = Utility::escape($cDTo->teacher_id);
+        if (!empty($teaId)) { //this ensures that the class already has a Form Teacher so as to avoid error
+            $teaDetail = $hos->getTeacherDetail($teaId);
+            $teaName = Utility::escape($teaDetail->title) . '. ' . Utility::formatName(Utility::escape($teaDetail->fname), Utility::escape($teaDetail->oname), Utility::escape($teaDetail->lname));
+            $notMsg = '<p>You have been transfered to ' . School::getLevelName(Utility::escape($cD->sch_abbr), $level) . ' ' . Utility::escape($cDTo->class) .
+                '.</p><p>Your Form Teacher is now ' . $teaName . '. <a href="' . $url->to('profile.php?staffId=' . $teaId, 2) . '">View Form Teacher\'s Profile</a></p>';
         } else {
-            $msg .= '<div class="failure">Transfer not unsuccessful, something went wrong</div>';
+            $notMsg = '<p>You have been transferred to ' . School::getLevelName(Utility::escape($cDTo->sch_abbr), $level) . ' ' . Utility::escape($cDTo->class) . '.</p>';
         }
+
+        //ensures the student have registered the necessary subjects for their class
+        $minNoSub = (int)$cDTo->nos;
+        $stdIds = explode(',', $stdIdsString);
+        $db2 = DB::get_instance2();
+        $res = $db->get_result();
+        $stdIdsWithMinNoSub = [];
+        $start = false;
+
+        foreach ($stdIds as $stdId) {
+            if (!$start) {
+                $db->query('select count(id) as counter from ' . $formSession . '_score where std_id=?', [$stdId]);
+                $start = true;
+            } else {
+                $db->requery([$stdId]);
+            }
+            $no_of_sub_registered = $db->one_result()->counter;
+            if ($no_of_sub_registered < $minNoSub) {
+                $stdIdsWithMinNoSub[] = $stdId;
+            }
+        }
+        //update student table for those that need to complete subject registration
+        $stdIdsWithMinNoSubString = "'" . implode("','", $stdIdsWithMinNoSub) . "'"; //formatting so it can be used in query
+        $db->query('update student set sub_reg_comp = false where id in(' . $stdIdsWithMinNoSubString . ')');
+        //notify all students that have been transferred
+        $alert = new Alert(true);
+        if ($rank == 5) {
+            $alert->sendToRank(9, "Class Transfer", $notMsg, "std_id in(" . $sqlStdString . ")", false);
+        }
+
+        if ($rank == 17) { //when mudir are the HOS
+            $alert->sendToRank(10, "Class Transfer", $notMsg, "std_id in(" . $sqlStdString . ")", false);
+        }
+        $msg = '<div class="success">Transfer was successful</div>';
+        Session::set_flash('message', $msg);
     }
 
     Session::set_flash('message', $msg);

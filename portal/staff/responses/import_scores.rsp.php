@@ -39,7 +39,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
     $msg = '';
     $utils = new Utils();
     $table = $utils->getFormatedSession($sch_abbr) . '_score';
-    $scoreSettings = $staff->getScoreSettings($sch_abbr);
+    $scoreSettings = Subject::getScoreSettings($sch_abbr);
     $subject = new Subject($subId, $table, $scoreSettings);
 
     $val = new Validation();

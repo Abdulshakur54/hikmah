@@ -100,7 +100,7 @@ $db = DB::get_instance();
         <div class="card-body">
             <h4 class="card-title text-primary">Set E-Exam for Students</h4>
             <?php
-            $scoreSettings = $staff->getScoreSettings($sch_abbr);
+            $scoreSettings = Subject::getScoreSettings($sch_abbr);
 
             ?>
             <form class="forms-sample" id="examForm" onsubmit="return false" novalidate method="post" action="<?php echo Utility::myself() ?>">

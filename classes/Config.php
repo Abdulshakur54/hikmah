@@ -96,6 +96,11 @@ $GLOBALS['configuration'] = array(
 		'subject_teacher_role'=>23,
 		'class_teacher_role'=>24,
 		'staff_role'=>6
+	],
+	'sms'=>[
+'email'=>'mabdulshakur54@gmail.com',
+'password'=>'190587Ab',
+'sender_name'=>'HIKMAH',
 	]
 );
 

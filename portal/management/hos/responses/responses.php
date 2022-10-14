@@ -98,7 +98,7 @@ if (Input::submitted()) {
                             }
 
                             $genMsg = 'Changes has been successfully updated';
-                            Session::set_flash('post_method_success_message',$genMsg);
+                            Session::set_flash('post_method_success_message', $genMsg);
                             echo response(201);
                         } else {
                             $genMsg = '<div class="failure">Problem encountered while trying to save changes</div>';
@@ -121,6 +121,26 @@ if (Input::submitted()) {
                     }
                 }
             }
+            break;
+        case 'update_comment':
+            $updated_data = json_decode(Input::get('updated_data'), true);
+            $term = Utility::escape(Input::get('term'));
+            $start = false;
+            foreach ($updated_data as $upd_data) {
+                if ($start) {
+                    $db->requery([Utility::escape($upd_data[1]), Utility::escape($upd_data[0])]);
+                } else {
+                    $db->query('update student_psy set ' . $term . '_p_com =? where std_id = ?', [Utility::escape($upd_data[1]), Utility::escape($upd_data[0])]);
+                    $start = true;
+                }
+            }
+            echo response(201, 'Changes have been saved');
+            break;
+        case 'view_results':
+            $classId = Utility::escape(Input::get('class_id'));
+            $school = Utility::escape(Input::get('school'));
+            $students = Result::get_ids($classId,$school);
+            echo response(200, '',$students);
             break;
     }
 } else {

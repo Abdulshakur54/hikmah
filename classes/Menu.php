@@ -149,51 +149,37 @@ class Menu
             }
         }
 
-        //for subject teachers and class teacher for hikmah
-        $subject_teacher_role = Config::get('hikmah/subject_teacher_role');
-        $class_teacher_role = Config::get('hikmah/class_teacher_role');
-        $users_menu = Config::get('users/menu_table');
-        $role_menu_table = Config::get('menu/role_menu_table');
-        if ($role_id == $class_teacher_role) { //user is a staff
+        $class_teacher_role_id = Config::get('hikmah/class_teacher_role');
+        $subject_teacher_role_id = Config::get('hikmah/subject_teacher_role');
+
+        //for class teachers
+        if($role_id == $class_teacher_role_id){
             $db->query('select class.teacher_id from class inner join staff on class.teacher_id = staff.staff_id');
-            if ($db->row_count() > 0) { //assign class teacher menus because  user is a class teacher
-                $teacher_ids = $db->get_result();
-                $teacher_menus = $db->select($role_menu_table, 'menu_id', "role_id='$class_teacher_role'");
-                $start = false;
-                foreach ($teacher_ids as $teacher_id) {
-                    foreach ($teacher_menus as $teacher_menu) {
-                        if ($start) {
-                            $db->requery([$teacher_id->teacher_id, $teacher_menu->menu_id]);
-                        } else {
-                            $db->query("insert into $users_menu(user_id,menu_id) values(?,?)", [$teacher_id->teacher_id, $teacher_menu->menu_id]);
-                            $start = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        if ($role_id == $subject_teacher_role) {
-            $db->query('select distinct subject2.teacher_id from subject2 inner join staff on subject2.teacher_id = staff.staff_id');
-            if ($db->row_count() > 0) { //assign subject teacher menus because user is a subject teacher
-                $teacher_ids = $db->get_result();
-                $teacher_menus = $db->select($role_menu_table, 'menu_id', "role_id='$subject_teacher_role'");
-                $start = false;
-                foreach ($teacher_ids as $teacher_id) {
-                    foreach ($teacher_menus as $teacher_menu) {
-                        if ($start) {
-                            $db->requery([$teacher_id->teacher_id, $teacher_menu->menu_id]);
-                        } else {
-                            $db->query("insert into $users_menu(user_id,menu_id) values(?,?)", [$teacher_id->teacher_id, $teacher_menu->menu_id]);
-                            $start = true;
-                        }
+            if ($db->row_count() > 0) {
+                $users = $db->get_result();
+                foreach ($menu__ids as $menu__id) {
+                    $db->query('insert into ' . $users_menu . '(' . $username_column . ',menu_id) values(?,?)', [$users[0]->teacher_id, $menu__id]);
+                    for ($i = 1; $i < $users_count; $i++) {
+                        $db->requery([$users[$i]->teacher_id, $menu__id]);
                     }
                 }
             }
         }
 
 
-        //end of for subject teachers and class teacher for hikmah
+        //for subject teachers
+        if ($role_id == $subject_teacher_role_id) {
+            $db->query('select class.teacher_id from class inner join staff on class.teacher_id = staff.staff_id');
+            $users = $db->get_result();
+            if ($db->row_count() > 0) {
+                foreach ($menu__ids as $menu__id) {
+                    $db->query('insert into ' . $users_menu . '(' . $username_column . ',menu_id) values(?,?)', [$users[0]->teacher_id, $menu__id]);
+                    for ($i = 1; $i < $users_count; $i++) {
+                        $db->requery([$users[$i]->teacher_id, $menu__id]);
+                    }
+                }
+            }
+        }
     }
 
     public static function remove_menu_from_users($role_id, array $menu_ids)
@@ -215,49 +201,42 @@ class Menu
             }
         }
 
+        $class_teacher_role_id = Config::get('hikmah/class_teacher_role');
+        $subject_teacher_role_id = Config::get('hikmah/subject_teacher_role');
 
-        //for subject teachers and class teacher for hikmah
-        $subject_teacher_role = Config::get('hikmah/subject_teacher_role');
-        $class_teacher_role = Config::get('hikmah/class_teacher_role');
-        $users_menu = Config::get('users/menu_table');
-        $role_menu_table = Config::get('menu/role_menu_table');
-        if ($role_id == $class_teacher_role) { //user is a staff
-            $db->query('select class.teacher_id from class inner join staff on class.teacher_id = staff.staff_id');
-            if ($db->row_count() > 0) { //assign class teacher menus because  user is a class teacher
-                $teacher_ids = $db->get_result();
-                $teacher_menus = $menu_ids;
-                $teacher_menus_string = implode(",", $teacher_menus);
-                $start = false;
-                foreach ($teacher_ids as $teacher_id) {
-                    if ($start) {
-                        $db->requery([$teacher_id->teacher_id]);
-                    } else {
-                        $db->query("delete from $users_menu where user_id=? and menu_id in($teacher_menus_string)", [$teacher_id->teacher_id]);
-                    }
-                }
-            }
-        }
-
-        if ($role_id == $subject_teacher_role) {
+        //for class teachers
+        
+        if ($class_teacher_role_id == $role_id) {
             $db->query('select distinct subject2.teacher_id from subject2 inner join staff on subject2.teacher_id = staff.staff_id');
-            if ($db->row_count() > 0) { //assign subject teacher menus because user is a subject teacher
-                $teacher_ids = $db->get_result();
-                $teacher_menus = $db->select($role_menu_table, 'menu_id', "role_id='$subject_teacher_role'");
-                $teacher_menus = Utility::convertToArray($teacher_menus, 'menu_id');
-                $teacher_menus_string = implode(",", $teacher_menus);
-                $start = false;
-                foreach ($teacher_ids as $teacher_id) {
-                    if ($start) {
-                        $db->requery([$teacher_id->teacher_id]);
-                    } else {
-                        $db->query("delete from $users_menu where user_id=? and menu_id in($teacher_menus_string)", [$teacher_id->teacher_id]);
-                    }
+            if ($db->row_count() > 0) {
+                $users = $db->get_result();
+                $users_array = [];
+                foreach ($users as $user) {
+                    $users_array[] = $user->teacher_id;
+                }
+                foreach ($menu_ids as $menu_id) {
+                    $users_string = implode("','", $users_array);
+                    $db->delete($users_menu, 'menu_id = ' . $menu_id . ' and ' . $username_column . ' in(\'' . $users_string . '\')');
                 }
             }
         }
 
+        //for subject teachers
+        if ($subject_teacher_role_id ==$role_id) {
 
-        //end of for subject teachers and class teacher for hikmah
+            $db->query('select distinct subject2.teacher_id from subject2 inner join staff on subject2.teacher_id = staff.staff_id'); 
+            if ($db->row_count() > 0) {
+                $users = $db->get_result();
+                $users_array = [];
+                foreach ($users as $user) {
+                    $users_array[] = $user->teacher_id;
+                }
+                foreach ($menu_ids as $menu_id) {
+                    $users_string = implode("','", $users_array);
+                    $db->delete($users_menu, 'menu_id = ' . $menu_id . ' and ' . $username_column . ' in(\'' . $users_string . '\')');
+                }
+            }
+        }
     }
 
     public static function add_available_menus($user_id, $role_id)

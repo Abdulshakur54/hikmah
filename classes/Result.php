@@ -48,10 +48,38 @@ class Result
     {
         $db = $this->_db2;
         if (!$this->_has_agg_prep_stmt) {
-            $db->query('select student.fname,student.oname,student.lname,student.level,student.sch_abbr,student.picture, school.address,school.phone_contacts,school.email,school.logo,' . $this->_std_psy_table . '.' . $this->_term . '_height_beg,' . $this->_std_psy_table . '.' . $this->_term . '_height_end,' . $this->_std_psy_table . '.' . $this->_term . '_weight_beg,' . $this->_std_psy_table . '.' . $this->_term . '_weight_end,' . $this->_std_psy_table . '.' . $this->_term . '_times_present,' . $this->_std_psy_table . '.' . $this->_term . '_com,' . $this->_std_psy_table . '.' . $this->_term . '_p_com,' . $this->_std_psy_table . '.' . $this->_term . '_psy1,' . $this->_std_psy_table . '.' . $this->_term . '_psy2,' . $this->_std_psy_table . '.' . $this->_term . '_psy3,' . $this->_std_psy_table . '.' . $this->_term . '_psy4,' . $this->_std_psy_table . '.' . $this->_term . '_psy5,' . $this->_std_psy_table . '.' . $this->_term . '_psy6,' . $this->_std_psy_table . '.' . $this->_term . '_psy7,' . $this->_std_psy_table . '.' . $this->_term . '_psy8,' . $this->_std_psy_table . '.' . $this->_term . '_psy9,' . $this->_std_psy_table . '.' . $this->_term . '_psy10,' . $this->_std_psy_table . '.' . $this->_term . '_psy11,' . $this->_std_psy_table . '.' . $this->_term . '_psy12,' . $this->_std_psy_table . '.' . $this->_term . '_psy13,' . $this->_std_psy_table . '.' . $this->_term . '_psy14,' . $this->_std_psy_table . '.' . $this->_term . '_psy15,' . $this->_std_psy_table . '.' . $this->_term . '_psy16,' . $this->_std_psy_table . '.' . $this->_term . '_psy17,' . $this->_std_psy_table . '.' . $this->_term . '_psy18,' . $this->_std_psy_table . '.' . $this->_term . '_psy19,' . $this->_std_psy_table . '.' . $this->_term . '_psy20,' . $this->_class_table . '.class,' . $this->_class_table . '.id as class_id,' . $this->_class_table . '.petname, avg(' . $this->_score_table . '.' . $this->_term . '_tot) as average, sum(' . $this->_score_table . '.' . $this->_term . '_tot) as total,' . $this->_school2_table . '.hijra_session,' . $this->_school2_table . '.' . $this->_term . '_res_date,' . $this->_school2_table . '.' . $this->_term . '_times_opened,' . $this->_school2_table . '.signature as hos_signature,' . $this->_class_psy_table . '.signature as tea_signature from ' . $this->_class_psy_table . ' left join ' . $this->_score_table . ' on ' . $this->_class_psy_table . '.class_id = ' . $this->_score_table . '.class_id inner join ' . $this->_school2_table . ' on ' . $this->_class_psy_table . '.sch_abbr = ' . $this->_school2_table . '.sch_abbr inner join student on student.std_id = ' . $this->_score_table . '.std_id inner join ' . $this->_std_psy_table . ' on ' . $this->_std_psy_table . '.std_id = student.std_id inner join ' . $this->_class_table . ' on ' . $this->_class_table . '.id = ' . $this->_class_psy_table . '.class_id inner join school on ' . $this->_school2_table . '.sch_abbr = school.sch_abbr where ' . $this->_score_table . '.std_id=? and school.sch_abbr = ?', [$student_id, $sch_abbr]);
+            $sql = 'select student.fname,student.oname,student.lname,student.level,student.sch_abbr,student.picture, school.address,school.phone_contacts,school.email,school.logo,' . $this->_class_psy_table . '.a1,'
+            . $this->_class_psy_table . '.b2,' . $this->_class_psy_table . '.b3,' . $this->_class_psy_table . '.c4,' . $this->_class_psy_table . '.c5,' . $this->_class_psy_table . '.c6,' . $this->_class_psy_table . '.d7,' . $this->_class_psy_table . '.e8,' . $this->_class_psy_table .
+                '.f9,' . $this->_school2_table . '.a1 as hos_a1,'
+                . $this->_school2_table . '.b2 as hos_b2,' . $this->_school2_table . '.b3 as hos_b3,' . $this->_school2_table . '.c4 as hos_c4,' . $this->_school2_table . '.c5 as hos_c5,' . $this->_school2_table . '.c6 as hos_c6,' . $this->_school2_table . '.d7 as hos_d7,' . $this->_school2_table . '.e8 as hos_e8,' . $this->_school2_table .
+                '.f9 as hos_f9,' . $this->_class_psy_table .
+                '.psy1,' . $this->_class_psy_table .
+                '.psy2,' . $this->_class_psy_table .
+                '.psy3,' . $this->_class_psy_table .
+                '.psy4,' . $this->_class_psy_table .
+                '.psy5,' . $this->_class_psy_table .
+                '.psy6,' . $this->_class_psy_table .
+                '.psy7,' . $this->_class_psy_table .
+                '.psy8,' . $this->_class_psy_table .
+                '.psy9,' . $this->_class_psy_table .
+                '.psy10,' . $this->_class_psy_table .
+                '.psy11,' . $this->_class_psy_table .
+                '.psy12,' . $this->_class_psy_table .
+                '.psy13,' . $this->_class_psy_table .
+                '.psy14,' . $this->_class_psy_table .
+                '.psy15,' . $this->_class_psy_table .
+                '.psy16,' . $this->_class_psy_table .
+                '.psy17,' . $this->_class_psy_table .
+                '.psy18,' . $this->_class_psy_table .
+                '.psy19,' . $this->_class_psy_table .
+                '.psy20,' . $this->_class_psy_table . '.height_beg,' . $this->_class_psy_table . '.height_end,' . $this->_class_psy_table . '.weight_beg,' . $this->_class_psy_table . '.weight_end,' .
+                $this->_std_psy_table . '.' . $this->_term . '_height_beg,' . $this->_std_psy_table . '.' . $this->_term . '_height_end,' . $this->_std_psy_table . '.' . $this->_term . '_weight_beg,' . $this->_std_psy_table . '.' . $this->_term . '_weight_end,' . $this->_std_psy_table . '.' . $this->_term . '_times_present,' . $this->_std_psy_table . '.' . $this->_term . '_com,' . $this->_std_psy_table . '.' . $this->_term . '_p_com,' . $this->_std_psy_table . '.' . $this->_term . '_psy1,' . $this->_std_psy_table . '.' . $this->_term . '_psy2,' . $this->_std_psy_table . '.' . $this->_term . '_psy3,' . $this->_std_psy_table . '.' . $this->_term . '_psy4,' . $this->_std_psy_table . '.' . $this->_term . '_psy5,' . $this->_std_psy_table . '.' . $this->_term . '_psy6,' . $this->_std_psy_table . '.' . $this->_term . '_psy7,' . $this->_std_psy_table . '.' . $this->_term . '_psy8,' . $this->_std_psy_table . '.' . $this->_term . '_psy9,' . $this->_std_psy_table . '.' . $this->_term . '_psy10,' . $this->_std_psy_table . '.' . $this->_term . '_psy11,' . $this->_std_psy_table . '.' . $this->_term . '_psy12,' . $this->_std_psy_table . '.' . $this->_term . '_psy13,' . $this->_std_psy_table . '.' . $this->_term . '_psy14,' . $this->_std_psy_table . '.' . $this->_term . '_psy15,' . $this->_std_psy_table . '.' . $this->_term . '_psy16,' . $this->_std_psy_table . '.' . $this->_term . '_psy17,' . $this->_std_psy_table . '.' . $this->_term . '_psy18,' . $this->_std_psy_table . '.' . $this->_term . '_psy19,' . $this->_std_psy_table . '.' . $this->_term . '_psy20,' . $this->_class_table . '.class,' . $this->_class_table . '.id as class_id,' . $this->_class_table . '.petname, avg(' . $this->_score_table . '.' . $this->_term . '_tot) as average, sum(' . $this->_score_table . '.' . $this->_term . '_tot) as total,' . $this->_school2_table . '.hijra_session,' . $this->_school2_table . '.' . $this->_term . '_res_date,' . $this->_school2_table . '.' . $this->_term . '_times_opened,' . $this->_school2_table . '.signature as hos_signature,' . $this->_class_psy_table . '.signature as tea_signature from ' . $this->_class_psy_table . ' left join ' . $this->_score_table . ' on ' . $this->_class_psy_table . '.class_id = ' . $this->_score_table . '.class_id inner join ' . $this->_school2_table . ' on ' . $this->_class_psy_table . '.sch_abbr = ' . $this->_school2_table . '.sch_abbr inner join student on student.std_id = ' . $this->_score_table . '.std_id inner join ' . $this->_std_psy_table . ' on ' . $this->_std_psy_table . '.std_id = student.std_id inner join ' . $this->_class_table . ' on ' . $this->_class_table . '.id = ' . $this->_class_psy_table . '.class_id inner join school on ' . $this->_school2_table . '.sch_abbr = school.sch_abbr where ' . $this->_score_table . '.std_id=?';
+               
+            $db->query($sql, [$student_id]);
+              
             $this->_has_agg_prep_stmt = true;
-        }else{
-            $db->requery([$student_id, $sch_abbr]);
+        } else {
+            $db->requery([$student_id]);
         }
         return $db->one_result();
     }
@@ -59,7 +87,7 @@ class Result
     function get_student_count($class_id)
     {
         $db = $this->_db;
-        $db->query('select count(class_id) as counter from student where class_id=?',[$class_id]);
+        $db->query('select count(class_id) as counter from student where class_id=?', [$class_id]);
         return $db->one_result()->counter;
     }
 
@@ -109,5 +137,16 @@ class Result
             case 'F9':
                 return 'Fail';
         }
+    }
+
+     public static function get_ids($class_id,$sch_abbr){
+        $db = DB::get_instance();
+        $util = new Utils();
+        $formatted_session = $util->getFormatedSession($sch_abbr);
+       $db->query('select distinct std_id from '.$formatted_session.'_score where class_id=?',[$class_id]);
+       if($db->row_count() > 0){
+        return $db->get_result();
+       }
+       return [];
     }
 }

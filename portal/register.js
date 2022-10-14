@@ -54,6 +54,7 @@ function populateLGA(obj){
 
    function handleLGAListResponse(){
      const rsp = JSON.parse(xmlhttp.responseText);
+      _("token").value = rsp.token;
      if (rsp.status === 200) {
        const lgaContainer = _('lga');
        const lgas = rsp.data;
@@ -63,7 +64,7 @@ function populateLGA(obj){
        }
        lgaContainer.innerHTML = output;
      }
-      _("token").value = rsp.token;
+     
    }
 }
 

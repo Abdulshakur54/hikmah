@@ -101,6 +101,8 @@ foreach ($student_ids as $std_id) {
     $class = School::getLevelName($sch_abbr, $agg_data->level) . ' ' . $agg_data->class;
     $no_in_class = $res->get_student_count($agg_data->class_id);
     $position_grade = Result::get_grade($average);
+    $tea_comment = (!empty($agg_data->{$term . '_com'})) ? $agg_data->{$term . '_com'} : $agg_data->{strtolower($position_grade)};
+    $pri_comment = (!empty($agg_data->{$term . '_p_com'})) ? $agg_data->{$term . '_p_com'} : $agg_data->{'hos_'.strtolower($position_grade)};
     $output_session = $session . ' (' . $agg_data->hijra_session . ')';
     $times_school_opened = $agg_data->{$term . '_times_opened'};
     $times_present = $agg_data->{$term . '_times_present'};
@@ -318,16 +320,16 @@ foreach ($student_ids as $std_id) {
     $pdf->Cell(10, 4, 'D', 1, 1, 'C');
 
     $psychomotors = ['Verbal Skills', 'Participation in games', 'Participation in sports', 'Artistic Creativity', 'Physical and Mental Agility', 'Manual Skills (Dexterity)'];
-    $counter = 1;
+    $counter = 15;
     foreach ($psychomotors as $psy) {
         $pdf->SetFont('Rubik-Regular', '', 6);
         $pdf->Cell(40, 4, $psy, 1, 0, 'L');
         $pdf->SetFont('Mansalva-Regular', '', 6);
-        $pdf->Cell(10, 4, checked_counter('A', $agg_data->{$term . '_psy' . $counter}), 1, 0, 'C');
-        $pdf->Cell(10, 4, checked_counter('B+', $agg_data->{$term . '_psy' . $counter}), 1, 0, 'C');
-        $pdf->Cell(10, 4, checked_counter('B', $agg_data->{$term . '_psy' . $counter}), 1, 0, 'C');
-        $pdf->Cell(10, 4, checked_counter('C', $agg_data->{$term . '_psy' . $counter}), 1, 0, 'C');
-        $pdf->Cell(10, 4, checked_counter('D', $agg_data->{$term . '_psy' . $counter}), 1, 1, 'C');
+        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('A', $agg_data->{$term . '_psy' . $counter}) : checked_counter('A', $agg_data->{'psy' . $counter}), 1, 0, 'C');
+        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('B+', $agg_data->{$term . '_psy' . $counter}) : checked_counter('B+', $agg_data->{'psy' . $counter}), 1, 0, 'C');
+        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('B', $agg_data->{$term . '_psy' . $counter}) : checked_counter('B', $agg_data->{'psy' . $counter}), 1, 0, 'C');
+        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('C', $agg_data->{$term . '_psy' . $counter}) : checked_counter('C', $agg_data->{'psy' . $counter}), 1, 0, 'C');
+        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('D', $agg_data->{$term . '_psy' . $counter}) : checked_counter('D', $agg_data->{'psy' . $counter}), 1, 1, 'C');
         $counter++;
     }
     //PSYCHOMOTOR ENDS
@@ -366,17 +368,17 @@ foreach ($student_ids as $std_id) {
     $pdf->Cell(10, 4, 'C', 1, 0, 'C');
     $pdf->Cell(10, 4, 'D', 1, 2, 'C');
     $aob = ['Punctuality', 'Honesty', 'Does home work', 'Respect and Politeness', 'Spirit of teamwork', 'Relationship with peers', 'Leadership skills', 'Attitude to work', 'Helping others', 'Carefulness', 'Consideration', 'Works independently', 'Obedience', 'Health'];
-    $counter = 7;
+    $counter = 1;
     foreach ($aob as $ab) {
         $pdf->SetX($x);
         $pdf->SetFont('Rubik-Regular', '', 6);
         $pdf->Cell(40, 4, $ab, 1, 0, 'L');
         $pdf->SetFont('Mansalva-Regular', '', 6);
-        $pdf->Cell(10, 4, checked_counter('A', $agg_data->{$term . '_psy' . $counter}), 1, 0, 'C');
-        $pdf->Cell(10, 4, checked_counter('B+', $agg_data->{$term . '_psy' . $counter}), 1, 0, 'C');
-        $pdf->Cell(10, 4,  checked_counter('B', $agg_data->{$term . '_psy' . $counter}), 1, 0, 'C');
-        $pdf->Cell(10, 4,  checked_counter('C', $agg_data->{$term . '_psy' . $counter}), 1, 0, 'C');
-        $pdf->Cell(10, 4,  checked_counter('D', $agg_data->{$term . '_psy' . $counter}), 1, 2, 'C');
+        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ?checked_counter('A',$agg_data->{$term . '_psy' . $counter}):checked_counter('A',$agg_data->{'psy' . $counter}), 1, 0, 'C');
+        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('B+', $agg_data->{$term . '_psy' . $counter}) : checked_counter('B+', $agg_data->{'psy' . $counter}), 1, 0, 'C');
+        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('B', $agg_data->{$term . '_psy' . $counter}) : checked_counter('B', $agg_data->{'psy' . $counter}), 1, 0, 'C');
+        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('C', $agg_data->{$term . '_psy' . $counter}) : checked_counter('C', $agg_data->{'psy' . $counter}), 1, 0, 'C');
+        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('D', $agg_data->{$term . '_psy' . $counter}) : checked_counter('D', $agg_data->{'psy' . $counter}), 1, 2, 'C');
         $counter++;
     }
     //ASSESSMENT OF BEHAVIOUR ENDS
@@ -388,7 +390,7 @@ foreach ($student_ids as $std_id) {
     $imgY = $pdf->GetY();
     $pdf->Cell(15, 5, 'Sign/Date', 0, 1);
     $pdf->SetFont('HindSiliguri-Medium', '', 8);
-    $pdf->Cell(140, 5, $agg_data->{$term . '_com'}, 0, 0);
+    $pdf->Cell(140, 5, $tea_comment, 0, 0);
 
 
     $pdf->Ln(7);
@@ -398,7 +400,7 @@ foreach ($student_ids as $std_id) {
     $imgY2 = $pdf->GetY();
     $pdf->Cell(15, 5, 'Sign/Date', 0, 1);
     $pdf->SetFont('HindSiliguri-Medium', '', 8);
-    $pdf->Cell(140, 5, $agg_data->{$term . '_p_com'}, 0, 0);
+    $pdf->Cell(140, 5, $pri_comment, 0, 0);
 
     //images
     $pdf->Image('staff/uploads/signatures/' . $agg_data->tea_signature, 165, $imgY - 2, 15, 9);
@@ -406,4 +408,4 @@ foreach ($student_ids as $std_id) {
     $pdf->Image('barcodes/' . $title, 185, $imgY + 1, 15, 15);
     //end of images
 }
-$pdf->Output('D', 'results.pdf');
+$pdf->Output('I', 'results.pdf');

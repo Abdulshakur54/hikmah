@@ -325,7 +325,7 @@ class User
 			case 8:
 			case 15:
 			case 16:
-				return $this->_db->get($role_table, 'id', "role='Teaching Staff'")->id;
+				return $this->_db->get($role_table, 'id', "role='Staff'")->id;
 			case 9:
 			case 10:
 				return $this->_db->get($role_table, 'id', "role='Student'")->id;

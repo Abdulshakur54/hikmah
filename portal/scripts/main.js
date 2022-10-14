@@ -129,7 +129,7 @@ async function getPostPageWithUpload(formId, url,op) {
   let form = _(formId);
    let formData = new FormData(form);
    formData.append('page_token',_('page_token').value);
-      formData.append("op", "update_schedules");
+      formData.append("op", op);
    let rsp = await fetch(url,{
     method:"POST",
     body:formData,
