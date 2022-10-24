@@ -14,9 +14,7 @@ var dataTableOptions = {
     ],
   },
   responsive: true,
-   columnDefs: [
-        { responsivePriority: 1, targets: 1 },
-    ],
+  columnDefs: [{ responsivePriority: 1, targets: 1 }],
   fnRowCallback: function (nRow, aData, iDisplayIndex) {
     $("td:first", nRow).html(iDisplayIndex + 1);
     return nRow;
@@ -24,6 +22,18 @@ var dataTableOptions = {
 };
 
 function getPage(url, postData = null) {
+  $("#page").block({
+    message: "<div>Loading...</div>",
+    css: {
+      display: "flex",
+      width: "100%",
+      height: "100vh",
+      justifyContent: "center",
+      alignItems: "center",
+      border:'none',
+      fontWeight:'bold'
+    },
+  });
   if (postData == null) {
     //get request
     if (url.indexOf("?") === -1) {
@@ -37,6 +47,7 @@ function getPage(url, postData = null) {
     postData += "&page_token=" + _("page_token").value;
     ajaxRequest(url, loadPage, postData);
   }
+  $('#page').unblock();
 }
 
 function loadPage() {
@@ -125,28 +136,45 @@ function getPostPage(formId, url) {
   getPage(url, formvalues);
 }
 
-async function getPostPageWithUpload(formId, url,op) {
+async function getPostPageWithUpload(formId, url, op, reload = true) {
+  reload &&
+    $("#page").block({
+      message: "<div>Loading...</div>",
+      css: {
+        display: "flex",
+        width: "100%",
+        height: "100vh",
+        justifyContent: "center",
+        alignItems: "center",
+        border: "none",
+        fontWeight: "bold",
+      },
+    });
   let form = _(formId);
-   let formData = new FormData(form);
-   formData.append('page_token',_('page_token').value);
-      formData.append("op", op);
-   let rsp = await fetch(url,{
-    method:"POST",
-    body:formData,
-   });
+  let formData = new FormData(form);
+  formData.append("page_token", _("page_token").value);
+  formData.append("op", op);
+  let rsp = await fetch(url, {
+    method: "POST",
+    body: formData,
+  });
 
-   rsp = await rsp.json();
-   let status = rsp.status;
-   if(!(status == 200 || status==201  || status==204)){
-     swalNotifyDismiss(rsp.message, "warning");
-   }else{
+  rsp = await rsp.json();
+  let status = rsp.status;
+  if (!(status == 200 || status == 201 || status == 204)) {
+    swalNotify(rsp.message, "warning");
+  } else {
+    if (reload) {
+     $("#page").unblock();
       location.reload();
-   }
-
+    } else {
+      swalNotify(rsp.message, "success");
+    }
+  }
 }
 
-function convertStringToHTML(text){
+function convertStringToHTML(text) {
   let domObj = new DOMParser();
-  let htmlDoc = domObj.parseFromString(text,'text/html');
+  let htmlDoc = domObj.parseFromString(text, "text/html");
   return htmlDoc.body.childNodes[0];
 }

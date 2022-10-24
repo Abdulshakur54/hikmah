@@ -11,6 +11,9 @@ function runFirst(){
 runFirst();
 
 function showImage(event) {
+   const image = _("image");
+   const hiddenPic = _("hiddenPic");
+   const picMsg = _("picMsg");
   if (objLength(event.files) > 0) {
     if (event.files[0].size > 100 * 1024) {
       image.style.display = "none";

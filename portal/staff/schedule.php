@@ -21,6 +21,26 @@ function selectedParam($param, $selParam)
                 ?>
                 <section class="card border border-secondary mt-3 mb-3">
                     <div class="card-header text-center">
+                        <h4>Result Settings</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="ft_passmark" class="form-label">First Term Pass Mark</label>
+                            <input type="number" name="ft_passmark" value="<?php echo Utility::escape($schedule->ft_passmark) ?>" class="form-control" id="ft_passmark" title="First Term Pass Mark" min="0" max="100" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="st_passmark" class="form-label">Second Term Pass Mark</label>
+                            <input type="number" name="st_passmark" value="<?php echo Utility::escape($schedule->st_passmark) ?>" class="form-control" id="st_passmark" title="Second Term Pass Mark" min="0" max="100"  required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="tt_passmark" class="form-label">Third Term Pass Mark</label>
+                            <input type="number" name="tt_passmark" value="<?php echo Utility::escape($schedule->tt_passmark) ?>" class="form-control" id="tt_passmark" title="Third Term Pass Mark" min="0" max="100"  required/>
+                        </div>
+                    </div>
+
+                </section>
+                <section class="card border border-secondary mt-3 mb-3">
+                    <div class="card-header text-center">
                         <h4>Psychomotor Skills</h4>
                     </div>
                     <div class="card-body">
@@ -299,6 +319,7 @@ function selectedParam($param, $selParam)
                     </div>
 
                 </section>
+
                 <section class="card border border-secondary mt-3 mb-3">
                     <div class="card-header text-center">
                         <h4>Height and Weight</h4>

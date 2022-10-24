@@ -31,7 +31,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
     'fname' => array('name' => 'Firstname', 'required' => true, 'min' => 3, 'max' => '20', 'pattern' => '^[a-zA-Z`]+$'),
     'lname' => array('name' => 'Lastname', 'required' => true, 'min' => 3, 'max' => '20', 'pattern' => '^[a-zA-Z`]+$'),
     'oname' => array('name' => 'Othername', 'min' => 3, 'max' => '20', 'pattern' => '^[a-zA-Z`]+$'),
-    'password' => array('name' => 'password', 'required' => true, 'min' => 3, 'max' => '32', 'pattern' => '^[a-zA-Z0-9]+$'),
+    'password' => array('name' => 'password', 'required' => true, 'min' => 6, 'max' => '32', 'pattern' => '^[a-zA-Z0-9`]+$'),
     'c_password' => array('name' => 'Confirm_Password', 'same' => 'password'),
     'phone' => array('name' => 'Phone', 'required' => true, 'pattern' => '^(080|070|090|081|091|071)[0-9]{8}$'),
     'pin' => array('name' => 'Pin', 'required' => true, 'pattern' => '^[0-9a-zA-Z]{14}$'),
@@ -67,7 +67,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
       switch ($user_type) {
         case 'admission':
           $user = new Admission();
-          $user_id = 'A' . Admission::genId(); //generates the admission id
+          $user_id = $util->getSession($sch_abbr) . '/'.'A' . Admission::genId(); //generates the admission id
           $table = Config::get('users/table_name3');
           $username_column = Config::get('users/username_column3');
           break;
@@ -102,7 +102,6 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
           $level = (int) $res->level;
           $valid_ranks = [11, 12];
           $valid_rank = (in_array($rank, $valid_ranks));
-          $user_id = $util->getSession($sch_abbr).'/'.$user_id;
           break;
         case 'staff':
           $salary = $res->salary;
@@ -148,9 +147,9 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 
               $file->move($file_path . $pictureName); //move picture to the destination folder
               $agg->rowDelete('token', 'token,=,' . $pin); //delete the token from the token table
-              $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registeration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong></div>';
+              $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registeration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong> <a href="' . $url->to('login.php', 0) . '">Login Here</a></div>';
               $mail->send($email, 'Registration Completion', $message);
-              Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>use it to login, it has also be sent to your email for backup</em></div>');
+              Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>use it to login along with the password you created during registration. Your username has also be sent to your email for backup</em></div>');
               Redirect::to('success2.php?user_type=admission');
             } else {
               $errors[] = 'Registration Not Successful';
@@ -182,18 +181,20 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 //notify the director(s)
                 $alert->sendToRank(1, 'Registration Completion', 'This is to inform you that ' . Utility::formatName($fname, $oname, $lname) . ' has successfully registered as ' . formatManagementMsg($rank, $user) . '.<br>A request has been sent to the accountant to confirm his salary of &#8358;' . $salary);
 
-                $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registeration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong></div>';
+                $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registeration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong>  <a href="' . $url->to('login.php', 0) . '">Login Here</a></div>';
                 $mail->send($email, 'Registration Completion', $message);
 
-                Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>use it to login, it has also be sent to your email for backup</em></div>');
+                Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>use it to login along with the password you created during registration. Your username has also be sent to your email for backup</em></div>');
                 Redirect::to('success2.php?user_type=management');
               } else {
                 if ($user_type === 'staff') {
                   //notify the APM(s)
                   $notMessage = 'This is to inform you that ' . $title . ' ' . Utility::formatName($fname, $oname, $lname) . ' has successfully registered as ' . formatStaffMsg($rank, $user);
                   $alert->sendToRank(2, 'Registration Completion', $notMessage);
+                  $profile_url =$url->to('profile.php?username='.$user_id,0);
                   //customize a message to notify the HOS(s)
-                  $notMessage .= '.<br><br><a href="#" onclick="getPage(\'management/hos/assign_class.php\')">Assign Class (If staff is a Class Teacher)</a><br>
+                  $notMessage .= '.<br><br>
+                  <a href="'.$profile_url.'">View Profile</a><br><a href="#" onclick="getPage(\'management/hos/assign_class.php\')">Assign Class (If staff is a Class Teacher)</a><br>
                                             <a href="#" onclick="getPage(\'management/hos/add_subject.php\')">Assign Subject (If staff is a Subject Teacher)</a>
                                             <a href="#" onclick="' . Utility::escape(Session::getAltLastPage()) . '">Ignore (if staff is a Non Teaching Staff)</a>
                                            ';
@@ -201,18 +202,18 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                   $alert->reset(); //this will help reset the object for another prepared query
                   $alert->sendToRank(5, 'Registration Completion', $notMessage, 'sch_abbr,=,' . $sch_abbr);
 
-                  $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registeration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong></div>';
+                  $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registeration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong>  <a href="' . $url->to('login.php', 0) . '">Login Here</a> </div>';
                   $mail->send($email, 'Registration Completion', $message);
 
-                  Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>use it to login, it has also be sent to your email for backup</em></div>');
-                Redirect::to('success2.php?user_type=staff');
+                  Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>use it to login along with the password you created during registration. Your username has also be sent to your email for backup</em></div>');
+                  Redirect::to('success2.php?user_type=staff');
                 }
               }
             } else {
               $errors[] = 'Registration Not Successful';
             }
             break;
-          }
+        }
       } else {
         $errors[] = 'Use the proper tab to register';
       }
@@ -387,7 +388,7 @@ function formatManagementMsg($rank, $user)
 
                 <div class="form-group">
                   <label for="address">Residential Address</label>
-                  <textarea class="form-control" id="address" rows="4" name="address"><?php echo Input::get('address') ?></textarea>
+                  <input type="text" id="address" name="address" value="<?php echo Input::get('address') ?>" class="form-control" />
                 </div>
 
 
@@ -407,7 +408,7 @@ function formatManagementMsg($rank, $user)
                 </div>
                 <div class="form-group">
                   <label for="password">Password</label>
-                  <input type="password" class="form-control form-control-lg" id="password" title="Password" required name="password">
+                  <input type="password" class="form-control form-control-lg" id="password" title="Password" required name="password" pattern="^[a-zA-Z0-9`]$">
                 </div>
                 <div class="form-group">
                   <label for="c_password">Confirm Password</label>

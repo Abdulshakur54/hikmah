@@ -19,7 +19,7 @@ class DB
 		try {
 			$this->_pdo = new PDO('mysql:host=' . Config::get('mysql/host') . ';dbname=' . Config::get('mysql/db_name'), Config::get('mysql/db_username'), Config::get('mysql/db_password'), array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 		} catch (PDOException $e) {
-			die('Database Connection Failed');
+			die($e->getMessage());
 		}
 	}
 
@@ -269,7 +269,6 @@ class DB
 		if ($limit !== 0) {
 			$sql .= ' limit ' . $limit;
 		}
-	
 		$this->query($sql);
 		if ($this->row_count() > 0) {
 			return $this->get_result();

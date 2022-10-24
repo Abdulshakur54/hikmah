@@ -41,8 +41,8 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         $cD = $hos->getClassDetail($classId);
         $cDTo = $hos->getClassDetail($classIdTo);
 
-        //update class_id for student and student3 table
-        $db->query('update student3 inner join student on student3.std_id = student.std_id set student3.class_id = ?, student.class_id=? where student3.std_id in(' . $sqlStdString . ')', [$classIdTo, $classIdTo]);
+        //update class_id for student table
+        $db->query('update student set class_id = ? where std_id in(' . $sqlStdString . ')', [y$classIdTo]);
         //update score table
         $utils = new Utils();
         $formSession = $utils->getFormatedSession($sch_abbr);

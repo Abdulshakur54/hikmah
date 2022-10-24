@@ -68,20 +68,6 @@ class Hos extends Management
         }
     }
 
-
-    //this method returns all the subject(id) for a student, an array is returned
-    public function getStudentSubjects($studentId)
-    {
-        $this->_db->query('select subject_ids from student3 where student_id=?', [$studentId]);
-        if ($this->_db->row_count() > 0) {
-            $sIds = $this->_db->one_result()->subject_ids;
-            if ($sIds !== null) {
-                return json_decode($sIds, true);
-            }
-        }
-        return [];
-    }
-
     //this method returns all the students in a class
     public function getAllClassStudents($classId)
     {
@@ -292,58 +278,24 @@ class Hos extends Management
         $sql1 = 'delete from class where id = ?';
         $val1 = [$classId];
         //delete from the other tables
-        $sql2 = 'delete from subject where class_id=?';
+        $sql2 = 'delete from subject2 where class_id=?';
         $val2 = [$classId];
-        $sql3 = 'update student3 set class_id = ? where class_id = ?';
-        $val3 = [null, $classId];
         //delete from score table
         $utils = new Utils();
         $formSession = $utils->getFormatedSession($sch_abbr);
-        $sql4 = 'delete from ' . $formSession . '_score where class_id = ?';
-        $val4 = [$classId];
+        $sql3 = 'delete from ' . $formSession . '_score where class_id = ?';
+        $val3 = [$classId];
         //delete from the other tables(class_psy)
-        $sql5 = 'delete from class_psy where class_id=?';
-        $val5 = [$classId];
-        return $this->_db->trans_query([[$sql1, $val1], [$sql2, $val2], [$sql3, $val3], [$sql4, $val4], [$sql5, $val5]]);
+        $sql4 = 'delete from class_psy where class_id=?';
+        $val4 = [$classId];
+        return $this->_db->trans_query([[$sql1, $val1], [$sql2, $val2], [$sql3, $val3], [$sql4, $val4]]);
     }
 
     //this method deletes a subject, it also deletes all the relationship it has in other tables
     public function deleteSubject($subjectId, $sch_abbr): bool
     {
-        //query to get the students and teacher related to the subject
-        $this->_db->query('select student_ids from subject where id=?', [$subjectId]);
-        $studentIds = json_decode($this->_db->one_result()->student_ids);
-        $db2 = DB::get_instance2();
-        if (!empty($studentIds)) { //this means some students offer this subject
-            $start = false;
-            foreach ($studentIds as $studentId) {
-                if ($start) { //requery because query have already been prepared
-                    $this->_db->requery([$studentId]);
-                    $subjectIds = json_decode($this->_db->one_result()->subject_ids);
-                    $newSubjectIds = [];
-                    foreach ($subjectIds as $subId) {
-                        if ($subId != $subjectId) {
-                            $newSubjectIds[] = $subId;
-                        }
-                    }
-                    //update student3 table with the modified sujectIds(newSubjectIds)
-                    $db2->requery([json_encode($newSubjectIds)]);
-                } else {
-                    $this->_db->query('select subject_ids from student3 where std_id = ?', [$studentId]); //query the db
-                    $subjectIds = json_decode($this->_db->one_result()->subject_ids);
-                    $newSubjectIds = [];
-                    foreach ($subjectIds as $subId) {
-                        if ($subId != $subjectId) {
-                            $newSubjectIds[] = $subId;
-                        }
-                    }
-                    //update student3 table with the modified sujectIds(newSubjectIds)
-                    $db2->query('update student3 set subject_ids = ?', [json_encode($newSubjectIds)]);
-                }
-            }
-        }
         //delete from the subject tables
-        $sql1 = 'delete from subject where id=?';
+        $sql1 = 'delete from subject2 where id=?';
         $val1 = [$subjectId];
         //delete from score table
         $utils = new Utils();
@@ -378,13 +330,13 @@ class Hos extends Management
 
     function getNoStudentsNeedsClass($sch_abbr): int
     {
-        $this->_db->query('select count(student.id) as counter from student3 inner join student on student3.std_id = student.std_id where student3.class_id IS NULL and student.sch_abbr = ?', [$sch_abbr]);
+        $this->_db->query('select count(id) as counter from student where class_id IS NULL and sch_abbr = ?', [$sch_abbr]);
         return $this->_db->one_result()->counter;
     }
 
     function getStudentsNeedsClass($sch_abbr, $level = null)
     {
-        $this->_db->query('select student.id,student.std_id, student.fname,student.oname,student.lname from student inner join student3 on student.std_id = student3.std_id where student3.class_id IS NULL and student.sch_abbr = ? and student.level = ?', [$sch_abbr, $level]);
+        $this->_db->query('select id,std_id, fname,oname,lname from student where class_id IS NULL and sch_abbr = ? and level = ?', [$sch_abbr, $level]);
         return $this->_db->get_result();
     }
 

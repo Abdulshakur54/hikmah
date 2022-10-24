@@ -1,18 +1,7 @@
-# You have to implement forgotten password for the users
-# You have to send email when a user signs in containing the username of the user
+
 # notification and confirmation should only show when the user has it, same with the welcome message 
 # the search at the dashboard should be implemented as a search of menus
 
-# look at how to make the email functionality work
+# understand the email functionality, and confirm if add attachment works when the student receive an email for his admission, also send admission letter along with the email
 
-# add functionality to  make a user retake an exam in the e-exam feature
-# check if exists, if not add a functionality to the exam to prevent and examinee to see results immediately
-
-#you have not work on the profile (seen by anyone, by someone logged in), account profile(seen only by the owner when he is logged in)
-
-# integrate the forgot password feature;
-
-
-student-school2-score-subject-subject2-class-student_psy
-address,phone_contacts and email were added to school table
-hijra_session was added to school2
+#add the feature for students to see their admission letter

@@ -3,7 +3,7 @@
 
 		public static function set($cookie_name, $cookie_value, $expiry){
 			$options = array(
-				'expires' =>$expiry,
+				'expires' =>time() + $expiry,
 				'path' =>Config::get('cookie/path'),
 				'domain' =>Config::get('cookie/domain'),
 				'secure' =>Config::get('cookie/secure'),

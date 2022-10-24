@@ -42,7 +42,7 @@ if (Input::submitted('get')) {
         $student_ids = [$other_data['student_id']];
         $term = $other_data['term'];
         $sch_abbr = $other_data['school'];
-    } else if (Token::check($token,null,true)) {
+    } else if (Token::check($token, null, true)) {
         $session = Utility::escape(Input::get('session'));
         $term = Utility::escape(Input::get('term'));
         $sch_abbr = Utility::escape(Input::get('school'));
@@ -102,7 +102,7 @@ foreach ($student_ids as $std_id) {
     $no_in_class = $res->get_student_count($agg_data->class_id);
     $position_grade = Result::get_grade($average);
     $tea_comment = (!empty($agg_data->{$term . '_com'})) ? $agg_data->{$term . '_com'} : $agg_data->{strtolower($position_grade)};
-    $pri_comment = (!empty($agg_data->{$term . '_p_com'})) ? $agg_data->{$term . '_p_com'} : $agg_data->{'hos_'.strtolower($position_grade)};
+    $pri_comment = (!empty($agg_data->{$term . '_p_com'})) ? $agg_data->{$term . '_p_com'} : $agg_data->{'hos_' . strtolower($position_grade)};
     $output_session = $session . ' (' . $agg_data->hijra_session . ')';
     $times_school_opened = $agg_data->{$term . '_times_opened'};
     $times_present = $agg_data->{$term . '_times_present'};
@@ -154,13 +154,13 @@ foreach ($student_ids as $std_id) {
     $pdf->Cell(30, 6, $total, 0, 2, 'L');
 
     $pdf->setXY(148, $yPos);
-    $pdf->Cell(28, 6, 'GRADE POSITION: ', 0, 0, 'L');
+    $pdf->Cell(28, 6, 'OVERALL GRADE: ', 0, 0, 'L');
     switch ($position_grade) {
         case 'A1':
-            $pdf->SetTextColor(15, 165, 19);
+            $pdf->SetTextColor(0, 204, 0);
             break;
         case 'F9':
-            $pdf->SetTextColor(172, 28, 18);
+            $pdf->SetTextColor(204, 0, 0);
             break;
         case 'B2':
         case 'B3':
@@ -194,9 +194,21 @@ foreach ($student_ids as $std_id) {
     $pdf->Cell(27, 4, 'Times Absent', 1, 0, 'L');
     $pdf->Cell(16, 4, $times_absent, 1, 1, 'L');
 
-    //output student passport
-    $pdf->Image('student/uploads/passports/' . $agg_data->picture, 100, $imgY + 4 - 20, 20, 20);
-    //output student passport
+    if (file_exists('student/uploads/passports/' . $agg_data->picture)) {
+        //output student passport
+        $pdf->Image('student/uploads/passports/' . $agg_data->picture, 95, $imgY + 4 - 20, 20, 20);
+        //output student passport
+    }
+    $pdf->SetY($imgY + 4 + 3);
+    $pdf->SetFontSize(9);
+    if ($average >= $agg_data->{$term . '_passmark'}) {
+        $pdf->SetTextColor(0, 204, 0);
+        $pdf->Cell(190, 6, 'PASSED', 0, 1, 'C');
+    } else {
+        $pdf->SetTextColor(204, 0, 0);
+        $pdf->Cell(190, 6, 'POOR', 0, 1, 'C');
+    }
+    $pdf->SetTextColor(0,0,0);
 
     $pdf->SetFont('Lusitana-Bold', '', 6);
     $pdf->SetXY(148, $yPos);
@@ -263,46 +275,92 @@ foreach ($student_ids as $std_id) {
         $pdf->Cell($sub_width, 5, strtoupper($score->subject), 1, 0, 'L');
         $ca_s = [];
         $output_ca_total_col = false;
-        foreach ($columns as $col) {
-            switch ($col) {
-                case 'fa':
-                case 'sa':
-                case 'ft':
-                case 'st':
-                    $col_name = $term . '_' . $col;
-                    $ca_s[] =  $score->$col_name;
+        $tot = $score->{$term . '_tot'};
 
-                    $pdf->Cell(14, 5, $score->$col_name, 1, 0, 'C');
+        if(Utility::notEmpty($tot)){
+            foreach ($columns as $col) {
+                switch ($col) {
+                    case 'fa':
+                    case 'sa':
+                    case 'ft':
+                    case 'st':
+                        $col_name = $term . '_' . $col;
+                        $ca_s[] =  $score->$col_name;
 
-                    break;
-                case 'pro':
-                case 'ex':
-                    if (!$output_ca_total_col) {
-                        $pdf->Cell(14, 5, array_sum($ca_s), 1, 0, 'C');
-                        $output_ca_total_col = true;
-                        $xPos += 14;
-                    }
-                    $pdf->Cell(14, 5, $score->{$term . '_' . $col}, 1, 0, 'C');
-                    break;
+                        $pdf->Cell(14, 5, $score->$col_name, 1, 0, 'C');
+
+                        break;
+                    case 'pro':
+                    case 'ex':
+                        if (!$output_ca_total_col) {
+                            $pdf->Cell(14, 5, array_sum($ca_s), 1, 0, 'C');
+                            $output_ca_total_col = true;
+                            $xPos += 14;
+                        }
+                        $pdf->Cell(14, 5, $score->{$term . '_' . $col}, 1, 0, 'C');
+                        break;
+                }
+
+                $xPos += 14;
             }
 
+            $grade = Result::get_grade($tot);
+            $pdf->Cell(14, 5, $tot, 1, 0, 'C');
             $xPos += 14;
+            switch ($grade) {
+                case 'A1':
+                    $pdf->SetTextColor(0, 204, 0);
+                    break;
+                case 'F9':
+                    $pdf->SetTextColor(204, 0, 0);
+            }
+            $pdf->Cell(12, 5, $grade, 1, 0, 'C');
+            $xPos += 12;
+            $rem_width = 200 - $xPos;
+            $pdf->Cell($rem_width, 5, Result::get_remark($grade), 1, 1, 'L');
+        }else{
+
+
+
+            foreach ($columns as $col) {
+                switch ($col) {
+                    case 'fa':
+                    case 'sa':
+                    case 'ft':
+                    case 'st':
+                        $col_name = $term . '_' . $col;
+                        $ca_s[] =  $score->$col_name;
+
+                        $pdf->Cell(14, 5, '-', 1, 0, 'C');
+
+                        break;
+                    case 'pro':
+                    case 'ex':
+                        if (!$output_ca_total_col) {
+                            $pdf->Cell(14, 5,'', 1, 0, 'C');
+                            $output_ca_total_col = true;
+                            $xPos += 14;
+                        }
+                        $pdf->Cell(14, 5, '-', 1, 0, 'C');
+                        break;
+                }
+
+                $xPos += 14;
+            }
+
+            $pdf->Cell(14, 5, '', 1, 0, 'C');
+            $xPos += 14;
+            
+            $pdf->Cell(12, 5, '', 1, 0, 'C');
+            $xPos += 12;
+            $rem_width = 200 - $xPos;
+            $pdf->Cell($rem_width, 5, '', 1, 1, 'L');
+
+
+
+
         }
-        $tot = $score->{$term . '_tot'};
-        $grade = Result::get_grade($tot);
-        $pdf->Cell(14, 5, $tot, 1, 0, 'C');
-        $xPos += 14;
-        switch ($grade) {
-            case 'A1':
-                $pdf->SetTextColor(15, 165, 19);
-                break;
-            case 'F9':
-                $pdf->SetTextColor(172, 28, 18);
-        }
-        $pdf->Cell(12, 5, $grade, 1, 0, 'C');
-        $xPos += 12;
-        $rem_width = 200 - $xPos;
-        $pdf->Cell($rem_width, 5, Result::get_remark($grade), 1, 1, 'L');
+ 
         $pdf->SetTextColor(0, 0, 0);
     }
 
@@ -374,7 +432,7 @@ foreach ($student_ids as $std_id) {
         $pdf->SetFont('Rubik-Regular', '', 6);
         $pdf->Cell(40, 4, $ab, 1, 0, 'L');
         $pdf->SetFont('Mansalva-Regular', '', 6);
-        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ?checked_counter('A',$agg_data->{$term . '_psy' . $counter}):checked_counter('A',$agg_data->{'psy' . $counter}), 1, 0, 'C');
+        $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('A', $agg_data->{$term . '_psy' . $counter}) : checked_counter('A', $agg_data->{'psy' . $counter}), 1, 0, 'C');
         $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('B+', $agg_data->{$term . '_psy' . $counter}) : checked_counter('B+', $agg_data->{'psy' . $counter}), 1, 0, 'C');
         $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('B', $agg_data->{$term . '_psy' . $counter}) : checked_counter('B', $agg_data->{'psy' . $counter}), 1, 0, 'C');
         $pdf->Cell(10, 4, (!empty($agg_data->{$term . '_psy' . $counter})) ? checked_counter('C', $agg_data->{$term . '_psy' . $counter}) : checked_counter('C', $agg_data->{'psy' . $counter}), 1, 0, 'C');
@@ -403,8 +461,13 @@ foreach ($student_ids as $std_id) {
     $pdf->Cell(140, 5, $pri_comment, 0, 0);
 
     //images
-    $pdf->Image('staff/uploads/signatures/' . $agg_data->tea_signature, 165, $imgY - 2, 15, 9);
-    $pdf->Image('management/hos/uploads/signatures/' . $agg_data->hos_signature, 165, $imgY2 - 2, 15, 9);
+    if (file_exists('staff/uploads/signatures/' . $agg_data->tea_signature)) {
+        $pdf->Image('staff/uploads/signatures/' . $agg_data->tea_signature, 165, $imgY - 2, 15, 9);
+    }
+    if (file_exists('staff/uploads/signatures/' . $agg_data->tea_signature)) {
+        $pdf->Image('management/hos/uploads/signatures/' . $agg_data->hos_signature, 165, $imgY2 - 2, 15, 9);
+    }
+
     $pdf->Image('barcodes/' . $title, 185, $imgY + 1, 15, 15);
     //end of images
 }

@@ -17,5 +17,6 @@ class SMS{
         $result = curl_exec($ch);
         $res_array = json_decode($result);
         print_r($res_array);
+        echo 'I ran';
     }
 }

@@ -1,3 +1,1 @@
-### To Delete a user
-    You have to remove the user from all table concerning users including account table, 
-chkdsk C: /f
+You are currently at the stage of testing the manual_admission page, after which you should now send email containing login password and the admission attachments to the student including admission letter

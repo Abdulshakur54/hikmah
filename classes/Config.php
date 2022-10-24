@@ -19,7 +19,7 @@ $GLOBALS['configuration'] = array(
 		'id_column3' => 'adm_id', //this must be the foreign key of the id in the users table
 		'hash_column' => 'hash',
 		'expiry' => 864000, //2 weeks
-		'name' => 'remember',
+		'name' => 'rem_user',
 		'name0' => 'rem_mgt',
 		'name1' => 'rem_staff',
 		'name2' => 'rem_std',
@@ -48,7 +48,7 @@ $GLOBALS['configuration'] = array(
 		'table_name1' => 'staff',
 		'table_name2' => 'student',
 		'table_name3' => 'admission',
-		'menu_table'=>'users_menu',
+		'menu_table' => 'users_menu',
 		'username_column' => 'user_id', //the column holding the username in the users table
 		'username_column0' => 'mgt_id', //the column holding the username in the users table
 		'username_column1' => 'staff_id', //the column holding the username in the users table
@@ -57,10 +57,6 @@ $GLOBALS['configuration'] = array(
 		'password_column' => 'password', //the column holding the password in the users table
 		'id_column' => 'id',
 		'alert' => 'ex_alert',
-		'alert0' => 'ex_mgt_alert',
-		'alert1' => 'ex_staff_alert',
-		'alert2' => 'ex_std_alert',
-		'alert3' => 'ex_adm_alert'
 	),
 	'webmail' => [
 		'username' => "info@hikmahschools.com", // SMTP account username
@@ -68,7 +64,7 @@ $GLOBALS['configuration'] = array(
 		'name' => 'Hikmah Group Of Schools'
 	],
 	'server' => array(
-		'name' => 'http://' . Utility::escape($_SERVER['HTTP_HOST']) . '/hikmah',
+		'name' => 'http://' . Utility::escape($_SERVER['HTTP_HOST']) . '/hikmah/',
 		'protocol' => 'http://'
 	),
 	'error' => array(
@@ -87,20 +83,20 @@ $GLOBALS['configuration'] = array(
 		'menu_table' => 'menu',
 		'role_table' => 'role',
 		'user_menu_table' => 'user_menu',
-		'role_menu_table'=>'roles_menu'
+		'role_menu_table' => 'roles_menu'
 	],
-	'audit'=>[
-		'table'=>'audit'
+	'audit' => [
+		'table' => 'audit'
 	],
-	'hikmah'=>[
-		'subject_teacher_role'=>23,
-		'class_teacher_role'=>24,
-		'staff_role'=>6
+	'hikmah' => [
+		'subject_teacher_role' => 23,
+		'class_teacher_role' => 24,
+		'staff_role' => 6
 	],
-	'sms'=>[
-'email'=>'mabdulshakur54@gmail.com',
-'password'=>'190587Ab',
-'sender_name'=>'HIKMAH',
+	'sms' => [
+		'email' => 'mabdulshakur54@gmail.com',
+		'password' => '190587Ab',
+		'sender_name' => 'HIKMAH',
 	]
 );
 

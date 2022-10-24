@@ -12,6 +12,12 @@ class Utility
         }
     }
 
+    public static function notEmpty($val): bool
+    {
+        
+        return (!empty($val) || $val === (float) 0 || $val === (int) 0) ? true : false;
+    }
+
 
 
     //this method checks if a string is equal and returns a boolean,it is case insenitive
@@ -256,6 +262,10 @@ class Utility
                 return 'Second Term';
             case 'tt':
                 return 'Third Term';
+            case 'ses':
+                return 'Sessional';
+            default:
+            return '';
         }
     }
 
@@ -268,7 +278,7 @@ class Utility
         return $sum;
     }
 
-    public static function getColumnDisplayName(string $col):string
+    public static function getColumnDisplayName(string $col): string
     {
         switch ($col) {
             case 'fa':
@@ -310,5 +320,11 @@ class Utility
     {
         $arr = explode('/', $student_id);
         return implode('', $arr);
+    }
+
+    public static function get_bank_and_acctno(string $username)
+    {
+        $db = DB::get_instance();
+        return $db->get('account', 'bank,no', "receiver='$username'");
     }
 }

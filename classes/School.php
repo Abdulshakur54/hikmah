@@ -335,7 +335,13 @@ class School
             case 'H E-M':
                 return 'Pupil';
             default:
-            return '';
+                return '';
         }
+    }
+
+    public static function get_attachments(string $sch_abbr, $level): array
+    {
+        $db = DB::get_instance();
+        return $db->select('attachment', 'name,attachment', "sch_abbr in('$sch_abbr','ALL') AND level in('$level','ALL')");
     }
 }

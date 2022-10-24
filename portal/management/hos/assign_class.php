@@ -37,10 +37,10 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                     //check if class already has a teacher
                     if (!$hos->classHasATeacher($classId)) {
                         $hos->assignClass($classId, $teacherId);
-                      
+
                         /*for hikmah only to help use the role and menu functionality*/
                         Menu::add_available_menus($teacherId, $role_id); //add menus for real class teacher
-              /*for hikmah only to help use the role and menu functionality*/
+                        /*for hikmah only to help use the role and menu functionality*/
 
                         //notify all the students in that class of the development
                         $notMsg = '<p>This is to notify that you now have a new Form Teacher ' . $fullname . '. <a href="' . $url->to('profile.php?id=' . $teacherId, 0) . '">View Form Teacher\'s Profile</a></p>';
@@ -60,10 +60,11 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         }
         if ($submitType === 'unassign') {
             if ($hos->isAClassTeacher($teacherId)) {
+                
                 $hos->unAssignClass($teacherId);
                 /*for hikmah only to help use the role and menu functionality*/
-                Menu::delete_available_menus($teacherId,$role_id); //delete menus of class teacher
-              /*for hikmah only to help use the role and menu functionality*/
+                Menu::delete_available_menus($teacherId, $role_id); //delete menus of class teacher
+                /*for hikmah only to help use the role and menu functionality*/
 
                 //notify all the students in that class of the development
                 $notMsg = '<p>This is to notify that ' . $fullname . ' is no longer your Form Teacher</p>';

@@ -130,6 +130,11 @@ class User
 				//store or set the cookie
 				Cookie::set($this->_ck_name, $hash, time() + Config::get('cookie/expiry'));
 				$log_in = true;
+
+
+				//added so as to extend cookie for hikmah
+				Cookie::set('cookie_table', $cookie_table, time() + Config::get('cookie/expiry'));
+				//end of added to extend cookie for hikmah
 			} else {
 				$log_in = false;
 			}
@@ -157,6 +162,10 @@ class User
 		if (Cookie::exists($this->_ck_name)) {
 			//delete cookie from get_browser
 			Cookie::delete($this->_ck_name);
+			//added so as to extend cookie for hikmah
+			Cookie::delete('cookie_table');
+			Cookie::delete('user');
+			//end of added to extend cookie for hikmah
 			//delete cookie from database
 			$log_out = $this->_db->query('delete from ' . $this->_ck_table . ' where ' . $this->_ck_id_col . ' = ?', array($session_id));
 		}
@@ -223,7 +232,7 @@ class User
 
 
 	//a getter for the postion
-	public function getPosition($rank, $asst = 0,$fullPosition=false)
+	public function getPosition($rank, $asst = 0, $fullPosition = false)
 	{
 		switch ($rank) {
 			case 1:
@@ -455,7 +464,7 @@ class User
 
 
 
-	public function isRemembered()
+	public function isRemembered(): bool
 	{
 		if (Session::exists($this->_ses_name)) {
 			$this->find($this->ses_id()); //get user data
@@ -472,7 +481,9 @@ class User
 					$this->find($this->ses_id()); //get user data
 					return true;
 				}
+				return false;
 			}
+			return false;
 		}
 		return false;
 	}
@@ -499,64 +510,101 @@ class User
 		return $db->get($table, '*', 'role_id = ' . $role_id, $user_column);
 	}
 
-	public static function get_profile(string $username) {
+	public static function get_profile(string $username)
+	{
 		$first_letter = substr($username, 0, 1);
 		$db = DB::get_instance();
 		$data = [];
-		switch (strtoupper($first_letter)) {
-			case 'H':
-				$db->query('select student.*,student2.*,class.class,states.name as state_of_origin,local_governments.name as lga_of_origin from student inner join student2 on student.std_id=student2.std_id inner join class on student.class_id = class.id inner join states on states.id = student2.state inner join local_governments on local_governments.id = student2.lga where student.std_id = ?',[$username]);
-				if($db->row_count() > 0){
-					$data = $db->one_result();
-				}
-				break;
-			case 'A':
-				$db->query('select admission.*,states.name as state_of_origin,local_governments.name as lga_of_origin from admission inner join states on states.id = admission.state inner join local_governments on local_governments.id = admission.lga where admission.adm_id = ?', [$username]);
-				if ($db->row_count() > 0) {
-					$data = $db->one_result();
-				}
-				break;
-			case 'M':
-				$db->query('select management.*,states.name as state_of_origin,local_governments.name as lga_of_origin from management inner join states on states.id = management.state inner join local_governments on local_governments.id = management.lga where management.mgt_id = ?', [$username]);
-				if ($db->row_count() > 0) {
-					$data = $db->one_result();
-				}
-				break;
-			case 'S':
-				$db->query('select staff.*,states.name as state_of_origin,local_governments.name as lga_of_origin from staff inner join states on states.id = staff.state inner join local_governments on local_governments.id = staff.lga where staff.staff_id = ?', [$username]);
-				if ($db->row_count() > 0) {
-					$data = $db->one_result();
-				}
+		if (is_numeric($first_letter)) {
+			$db->query('select admission.*,states.name as state_of_origin,local_governments.name as lga_of_origin from admission inner join states on states.id = admission.state inner join local_governments on local_governments.id = admission.lga where admission.adm_id = ?', [$username]);
+			if ($db->row_count() > 0) {
+				$data = $db->one_result();
+			}
+		} else {
+
+			switch (strtoupper($first_letter)) {
+				case 'H':
+					$db->query('select student.*,student2.*,class.class,states.name as state_of_origin,local_governments.name as lga_of_origin from student inner join student2 on student.std_id=student2.std_id inner join class on student.class_id = class.id inner join states on states.id = student2.state inner join local_governments on local_governments.id = student2.lga where student.std_id = ?', [$username]);
+					if ($db->row_count() > 0) {
+						$data = $db->one_result();
+					}
+					break;
+				case 'M':
+					$db->query('select management.*,states.name as state_of_origin,local_governments.name as lga_of_origin from management inner join states on states.id = management.state inner join local_governments on local_governments.id = management.lga where management.mgt_id = ?', [$username]);
+					if ($db->row_count() > 0) {
+						$data = $db->one_result();
+					}
+					break;
+				case 'S':
+					$db->query('select staff.*,states.name as state_of_origin,local_governments.name as lga_of_origin from staff inner join states on states.id = staff.state inner join local_governments on local_governments.id = staff.lga where staff.staff_id = ?', [$username]);
+					if ($db->row_count() > 0) {
+						$data = $db->one_result();
+					}
+					break;
+			}
 		}
 		return $data;
 	}
 
-	public static function get_specifics($username,$rank,$position){
+	public static function get_specifics($username, $rank, $position)
+	{
 		$specifics = [];
 		$user = new User();
-		$db = DB::get_instance();
 		$url = new Url();
-		$specifics['rank'] = $user->getPosition($rank,$position);
+		$specifics['rank'] = $user->getPosition($rank, $position);
 		$specifics['role'] = $user->getFullPosition($rank);
-		$first_letter = substr($username,0,1);
+		$first_letter = substr($username, 0, 1);
+		if (is_numeric($first_letter)) {
+			$specifics['profile_photo_path'] = $url->to('uploads/passports/', 5);
+			$specifics['show_parents'] = false;
+		} else {
 
-		switch (strtoupper($first_letter)) {
-			case 'H':
-				$specifics['profile_photo_path'] = $url->to('uploads/passports/',3);
-				$specifics['show_parents'] = true;
-				break;
-			case 'A':
-				$specifics['profile_photo_path'] = $url->to('uploads/passports/',5);
-				$specifics['show_parents'] = false;
-				break;
-			case 'M':
-				$specifics['profile_photo_path'] = $url->to('uploads/passports/',1);
-				$specifics['show_parents'] = false;
-				break;
-			case 'S':
-				$specifics['profile_photo_path'] = $url->to('uploads/passports/',2);
-				$specifics['show_parents'] = false;
+			switch (strtoupper($first_letter)) {
+				case 'H':
+					$specifics['profile_photo_path'] = $url->to('uploads/passports/', 3);
+					$specifics['show_parents'] = true;
+					break;
+				case 'M':
+					$specifics['profile_photo_path'] = $url->to('uploads/passports/', 1);
+					$specifics['show_parents'] = false;
+					break;
+				case 'S':
+					$specifics['profile_photo_path'] = $url->to('uploads/passports/', 2);
+					$specifics['show_parents'] = false;
+					break;
+			}
 		}
 		return $specifics;
+	}
+
+	public static function hikmahDashboardRememberMe(): bool
+	{
+		if (Cookie::exists('cookie_table')) {
+			$cookie = Cookie::get('cookie_table');
+			switch ($cookie) {
+				case 'mgt_cookie':
+					$user_class = 'Management';
+					break;
+				case 'staff_cookie':
+					$user_class = 'Staff';
+					break;
+				case 'std_cookie':
+					$user_class = 'Student';
+					break;
+				case 'adm_cookie':
+					$user_class = 'Admission';
+					break;
+				default:
+					return false;
+			}
+			$user = new $user_class();
+			$remembered =  $user->isRemembered();
+			if ($remembered) {
+				Session::set('user', Cookie::get('user'));
+				return true;
+			}
+			return false;
+		}
+		return false;
 	}
 }

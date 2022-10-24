@@ -8,7 +8,7 @@
   session_start(Config::get('session/options'));
 
   //redirect user
-  if (Session::exists('user')) {
+  if (Session::exists('user') || User::hikmahDashboardRememberMe()) {
     Redirect::to('dashboard.php');
   }
   //end of redirect user
@@ -45,13 +45,17 @@
           $user = new Admission();
           break;
       }
-     
+
       if ($user->pass_match(Input::get('username'), Input::get('password'))) {
+        $username = Utility::escape(Input::get('username'));
         if ($user->login($remember)) {
           session_regenerate_id();
           $data = $user->data();
           Session::set('user_type', $user_type);
-          Session::set('user', Input::get('username'));
+          Session::set('user', $username);
+          if ($remember) {
+            Cookie::set('user', $username, time() + Config::get('cookie/expiry'));
+          }
           Redirect::to('dashboard.php');
         }
       } else {
@@ -129,10 +133,10 @@
                        Keep me signed in
                      </label>
                    </div>
-                   <a href="#" class="auth-link text-black">Forgot password?</a>
+                   <a href="recover_password.php" class="auth-link text-black">Recover Password</a>
                  </div>
                  <div class="text-center mt-4 font-weight-light">
-                   Don't have an account? <a href="register.php" class="text-primary">Create</a>
+                   <a href="register.php" class="text-primary">Create Account</a>
                  </div>
                </form>
              </div>

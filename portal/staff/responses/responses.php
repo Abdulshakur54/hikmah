@@ -14,6 +14,7 @@ $data = [];
 $db = DB::get_instance();
 $staff = new Staff();
 $url = new Url();
+$val = new Validation();
 if (Input::submitted()) {
     $op = Input::get('op');
     $sch_abbr = Input::get('school');
@@ -26,6 +27,9 @@ if (Input::submitted()) {
             $level = $classWithId->level;
             $genMsg = '';
             if (Input::submitted() && Token::check(Input::get('token'))) {
+                $ft_passmark = Utility::escape(Input::get('ft_passmark'));
+                $st_passmark = Utility::escape(Input::get('st_passmark'));
+                $tt_passmark = Utility::escape(Input::get('tt_passmark'));
                 $punc = Utility::escape(Input::get('punc'));
                 $hon = Utility::escape(Input::get('hon'));
                 $dhw = Utility::escape(Input::get('dhw'));
@@ -67,7 +71,7 @@ if (Input::submitted()) {
                     $ext = $file->extension();
                     $signatureName = $sch_abbr . '_' . $level . $class . '.' . $ext;
                     //update schedule
-                    if ($staff->updateSchedule($classId, $punc, $hon, $dhw, $rap, $sot, $rwp, $ls, $atw, $ho, $car, $con, $wi, $ob, $hea, $vs, $pig, $pis, $ac, $pama, $ms, $a1, $b2, $b3, $c4, $c5, $c6, $d7, $e8, $f9, $height_beg, $height_end, $weight_beg, $weight_end, $signatureName)) {
+                    if ($staff->updateSchedule($ft_passmark,$st_passmark,$tt_passmark,$classId, $punc, $hon, $dhw, $rap, $sot, $rwp, $ls, $atw, $ho, $car, $con, $wi, $ob, $hea, $vs, $pig, $pis, $ac, $pama, $ms, $a1, $b2, $b3, $c4, $c5, $c6, $d7, $e8, $f9, $height_beg, $height_end, $weight_beg, $weight_end, $signatureName)) {
                         $file->move('../uploads/signatures/' . $signatureName); //move picture to the destination folder
 
                         $genMsg = 'Changes has been successfully updated';
@@ -79,7 +83,7 @@ if (Input::submitted()) {
                     }
                 } else {
                     //update schedule
-                    if ($staff->updateSchedule($classId, $punc, $hon, $dhw, $rap, $sot, $rwp, $ls, $atw, $ho, $car, $con, $wi, $ob, $hea, $vs, $pig, $pis, $ac, $pama, $ms, $a1, $b2, $b3, $c4, $c5, $c6, $d7, $e8, $f9, $height_beg, $height_end, $weight_beg, $weight_end)) {
+                    if ($staff->updateSchedule($ft_passmark, $st_passmark, $tt_passmark,$classId, $punc, $hon, $dhw, $rap, $sot, $rwp, $ls, $atw, $ho, $car, $con, $wi, $ob, $hea, $vs, $pig, $pis, $ac, $pama, $ms, $a1, $b2, $b3, $c4, $c5, $c6, $d7, $e8, $f9, $height_beg, $height_end, $weight_beg, $weight_end)) {
 
                         $genMsg = 'Changes has been successfully updated';
                         Session::set_flash('post_method_success_message', $genMsg);
@@ -101,7 +105,6 @@ if (Input::submitted()) {
                 'scheme' => ['name' => 'Scheme', 'required' => true],
                 'order' => ['name' => 'Order', 'required' => true],
             ];
-            $val = new Validation();
             if (!$val->check($rules)) {
                 echo response(406, implode('<br />', $val->errors()));
                 exit();
@@ -124,7 +127,7 @@ if (Input::submitted()) {
                 'scheme' => ['name' => 'Scheme', 'required' => true],
                 'order' => ['name' => 'Order', 'required' => true],
             ];
-            $val = new Validation();
+
             if (!$val->check($rules)) {
                 echo response(406, implode('<br />', $val->errors()));
                 exit();
@@ -175,6 +178,158 @@ if (Input::submitted()) {
             $school = Utility::escape(Input::get('school'));
             $students = Result::get_ids($classId, $school);
             echo response(200, '', $students);
+            break;
+        case 'change_password':
+            $password = Utility::escape(Input::get('password'));
+            $new_password = Utility::escape(Input::get('new_password'));
+            $username = Utility::escape(Input::get('username'));
+            $rules = [
+                'password' => [
+                    'name' => 'Password',
+                    'required' => true,
+                    'pattern' => '^[A-Za-z0-9]+$'
+                ],
+                'new_password' => [
+                    'name' => 'New Password',
+                    'required' => true,
+                    'pattern' => '^[A-Za-z0-9]+$',
+                    'min' => 6,
+                    'max' => 32
+                ]
+            ];
+            if ($val->check($rules)) {
+                $db_pwd = $db->get('staff', 'password', "staff_id='$username'")->password;
+                if (password_verify($password, $db_pwd)) {
+                    $db->update('staff', ['password' => password_hash($new_password, PASSWORD_DEFAULT)]);
+                    echo response(204, 'Successfully changed password');
+                } else {
+                    echo response(400, 'Present Password is incorrectly entered');
+                }
+            } else {
+                $errors = $val->errors();
+                echo response(400, implode('<br />', $errors));
+            }
+            break;
+        case 'update_account':
+            $rules = [
+                'fname' => [
+                    'name' => 'First Name',
+                    'required' => true,
+                    'min' => 3,
+                    'max' => 20,
+                    'pattern' => '^[a-zA-Z]+$'
+                ],
+                'oname' => [
+                    'name' => 'Other Name',
+                    'min' => 3,
+                    'max' => 20,
+                    'pattern' => '^[a-zA-Z]+$'
+                ],
+                'lname' => [
+                    'name' => 'Last Name',
+                    'required' => true,
+                    'min' => 3,
+                    'max' => 20,
+                    'pattern' => '^[a-zA-Z]+$'
+                ],
+                'title' => [
+                    'name' => 'Title',
+                    'required' => true,
+                    'pattern' => '^[a-zA-Z]+$'
+                ],
+                'dob' => [
+                    'name' => 'Date of Birth',
+                    'required' => true
+                ],
+                'state' => [
+                    'name' => 'State',
+                    'required' => true
+                ],
+                'lga' => [
+                    'name' => 'LGA',
+                    'required' => true
+                ],
+                'phone' => [
+                    'name' => 'Phone',
+                    'required' => true,
+                    'size' => 11,
+                    'pattern' => '^[0-9]{11}$'
+                ],
+                'email' => [
+                    'name' => 'Email',
+                    'required' => true,
+                    'pattern' => '^[a-zA-Z]+[a-zA-Z0-9]*@[a-zA-Z]+.[a-zA-Z]+$'
+                ],
+                'choosen_email' => [
+                    'name' => 'Preffered Email',
+                    'required' => true,
+                    'pattern' => '^[a-zA-Z]+[a-zA-Z0-9]*@[a-zA-Z]+.[a-zA-Z]+$'
+                ],
+                'account' => [
+                    'name' => 'Account No',
+                    'required' => true,
+                    'pattern' => '^[0-9]{10}$'
+                ],
+                'bank' => [
+                    'name' => 'Bank',
+                    'required' => true,
+                ]
+
+            ];
+            $fileValues = [
+                'picture' => [
+                    'name' => 'Picture',
+                    'required' => false,
+                    'maxSize' => 100,
+                    'extension' => ['jpg', 'jpeg', 'png']
+                ]
+            ];
+            if ($val->check($rules) && $val->checkFile($fileValues) && Utility::noScript(Input::get('address'))) {
+                $fname = Utility::escape(Input::get('fname'));
+                $lname = Utility::escape(Input::get('lname'));
+                $oname = Utility::escape(Input::get('oname'));
+                $title = Utility::escape(Input::get('title'));
+                $email = Utility::escape(Input::get('email'));
+                $choosen_email = Utility::escape(Input::get('choosen_email'));
+                $address = Utility::escape(Input::get('address'));
+                $state = Utility::escape(Input::get('state'));
+                $lga = Utility::escape(Input::get('lga'));
+                $dob = Utility::escape(Input::get('dob'));
+                $phone = Utility::escape(Input::get('phone'));
+                $account = Utility::escape(Input::get('account'));
+                $bank = Utility::escape(Input::get('bank'));
+                $username = Utility::escape(Input::get('username'));
+                $values = [
+                    'fname' => $fname,
+                    'lname' => $lname,
+                    'oname' => $oname,
+                    'title' => $title,
+                    'email' => $email,
+                    'choosen_email' => $choosen_email,
+                    'address' => $address,
+                    'state' => $state,
+                    'lga' => $lga,
+                    'dob' => $dob,
+                    'phone' => $phone,
+                ];
+                if (!empty($_FILES['picture']['name'])) {
+                    $file = new File('picture');
+                    $pictureName = $username . '.' . $file->extension();
+                    $values['picture']=$pictureName;
+                    $db->update('staff', $values, "staff_id='$username'");
+                    $file_path = '../uploads/passports/' . $pictureName;
+                    $file->move($file_path);
+                } else {
+                    $db->update('staff', $values, "staff_id='$username'");
+                }
+                $db->update('account', ['no' => $account, 'bank' => $bank]);
+                echo response(201, 'Update was successful');
+            } else {
+                $errors = implode('<br />', $val->errors());
+                echo response(500, $errors);
+            }
+
+
             break;
     }
 } else {

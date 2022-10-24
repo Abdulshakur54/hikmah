@@ -41,7 +41,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         if ($submitType == 'assign') {
             $stdIdsString = Input::get('studentids');
             $sqlStdString = "'" . str_replace(",", "','", $stdIdsString) . "'";
-            $db->query('update student3 inner join student on student3.std_id = student.std_id set student3.class_id = ?, student.class_id=? where student3.std_id in(' . $sqlStdString . ')', [$classId, $classId]);
+            $db->query('update student set class_id = ? where std_id in(' . $sqlStdString . ')', [$classId]);
             //populate student_psy table
             //notify the students
             $cD = $hos->getClassDetail($classId);

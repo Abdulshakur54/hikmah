@@ -1,6 +1,7 @@
 {
     "require": {
         "phpmailer/phpmailer": "^6.6",
-        "phpoffice/phpspreadsheet": "^1.24"
+        "phpoffice/phpspreadsheet": "^1.24",
+        "flutterwavedev/flutterwave-v3": "^1.0"
     }
 }

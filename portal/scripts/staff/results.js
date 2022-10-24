@@ -1,8 +1,13 @@
-function viewResult() {
+function viewResult(term) {
   let classId = _("class").value;
-  let url = _("url").value;
+  let url;
+  if (term === "ses") {
+     url = _("ses_url").value;
+  } else {
+     url = _("url").value+'&term='+term;
+  }
 
-  ld_startLoading("resultBtn");
+  ld_startLoading(term+"_resultBtn","ld_loader_"+term);
   let postData =
     "op=view_results&class_id=" +
     classId +
@@ -22,7 +27,7 @@ function viewResult() {
     _("token").value = rsp.token;
     if (successCodes.includes(rsp.status)) {
       let results = rsp.data;
-      ld_stopLoading("resultBtn");
+ ld_stopLoading(term + "_resultBtn", "ld_loader_" + term);
       if (results.length > 0) {
         let students = [];
         results.forEach((element) => {
