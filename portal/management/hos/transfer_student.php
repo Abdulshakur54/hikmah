@@ -42,7 +42,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         $cDTo = $hos->getClassDetail($classIdTo);
 
         //update class_id for student table
-        $db->query('update student set class_id = ? where std_id in(' . $sqlStdString . ')', [y$classIdTo]);
+        $db->query('update student set class_id = ? where std_id in(' . $sqlStdString . ')', [$classIdTo]);
         //update score table
         $utils = new Utils();
         $formSession = $utils->getFormatedSession($sch_abbr);

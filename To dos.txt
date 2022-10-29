@@ -1,7 +1,1 @@
-
-# notification and confirmation should only show when the user has it, same with the welcome message 
-# the search at the dashboard should be implemented as a search of menus
-
-# understand the email functionality, and confirm if add attachment works when the student receive an email for his admission, also send admission letter along with the email
-
-#add the feature for students to see their admission letter
+# add exam portal for all concerned

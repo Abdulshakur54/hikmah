@@ -108,7 +108,7 @@ if (Input::submitted('get') && (!empty(Input::get('sch_abbr')) && !empty(Input::
 
                         <?php
                         } else {
-                            echo '<div class="message">No Admission Request</div>';
+                            echo '<div class="message text-center py-5">No Admission Request</div>';
                         }
 
                         ?>

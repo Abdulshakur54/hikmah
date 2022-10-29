@@ -344,4 +344,9 @@ class School
         $db = DB::get_instance();
         return $db->select('attachment', 'name,attachment', "sch_abbr in('$sch_abbr','ALL') AND level in('$level','ALL')");
     }
+
+    public static function get_classes($sch_abbr){
+        $db = DB::get_instance();
+        return $db->select('class','id,level,class',"sch_abbr = '$sch_abbr'");
+    }
 }

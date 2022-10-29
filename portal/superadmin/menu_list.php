@@ -16,6 +16,7 @@ require_once './includes/val_page_request.inc.php';
                             <th>Menu</th>
                             <th>ID</th>
                             <th>Display Name</th>
+                            <th>Description</th>
                             <th>Url</th>
                             <th>Order</th>
                             <th>Parent ID</th>
@@ -38,6 +39,7 @@ require_once './includes/val_page_request.inc.php';
                                         <td>' . $menu->menu . '</td>
                                         <td>' . $menu->id . '</td>
                                         <td>' . $menu->display_name . '</td>
+                                        <td>' . $menu->description . '</td>
                                         <td>' . $menu->url . '</td>
                                         <td>' . $menu->menu_order . '</td>
                                         <td>' . $menu->parent_id . '</td>

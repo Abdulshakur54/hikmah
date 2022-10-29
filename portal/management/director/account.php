@@ -37,7 +37,7 @@ function selectedValue($value, string $type): string
 }
 
 ?>
-<div class="col-12 grid-margin stretch-card">
+<div class="col-12 grid-margin stretch-card px-0 px-md-3">
     <div class="card">
         <div class="card-body">
             <h4 class="card-title text-primary">Account</h4>
@@ -110,8 +110,8 @@ function selectedValue($value, string $type): string
                 <div class="form-group">
                     <label for="lga">Preffered Email</label> <span class="message" style="font-size: 0.75em;">(This email would be used for sending you emails)</span>
                     <select class="js-example-basic-single w-100 p-2" id="prefferedEmail" title="Preffered Email" name="choosen_email" required>
-                       <option <?php echo selectedValue($data->email,'preffered email') ?>><?php echo $data->email?></option>
-                       <option <?php echo selectedValue($data->official_email,'preffered email') ?>><?php echo $data->official_email?></option>
+                        <option <?php echo selectedValue($data->email, 'preffered email') ?>><?php echo $data->email ?></option>
+                        <option <?php echo selectedValue($data->official_email, 'preffered email') ?>><?php echo $data->official_email ?></option>
                     </select>
                 </div>
 
@@ -132,7 +132,7 @@ function selectedValue($value, string $type): string
                 </div>
                 <div class="form-group">
                     <label for="address">Residential Address</label>
-                    <input  type="text" id="address" name="address" value="<?php echo $data->address ?>" class="form-control" />
+                    <input type="text" id="address" name="address" value="<?php echo $data->address ?>" class="form-control" />
                 </div>
 
 

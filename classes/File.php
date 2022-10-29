@@ -51,5 +51,14 @@
             header('Content-Disposition: inline; filename="'.$savename.'"'); 
             readfile($filepath);
         }
+
+        public static function delete_from_directory(string $path, string $pattern){
+            $results = glob($path.'/'.$pattern);
+            if(is_array($results)){
+                foreach($results as $res){
+                    unlink($res);
+                }
+            }
+        }
      
     }

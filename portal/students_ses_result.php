@@ -83,7 +83,7 @@ foreach ($student_ids as $std_id) {
             $total  = $total + $sum;
             $count++;
         }
-        $average = $total / $count;
+        $average = round($total / $count,2);
         $position_grade = Result::get_grade($average);
         $output_session =  'SESSIONAL REPORT (' . $session . ' or ' . $agg_data->hijra_session . ')';
         $class = School::getLevelName($sch_abbr, $agg_data->level) . ' ' . $agg_data->class;

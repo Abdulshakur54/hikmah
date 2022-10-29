@@ -53,6 +53,8 @@
           $data = $user->data();
           Session::set('user_type', $user_type);
           Session::set('user', $username);
+          $greeting = User::get_user_greeting($username);
+          Session::set_flash(Config::get('hikmah/flash_welcome'), $greeting);
           if ($remember) {
             Cookie::set('user', $username, time() + Config::get('cookie/expiry'));
           }

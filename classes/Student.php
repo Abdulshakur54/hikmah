@@ -57,7 +57,7 @@ class Student extends User
         $this->_util = new Utils();
     }
 
-    
+
 
     //this function returns the class teacher id
     function getClassTeacherId($classId)
@@ -66,7 +66,7 @@ class Student extends User
         return $this->_db->one_result()->teacher_id;
     }
 
-   
+
 
 
     function classHasSubject($classId): bool
@@ -79,15 +79,21 @@ class Student extends User
     {
         $db = DB::get_instance();
         if ($std_id === '') {
-           $db->query('select student.std_id,student.fname,student.lname,student.oname, student_psy.' . $term . '_com, student_psy.' . $term . '_p_com from student inner join student_psy on student_psy.std_id = student.std_id where student.class_id=?', [$classId]);
+            $db->query('select student.std_id,student.fname,student.lname,student.oname, student_psy.' . $term . '_com, student_psy.' . $term . '_p_com from student inner join student_psy on student_psy.std_id = student.std_id where student.class_id=?', [$classId]);
         } else {
 
-           $db->query('select student.std_id,student.fname,student.lname,student.oname, student_psy.' . $term . '_com, student_psy.' . $term . '_p_com from student inner join student_psy on student_psy.std_id = student.std_id where student.class_id=? and student.std_id=?', [$classId, $std_id]);
+            $db->query('select student.std_id,student.fname,student.lname,student.oname, student_psy.' . $term . '_com, student_psy.' . $term . '_p_com from student inner join student_psy on student_psy.std_id = student.std_id where student.class_id=? and student.std_id=?', [$classId, $std_id]);
         }
         if ($db->row_count() > 0) {
-            return$db->get_result();
+            return $db->get_result();
         }
         return [];
     }
 
+
+    public static function getStudents(string|int $classId): array
+    {
+        $db = DB::get_instance();
+        return  $db->select('student', 'fname,oname,lname,std_id,class_id', "class_id = '$classId'");
+    }
 }

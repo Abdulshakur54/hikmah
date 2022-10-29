@@ -1,5 +1,7 @@
-
 function changeSchool(event) {
+  let pos = event.querySelector(
+    'option[value="' + event.value + '"]'
+  ).innerHTML;
   let genHtml = "";
   let schools = "";
   switch (event.value) {
@@ -20,6 +22,7 @@ function changeSchool(event) {
     default:
       genHtml += "<option value='All'>All</option>";
   }
+  changePosition(pos);
   $("#school").html(genHtml);
 }
 
@@ -31,6 +34,14 @@ function addToken() {
     const salary = _("salary");
     const token = _("token");
     const school = _("school");
+    const assts = document.querySelectorAll('input[name="asst"]');
+    let asst;
+    for (let a of assts) {
+      if (a.checked) {
+        asst = a.value;
+        break;
+      }
+    }
     ajaxRequest(
       "management/director/responses/add_token.rsp.php",
       addTokenRsp,
@@ -43,7 +54,8 @@ function addToken() {
         "&token=" +
         token.value +
         "&salary=" +
-        salary.value
+        salary.value+
+        "&asst="+asst
     );
   }
 
@@ -54,7 +66,7 @@ function addToken() {
     if (rsp.success) {
       msgStyleClass = "success m-2";
       msgDiv.innerHTML =
-        '<div>Pin successfully generated, Registration details below</div>' +
+        "<div>Pin successfully generated, Registration details below</div>" +
         '<div class="message">Name: ' +
         staffname.value +
         "<br/>Token: " +
@@ -62,15 +74,53 @@ function addToken() {
         "</div>";
     } else {
       msgStyleClass = "failure m-2";
-      msgDiv.innerHTML= '<div>' + rsp.message + '</div>';
+      msgDiv.innerHTML = "<div>" + rsp.message + "</div>";
     }
     _("token").value = rsp.token;
     msgDiv.className = msgStyleClass;
     emptyInputs(["staffname", "position", "school", "salary"]);
-      resetInputStyling("tokenForm", "inputsuccess", "inputfailure");
+    resetInputStyling("tokenForm", "inputsuccess", "inputfailure");
     ld_stopLoading("generatePin");
   }
-  
 }
 
-  $(".js-example-basic-single").select2();
+function changeAsst(obj) {
+  doAfterPositionChanges(parseInt(obj.value));
+}
+
+function changePosition(pos) {
+  _("pos").value = pos;
+  _("mainPos").checked = true;
+  doAfterPositionChanges(0);
+}
+
+function doAfterPositionChanges(asst) {
+  let asstDiv = _("asstDiv");
+  let pos = _("pos");
+  let description = "";
+  if (pos.value.length > 0) {
+    switch (asst) {
+      case 0:
+        description += "";
+        break;
+      case 1:
+        description += "Deputy";
+        break;
+      case 2:
+        description += "Secretary to ";
+        break;
+      default:
+    }
+    asstDiv.innerHTML =
+      '<div class="font-weight-bold my-3"> Position: <span class="message">' +
+      description +
+      " " +
+      pos.value +
+      "</span></div>";
+  } else {
+    asstDiv.innerHTML =
+      '<div class="text-danger">Select a position first</div>';
+  }
+}
+
+$(".js-example-basic-single").select2();

@@ -29,7 +29,7 @@ require_once './includes/hrm.inc.php';
                                         <td></td>
                                         <td>' . Utility::escape(ucwords($val->owner)) . '</td>
                                         <td>' . Utility::escape($val->token) . '</td>
-                                        <td>' . $hrm->getPosition($val->pro_rank) . '</td>
+                                        <td>' . User::getPosition($val->pro_rank) . '</td>
                                         <td>' . Utility::escape($val->sch_abbr) . '</td>
                                         <td><button class="btn btn-danger btn-md" onclick="deleteToken(' . $val->id . ')">Delete</button></td>
                                     </tr>';

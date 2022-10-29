@@ -2,6 +2,7 @@ var table = $("#menusTable").DataTable(dataTableOptions);;
 function saveMenu(op) {
   const menu = _("menu").value;
   const display_name = _('display_name').value;
+  const description = _('description').value;
   const menuId = _("menu_id").value;
   const token = _("token");
   const url = _("url").value;
@@ -15,7 +16,7 @@ function saveMenu(op) {
     ajaxRequest(
       "superadmin/responses/responses.php",
       handleSaveMenuReq,
-      `op=${op}&menu_id=${menuId}&menu=${menu}&display_name=${display_name}&url=${url}&menu_order=${menu_order}&parent_id=${parent_id}&parent_order=${parent_order}&shown=${shown}&active=${active}&token=${token.value}`
+      `op=${op}&menu_id=${menuId}&menu=${menu}&display_name=${display_name}&description=${description}&url=${url}&menu_order=${menu_order}&parent_id=${parent_id}&parent_order=${parent_order}&shown=${shown}&active=${active}&token=${token.value}`
     );
   }
 

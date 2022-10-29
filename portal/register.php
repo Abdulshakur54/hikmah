@@ -230,7 +230,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 //helper functions 
 function formatStaffMsg($rank, $user)
 {
-  return 'a ' . $user->getFullPosition($rank, $user);
+  return 'a ' . User::getFullPosition($rank, $user);
 }
 
 function formatManagementMsg($rank, $user)
@@ -241,7 +241,7 @@ function formatManagementMsg($rank, $user)
     case 3:
       return 'an Accountant';
     default:
-      return 'a ' . $user->getFullPosition($rank, $user);
+      return 'a ' . User::getFullPosition($rank, $user);
   }
 }
 ?>

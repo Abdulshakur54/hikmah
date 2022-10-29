@@ -168,8 +168,6 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 $errors = implode('<br />', $val->errors());
                 echo response(500, $errors);
             }
-
-
             break;
     }
 } else {

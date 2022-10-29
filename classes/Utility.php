@@ -37,13 +37,13 @@ class Utility
     {
         $hour = date('G');
         if ($hour < 12) {
-            return 'morning';
+            return 'Morning';
         } else if ($hour < 16) {
-            return 'afternoon';
+            return 'Afternoon';
         } else if ($hour < 21) {
-            return 'evening';
+            return 'Evening';
         } else {
-            return 'day';
+            return 'Day';
         }
     }
 

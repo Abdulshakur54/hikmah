@@ -40,4 +40,18 @@ function emp(val){
 }
 
 
+function capitalizeFirstLetter(word){
+    const firstLetter = word.substr(0,1);
+    return firstLetter.toUpperCase()+word.substr(1,word.length-1);
+}
+function capitalizeWords(sentence){
+    const words = sentence.split(' ');
+    let capitalizedWordsInSentence = '';
+    for(let word of words){
+        capitalizedWordsInSentence += (' '+capitalizeFirstLetter(word));
+    }
+    return capitalizedWordsInSentence.trim();
+}
+
+
 

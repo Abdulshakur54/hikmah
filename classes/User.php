@@ -232,7 +232,7 @@ class User
 
 
 	//a getter for the postion
-	public function getPosition($rank, $asst = 0, $fullPosition = false)
+	public static function getPosition($rank, $asst = 0, $fullPosition = false)
 	{
 		switch ($rank) {
 			case 1:
@@ -248,6 +248,8 @@ class User
 				switch ($asst) {
 					case 0:
 						return 'A.P.M';
+					case 1:
+						return 'Deputy A.P.M';
 					case 2:
 						return 'Secretary to A.P.M';
 				}
@@ -255,6 +257,8 @@ class User
 				switch ($asst) {
 					case 0:
 						return 'Accountant';
+					case 1:
+						return 'Deputy A.P.M';
 					case 2:
 						return 'Secretary to Accountant';
 				}
@@ -262,6 +266,8 @@ class User
 				switch ($asst) {
 					case 0:
 						return 'I.C';
+					case 1:
+						return 'Deputy A.P.M';
 					case 2:
 						return 'Secretary to I.C';
 				}
@@ -278,6 +284,8 @@ class User
 				switch ($asst) {
 					case 0:
 						return 'H.R.M';
+					case 1:
+						return 'Deputy A.P.M';
 					case 2:
 						return 'Secretary to H.R.M';
 				}
@@ -311,6 +319,13 @@ class User
 						return 'Secretary to Mudir';
 				}
 		}
+	}
+
+	private static function get_random_greeting(): string
+	{
+		$greetings = ['How have you been?', 'How is it going?', 'Nice to have you back', 'Hope you having a good day'];
+		$index = rand(0, count($greetings) - 1);
+		return $greetings[$index];
 	}
 
 	public function get_role_id($rank, $asst = 0)
@@ -349,7 +364,7 @@ class User
 
 
 	//a getter for the postion
-	public function getFullPosition($rank)
+	public static function getFullPosition($rank)
 	{
 		switch ($rank) {
 			case 1:
@@ -551,8 +566,8 @@ class User
 		$specifics = [];
 		$user = new User();
 		$url = new Url();
-		$specifics['rank'] = $user->getPosition($rank, $position);
-		$specifics['role'] = $user->getFullPosition($rank);
+		$specifics['rank'] = self::getPosition($rank, $position);
+		$specifics['role'] = User::getFullPosition($rank);
 		$first_letter = substr($username, 0, 1);
 		if (is_numeric($first_letter)) {
 			$specifics['profile_photo_path'] = $url->to('uploads/passports/', 5);
@@ -575,6 +590,119 @@ class User
 			}
 		}
 		return $specifics;
+	}
+
+	public static function get_link(string $username):string{
+		$first_letter = substr($username, 0, 1);
+		if (is_numeric($first_letter)) {
+			return 'admission';
+		} else {
+
+			switch (strtoupper($first_letter)) {
+				case 'H':
+					return 'student';
+				case 'M':
+					$db = DB::get_instance();
+					$rank = $db->get('management','rank',"mgt_id='$username'")->rank;
+					$pos = User::getPosition($rank);
+					switch($pos){
+						case 'Director':
+							return 'management/director';
+						case 'A.P.M':
+							return 'management/apm';
+						case 'H.R.M':
+							return 'management/hrm';
+						case 'H.O.S':
+							return 'management/hos';
+						case 'Accountant':
+							return 'management/accountant';
+						case 'I.C':
+							return 'management/ic';
+					}
+				case 'S':
+					return 'staff';
+				default:
+				return '';
+			}
+		}
+	}
+
+	public static function get_user_greeting(string $username): string
+	{
+		$db = DB::get_instance();
+		$first_letter = substr($username, 0, 1);
+		if (is_numeric($first_letter)) {
+			$table = 'admission';
+			$cookie_table = 'adm_cookie';
+			$user_data = $db->get($table, 'fname,oname,lname', "adm_id ='$username'");
+			if (!empty($db->get($cookie_table, 'id', "adm_id = '$username'"))) {
+				return 'Welcome back, ' . ucfirst($user_data->fname);
+			} else {
+				return '<span>Good ' . Utility::getPeriod() . ' ' . ucfirst($user_data->fname) . ', ' . self::get_random_greeting() . '</span>';
+			}
+		} else {
+
+			switch (strtoupper($first_letter)) {
+				case 'H':
+					$table = 'student';
+					$cookie_table = 'std_cookie';
+					$user_data = $db->get($table, 'fname,oname,lname', "std_id ='$username'");
+					if (!empty($db->get($cookie_table, 'id', "std_id = '$username'"))) {
+						return 'Welcome back, ' . ucfirst($user_data->fname);
+					} else {
+						return '<span>Good ' . Utility::getPeriod() . ' ' . ucfirst($user_data->fname) . ', ' . self::get_random_greeting() . '</span>';
+					}
+				case 'M':
+					$table = 'management';
+					$cookie_table = 'mgt_cookie';
+					$user_data = $db->get($table, 'fname,oname,lname,rank,asst', "mgt_id ='$username'");
+					$rank = (int)$user_data->rank;
+					$position = self::getPosition($rank, (int)$user_data->asst);
+					if (!empty($db->get($cookie_table, 'id', "mgt_id = '$username'"))) {
+						return 'Welcome back, ' . $position;
+					} else {
+						return '<span>Good ' . Utility::getPeriod() . ' ' . $position . ', ' . self::get_random_greeting() . '</span>';
+					}
+				case 'S':
+					$table = 'staff';
+					$cookie_table = 'staff_cookie';
+					$user_data = $db->get($table, 'fname,oname,lname,title', "staff_id ='$username'");
+					if (!empty($db->get($cookie_table, 'id', "staff_id = '$username'"))) {
+						return 'Welcome back, ' . $user_data->title . '. ' . ucfirst($user_data->fname);
+					} else {
+						return '<span>Good ' . Utility::getPeriod() . ' ' . $user_data->title . '. ' . ucfirst($user_data->fname) . ', ' . self::get_random_greeting() . '</span>';
+					}
+				default:
+					return '';
+			}
+		}
+	}
+
+	public static function get_profile_image_path($username) :string{
+
+		$db = DB::get_instance();
+		$url = new Url();
+		$first_letter = substr($username, 0, 1);
+		if (is_numeric($first_letter)) {
+			$picture = $db->get('admission', 'picture', "adm_id ='$username'")->picture;
+			return $url->to('uploads/passports/'.$picture,5);
+		} else {
+
+			switch (strtoupper($first_letter)) {
+				case 'H':
+					$picture = $db->get('student', 'picture', "std_id ='$username'")->picture;
+					return $url->to('uploads/passports/' . $picture, 3);
+				case 'M':
+					$picture = $db->get('management', 'picture', "mgt_id ='$username'")->picture;
+					return $url->to('uploads/passports/' . $picture, 1);
+				case 'S':
+					$picture = $db->get('staff', 'picture', "staff_id ='$username'")->picture;
+					return $url->to('uploads/passports/' . $picture, 2);
+				default:
+					return '';
+			}
+		}
+	
 	}
 
 	public static function hikmahDashboardRememberMe(): bool
@@ -600,7 +728,10 @@ class User
 			$user = new $user_class();
 			$remembered =  $user->isRemembered();
 			if ($remembered) {
-				Session::set('user', Cookie::get('user'));
+				$username = Cookie::get('user');
+				Session::set('user',$username);
+				$greeting = User::get_user_greeting($username);
+				Session::set_flash(Config::get('hikmah/flash_welcome'),$greeting);
 				return true;
 			}
 			return false;

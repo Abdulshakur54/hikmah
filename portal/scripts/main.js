@@ -22,18 +22,18 @@ var dataTableOptions = {
 };
 
 function getPage(url, postData = null) {
-  $("#page").block({
-    message: "<div>Loading...</div>",
-    css: {
-      display: "flex",
-      width: "100%",
-      height: "100vh",
-      justifyContent: "center",
-      alignItems: "center",
-      border:'none',
-      fontWeight:'bold'
-    },
-  });
+  // $("#page").block({
+  //   message: "<div>Loading...</div>",
+  //   css: {
+  //     display: "flex",
+  //     width: "100%",
+  //     height: "100vh",
+  //     justifyContent: "center",
+  //     alignItems: "center",
+  //     border:'none',
+  //     fontWeight:'bold'
+  //   },
+  // });
   if (postData == null) {
     //get request
     if (url.indexOf("?") === -1) {
@@ -47,27 +47,36 @@ function getPage(url, postData = null) {
     postData += "&page_token=" + _("page_token").value;
     ajaxRequest(url, loadPage, postData);
   }
-  $('#page').unblock();
+  // $('#page').unblock();
 }
 
 function loadPage() {
   const rsp = xmlhttp.responseText;
   $("#page").html(rsp);
-  //  const notCountContainer = _('notificationCount');
-  //  const notCount = parseInt(_("notCount").value);
-  //  const requestCountContainer = _("requestCount");
-  //  const requestCount = parseInt(_("reqCount").value);
-  //  notCountContainer.innerHTML = notCount;
-  //  requestCountContainer.innerHTML = requestCount;
+  const notCount = parseInt(_("notCount").value);
+  const reqCount = parseInt(_("reqCount").value);
+  if (notCount > 0) {
+    _('notificationLink').style.display = 'block';
+     _("notificationCount").innerHTML = notCount;
+  } else {
+     _("notificationLink").style.display = "none";
+  }
+  if (reqCount > 0) {
+    _("requestLink").style.display = "block";
+     _("requestCount").innerHTML = reqCount;
+  } else {
+    _("requestLink").style.display = "none";
+  }
 }
 
 setTimeout(function () {
-  _("welcomeMessage").style.display = "none";
-}, 10000);
+  _("welcomeMessage").style.visibility = "hidden";
+}, 5000);
 
 function getAltPage(altPage) {
   getPage(altPage);
 }
+
 
 function swalNotify(message, icon) {
   Swal.fire({

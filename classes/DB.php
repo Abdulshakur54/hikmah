@@ -78,7 +78,7 @@ class DB
 			]
 		*/
 
-	public function query(string $sql, $val = array(), $audit_options = []): bool
+	public function query(string $sql, array $val = array(), array $audit_options = []): bool
 	{
 		$this->_sql = $sql;
 		if ($this->_query = $this->_pdo->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL))) {
@@ -114,7 +114,7 @@ class DB
 		}
 	}
 
-	public function requery($values = [])
+	public function requery(array $values = [])
 	{
 		$this->insert_val($values);
 	}
@@ -269,7 +269,9 @@ class DB
 		if ($limit !== 0) {
 			$sql .= ' limit ' . $limit;
 		}
+		
 		$this->query($sql);
+		
 		if ($this->row_count() > 0) {
 			return $this->get_result();
 		}

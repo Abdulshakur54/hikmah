@@ -91,7 +91,8 @@ $GLOBALS['configuration'] = array(
 	'hikmah' => [
 		'subject_teacher_role' => 23,
 		'class_teacher_role' => 24,
-		'staff_role' => 6
+		'staff_role' => 6,
+		'flash_welcome'=>'greeting'
 	],
 	'sms' => [
 		'email' => 'mabdulshakur54@gmail.com',

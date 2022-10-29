@@ -6,6 +6,7 @@ if ($op === 'edit') {
     $menu_id = Utility::escape(Input::get('menu_id'));
     $menu_row =  Menu::get_menu($menu_id);
     $display_name = Utility::escape($menu_row->display_name);
+    $description = Utility::escape($menu_row->description);
     $menu = Utility::escape($menu_row->menu);
     $url = Utility::escape($menu_row->url);
     $menu_order = Utility::escape($menu_row->menu_order);
@@ -18,6 +19,7 @@ if ($op === 'edit') {
     $menu_id = "";
     $menu = "";
     $display_name = '';
+    $description = '';
     $url = "";
     $menu_order = "";
     $parent_id = "";
@@ -40,6 +42,10 @@ if ($op === 'edit') {
                 <div class="form-group">
                     <label for="display_name">Display Name</label>
                     <input type="text" class="form-control" id="display_name" placeholder="Display Name" value="<?php echo $display_name ?>" onfocus="clearHTML('messageContainer')" title="Display Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" class="form-control" id="description" placeholder="Description" value="<?php echo $description ?>" onfocus="clearHTML('messageContainer')" title="Description" required>
                 </div>
                 <div class="form-group">
                     <label for="url">Url</label>

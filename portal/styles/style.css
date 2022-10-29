@@ -89,3 +89,35 @@ input,select,button,textarea{
         gap: .5rem;
     }
 
+.gx-1{
+        column-gap: 1rem;
+    }
+.gx-2{
+        column-gap: 2rem;
+    }
+.gx-3{
+        column-gap: 3rem;
+    }
+.gx-4{
+        column-gap: 4rem;
+    }
+.gx-5{
+        column-gap: 5rem;
+    }
+.gy-1{
+        row-gap: 1rem;
+    }
+.gy-2{
+        row-gap: 2rem;
+    }
+.gy-3{
+        row-gap: 3rem;
+    }
+.gy-4{
+        row-gap: 4rem;
+    }
+.gy-5{
+        row-gap: 5rem;
+    }
+
+

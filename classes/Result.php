@@ -205,11 +205,11 @@ class Result
         return $summary;
     }
 
-    public static function format_grade_summary(array $summary,bool $html_output = false): string
+    public static function format_grade_summary(array $summary, bool $html_output = false): string
     {
         $formatted_summary = '';
         foreach ($summary as $alp => $count) {
-            $space = ($html_output)? '&nbsp; &nbsp; &nbsp;':'   ';
+            $space = ($html_output) ? '&nbsp; &nbsp; &nbsp;' : '   ';
             if ($count > 0) {
                 if ($count === 1) {
                     $formatted_summary .= $space . $count . ' ' . $alp;
@@ -230,10 +230,45 @@ class Result
         }
         return [];
     }
-    public static function get_student_term_totals($session, $std_id, $term)
+
+    public static function get_class_ses_totals($session, $class_id)
     {
         $db = DB::get_instance();
         $score_table = Utility::getFormatedSession($session) . '_score';
-        $db->select($score_table, $term . '_tot', "std_id='$std_id'");
+        $db->query('select ' . $score_table . '.ft_tot,' . $score_table . '.st_tot,' . $score_table . '.tt_tot from ' . $score_table . ' inner join student on student.std_id = ' . $score_table . '.std_id where student.class_id = ?', [$class_id]);
+        if ($db->row_count() > 0) {
+            return $db->get_result();
+        }
+        return [];
+    }
+    public static function get_student_term_totals($session, $std_id, $term, $requery = false): array
+    {
+        $db = DB::get_instance();
+        if ($requery) {
+             $db->requery([$std_id]);
+        } else {
+
+            $score_table = Utility::getFormatedSession($session) . '_score';
+            $db->query('select ' . $term . '_tot from ' . $score_table . ' where std_id = ?', [$std_id]);
+        }
+        if ($db->row_count() > 0) {
+            return $db->get_result();
+        }
+        return [];
+    }
+    public static function get_student_ses_totals($session, $std_id, $requery = false): array
+    {
+        $db = DB::get_instance();
+        if($requery){
+            $db->requery([$std_id]);
+        }else{
+            $score_table = Utility::getFormatedSession($session) . '_score';
+            $db->query('select ft_tot,st_tot,tt_tot from ' . $score_table . ' where std_id = ?', [$std_id]);
+        }
+        if ($db->row_count() > 0) {
+            return $db->get_result();
+        }
+        return [];
+       
     }
 }
