@@ -1,4 +1,4 @@
-var msgElement = "";
+var msgElement = "block";
 var defaultOptions = {
   validateOnSubmit: false,
   display: "block",
@@ -161,42 +161,59 @@ function validate(formId, options = {}, customMessages = {}) {
 
       if (element.pattern.length > 0 && userInput.length > 0) {
         if (!match(userInput, element.pattern)) {
-          outputMessage(element, "failure", "pattern");
+          if (element.getAttribute("data-error-message") !== null) {
+            outputMessage(element, "failure", "pattern", undefined, {
+              error: element.getAttribute("data-error-message"),
+              success: "",
+            });
+          } else {
+            outputMessage(element, "failure", "pattern");
+          }
           return false;
         }
       }
 
-       if (element.pattern.length == 0 && userInput.length > 0) {
-         //validate input type only when nothing is entered for pattern, this would help use the default form validation types in html to help fake filler fill appropriately
-         switch (inputType) {
-           case "email":
-             if (
-               !match(
-                 userInput,
-                 "/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$/"
-               )
-             ) {
-               outputMessage(element, "failure", "email");
-               return false;
-             }
-             break;
-           case "phone":
-             if (!match(userInput, "^(080|070|090|081|091|071)[0-9]{8}$")) {
-               outputMessage(element, "failure", "phone");
-               return false;
-             }
-             break;
-         }
-       }
+      if (element.pattern.length == 0 && userInput.length > 0) {
+        //validate input type only when nothing is entered for pattern, this would help use the default form validation types in html to help fake filler fill appropriately
+        switch (inputType) {
+          case "email":
+            if (
+              !match(userInput, "/^[a-zA-Z]+[a-zA-Z0-9]*@[a-zA-Z]+.[a-zA-Z]+$/")
+            ) {
+              outputMessage(element, "failure", "email");
+              return false;
+            }
+            break;
+          case "phone":
+            if (!match(userInput, "^(080|070|090|081|091|071)[0-9]{8}$")) {
+              outputMessage(element, "failure", "phone");
+              return false;
+            }
+            break;
+        }
+      }
     }
 
-    
     if (!options.numberIncludedForMinCharForSuccessMessageText) {
       //this will help validate number input below minChar
-      outputMessage(element, "success");
+      if (element.getAttribute("data-success-message") !== null) {
+        outputMessage(element, "success", undefined, undefined, {
+          success: element.getAttribute("data-success-message"),
+          error: "",
+        });
+      } else {
+        outputMessage(element, "success");
+      }
     } else {
       if (userInput.length >= options.minCharForSuccessMessageText) {
-        outputMessage(element, "success");
+        if (element.getAttribute("data-success-message") !== null) {
+          outputMessage(element, "success", undefined, undefined, {
+            success: element.getAttribute("data-success-message"),
+            error: "",
+          });
+        } else {
+          outputMessage(element, "success");
+        }
       }
     }
 
@@ -207,7 +224,8 @@ function validate(formId, options = {}, customMessages = {}) {
     element,
     state,
     valType = null,
-    placeholders = { ruleValue: "" }
+    placeholders = { ruleValue: "" },
+    messages = { success: "", error: "" }
   ) {
     const parent = element.parentElement;
     let messageWrapper = document.getElementById(element.title + "_msg");
@@ -218,14 +236,22 @@ function validate(formId, options = {}, customMessages = {}) {
     title = element.title;
     if (state === "success") {
       if (options.displaySuccessMessage) {
-        messageWrapper.innerHTML = options.successMessageText;
+        if (messages.success.length > 0) {
+          messageWrapper.innerHTML = messages.success;
+        } else {
+          messageWrapper.innerHTML = options.successMessageText;
+        }
       } else {
         messageWrapper.innerHTML = "";
       }
     } else {
-      messageWrapper.innerHTML = customMessages[valType]
-        .replace("val_Title", title)
-        .replace("val_RuleValue", placeholders.ruleValue);
+      if (messages.error.length > 0) {
+        messageWrapper.innerHTML = messages.error;
+      } else {
+        messageWrapper.innerHTML = customMessages[valType]
+          .replace("val_Title", title)
+          .replace("val_RuleValue", placeholders.ruleValue);
+      }
     }
 
     parent.appendChild(messageWrapper);
@@ -263,17 +289,15 @@ function resetInputStyling(formId, firstClass, secondClass = "") {
   }
 }
 
-
-
 function getFormData(formId, returnType = "str") {
   let form = document.getElementById(formId);
-  const hiddenElements = form.querySelectorAll('input[type=hidden]');
+  const hiddenElements = form.querySelectorAll("input[type=hidden]");
   const elements = getAllElements(formId);
-  const allElements = [...elements,...hiddenElements];
+  const allElements = [...elements, ...hiddenElements];
   if (returnType == "obj") {
     const outputObject = {};
     for (let element of allElements) {
-      if(element.name !== undefined){
+      if (element.name !== undefined) {
         if (element.name in outputObject) {
           if (Array.isArray(outputObject[element.name])) {
             outputObject[element.name].push(element.value);
@@ -284,20 +308,18 @@ function getFormData(formId, returnType = "str") {
           outputObject[element.name] = element.value;
         }
       }
-      
     }
-     return outputObject;
+    return outputObject;
   } else {
-      let outputString = "";
-      for (let element of allElements) {
-        if(element.name !== undefined){
-          outputString += `${element.name}=${element.value}&`;
-        }
+    let outputString = "";
+    for (let element of allElements) {
+      if (element.name !== undefined) {
+        outputString += `${element.name}=${element.value}&`;
       }
-      return outputString.substring(0,outputString.length-1);
+    }
+    return outputString.substring(0, outputString.length - 1);
   }
 }
-
 
 function getAllElements(formId) {
   const form = document.getElementById(formId);
@@ -311,7 +333,7 @@ function getAllElements(formId) {
   const otherTextInput = form.querySelectorAll(
     "input[type=email],[type=date],[type=number],[type=password],[type=month],[type=tel],[type=time],[type=url],[type=week]"
   );
- 
+
   const allElements = [
     ...textInput,
     ...radioInput,

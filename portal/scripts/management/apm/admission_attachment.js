@@ -4,6 +4,7 @@ var nameIndicator = _("nameIndicator");
 var errMsg = _("errMsg");
 var hiddenFileName = _("hiddenFileName");
 var form = document.querySelector("form");
+var table = $("#attachmentTable").DataTable(dataTableOptions);
 
 //this function is available for the apm
 function populateLevel(e) {
@@ -123,16 +124,16 @@ async function deleteAttachment(id) {
       token.value = rsp.token;
       if (rsp.status == 204) {
         swalNotifyDismiss(rsp.message, "success");
+        table
+          .row("#row" + id)
+          .remove()
+          .draw();
       } else {
         swalNotifyDismiss(rsp.message, "danger");
       }
-      _("row" + id).style.display = "none";
     }
   }
 }
 
-$(document).ready(function () {
-  $("#attachmentTable").DataTable(dataTableOptions);
-});
 
 $(".js-example-basic-single").select2();

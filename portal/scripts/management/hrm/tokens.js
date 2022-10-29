@@ -1,3 +1,4 @@
+var table = $("#tokensTable").DataTable(dataTableOptions);
 async function deleteToken(id){
      let token = _("token");
      let tableBody = document.querySelector("tbody");
@@ -13,8 +14,10 @@ async function deleteToken(id){
       let rsp = JSON.parse(xmlhttp.responseText);
       token.value = rsp.token;
       if (rsp.success) {
-        let tableRow = _("row" + rsp.id);
-        tableBody.removeChild(tableRow);
+        table
+          .row()
+          .remove("row" + rsp.id)
+          .draw();
         swalNotifyDismiss("Successfully deleted token", "success");
       } else {
          swalNotifyDismiss("Unable to delete token", "error");
@@ -22,9 +25,6 @@ async function deleteToken(id){
     }
 }
 
- $(document).ready(function () {
-   $("#tokensTable").DataTable(dataTableOptions);
- });
 
 
 

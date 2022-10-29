@@ -1,3 +1,1 @@
-### To Delete a user
-    You have to remove the user from all table concerning users including account table, 
-chkdsk C: /f
+You are to continue from HRM portal, staffs permission(manage_permission.php), a school should be selected at default, add loader when school changes

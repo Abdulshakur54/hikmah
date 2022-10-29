@@ -11,6 +11,9 @@ function runFirst(){
 runFirst();
 
 function showImage(event) {
+   const image = _("image");
+   const hiddenPic = _("hiddenPic");
+   const picMsg = _("picMsg");
   if (objLength(event.files) > 0) {
     if (event.files[0].size > 100 * 1024) {
       image.style.display = "none";
@@ -54,6 +57,7 @@ function populateLGA(obj){
 
    function handleLGAListResponse(){
      const rsp = JSON.parse(xmlhttp.responseText);
+      _("token").value = rsp.token;
      if (rsp.status === 200) {
        const lgaContainer = _('lga');
        const lgas = rsp.data;
@@ -63,7 +67,7 @@ function populateLGA(obj){
        }
        lgaContainer.innerHTML = output;
      }
-      _("token").value = rsp.token;
+     
    }
 }
 

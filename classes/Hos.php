@@ -68,20 +68,6 @@ class Hos extends Management
         }
     }
 
-
-    //this method returns all the subject(id) for a student, an array is returned
-    public function getStudentSubjects($studentId)
-    {
-        $this->_db->query('select subject_ids from student3 where student_id=?', [$studentId]);
-        if ($this->_db->row_count() > 0) {
-            $sIds = $this->_db->one_result()->subject_ids;
-            if ($sIds !== null) {
-                return json_decode($sIds, true);
-            }
-        }
-        return [];
-    }
-
     //this method returns all the students in a class
     public function getAllClassStudents($classId)
     {
@@ -292,58 +278,24 @@ class Hos extends Management
         $sql1 = 'delete from class where id = ?';
         $val1 = [$classId];
         //delete from the other tables
-        $sql2 = 'delete from subject where class_id=?';
+        $sql2 = 'delete from subject2 where class_id=?';
         $val2 = [$classId];
-        $sql3 = 'update student3 set class_id = ? where class_id = ?';
-        $val3 = [null, $classId];
         //delete from score table
         $utils = new Utils();
         $formSession = $utils->getFormatedSession($sch_abbr);
-        $sql4 = 'delete from ' . $formSession . '_score where class_id = ?';
-        $val4 = [$classId];
+        $sql3 = 'delete from ' . $formSession . '_score where class_id = ?';
+        $val3 = [$classId];
         //delete from the other tables(class_psy)
-        $sql5 = 'delete from class_psy where class_id=?';
-        $val5 = [$classId];
-        return $this->_db->trans_query([[$sql1, $val1], [$sql2, $val2], [$sql3, $val3], [$sql4, $val4], [$sql5, $val5]]);
+        $sql4 = 'delete from class_psy where class_id=?';
+        $val4 = [$classId];
+        return $this->_db->trans_query([[$sql1, $val1], [$sql2, $val2], [$sql3, $val3], [$sql4, $val4]]);
     }
 
     //this method deletes a subject, it also deletes all the relationship it has in other tables
     public function deleteSubject($subjectId, $sch_abbr): bool
     {
-        //query to get the students and teacher related to the subject
-        $this->_db->query('select student_ids from subject where id=?', [$subjectId]);
-        $studentIds = json_decode($this->_db->one_result()->student_ids);
-        $db2 = DB::get_instance2();
-        if (!empty($studentIds)) { //this means some students offer this subject
-            $start = false;
-            foreach ($studentIds as $studentId) {
-                if ($start) { //requery because query have already been prepared
-                    $this->_db->requery([$studentId]);
-                    $subjectIds = json_decode($this->_db->one_result()->subject_ids);
-                    $newSubjectIds = [];
-                    foreach ($subjectIds as $subId) {
-                        if ($subId != $subjectId) {
-                            $newSubjectIds[] = $subId;
-                        }
-                    }
-                    //update student3 table with the modified sujectIds(newSubjectIds)
-                    $db2->requery([json_encode($newSubjectIds)]);
-                } else {
-                    $this->_db->query('select subject_ids from student3 where std_id = ?', [$studentId]); //query the db
-                    $subjectIds = json_decode($this->_db->one_result()->subject_ids);
-                    $newSubjectIds = [];
-                    foreach ($subjectIds as $subId) {
-                        if ($subId != $subjectId) {
-                            $newSubjectIds[] = $subId;
-                        }
-                    }
-                    //update student3 table with the modified sujectIds(newSubjectIds)
-                    $db2->query('update student3 set subject_ids = ?', [json_encode($newSubjectIds)]);
-                }
-            }
-        }
         //delete from the subject tables
-        $sql1 = 'delete from subject where id=?';
+        $sql1 = 'delete from subject2 where id=?';
         $val1 = [$subjectId];
         //delete from score table
         $utils = new Utils();
@@ -360,8 +312,12 @@ class Hos extends Management
         return $this->_db->one_result();
     }
 
-    public function isSubjectTeacher($teacherId, $subjectId): bool
+    public function isSubjectTeacher($teacherId, $subjectId=''): bool
     {
+        if($subjectId = ''){
+            $this->_db->query('select count(id) as counter from subject2 where teacher_id=?', [$teacherId]);
+            return ($this->_db->one_result()->counter > 0) ? true : false;
+        }
         $this->_db->query('select count(id) as counter from subject2 where teacher_id=? and id=?', [$teacherId, $subjectId]);
         return ($this->_db->one_result()->counter > 0) ? true : false;
     }
@@ -374,13 +330,13 @@ class Hos extends Management
 
     function getNoStudentsNeedsClass($sch_abbr): int
     {
-        $this->_db->query('select count(student.id) as counter from student3 inner join student on student3.std_id = student.std_id where student3.class_id IS NULL and student.sch_abbr = ?', [$sch_abbr]);
+        $this->_db->query('select count(id) as counter from student where class_id IS NULL and sch_abbr = ?', [$sch_abbr]);
         return $this->_db->one_result()->counter;
     }
 
     function getStudentsNeedsClass($sch_abbr, $level = null)
     {
-        $this->_db->query('select student.id,student.std_id, student.fname,student.oname,student.lname from student inner join student3 on student.std_id = student3.std_id where student3.class_id IS NULL and student.sch_abbr = ? and student.level = ?', [$sch_abbr, $level]);
+        $this->_db->query('select id,std_id, fname,oname,lname from student where class_id IS NULL and sch_abbr = ? and level = ?', [$sch_abbr, $level]);
         return $this->_db->get_result();
     }
 
@@ -401,33 +357,6 @@ class Hos extends Management
         }
         return $this->_db->query('update school2 set fa=?,sa=?,ft=?,st=?,exam=?,pro=?,ft_times_opened=?,st_times_opened=?,tt_times_opened=?,ft_res_date=?,st_res_date=?,tt_res_date=?,'
             . 'ft_close_date=?,st_close_date=?,tt_close_date=?,a1=?,b2=?,b3=?,c4=?,c5=?,c6=?,d7=?,e8=?,f9=? where sch_abbr=?', [$fa, $sa, $ft, $st, $pro, $exam, $ftto, $stto, $ttto, $ftrd, $strd, $ttrd, $ftcd, $stcd, $ttcd, $a1, $b2, $b3, $c4, $c5, $c6, $d7, $e8, $f9, $sch_abbr]);
-    }
-
-    function populateStdPsy($classId, $stdIdsString): bool
-    {
-        //get default class psycometry
-        $this->_db->query('select * from class_psy where class_id=?', [$classId]);
-        $cp = $this->_db->one_result();  //cp stand for class psycometry, the short form is used to reduce the lenght of code written
-        $sql = 'UPDATE `student_psy` SET `ft_height_beg`=?,`ft_height_end`=?,`ft_weight_beg`=?,`ft_weight_end`=?,`st_height_beg`=?,'
-            . '`st_height_end`=?,`st_weight_beg`=?,`st_weight_end`=?,`tt_height_beg`=?,`tt_height_end`=?,`tt_weight_beg`=?,'
-            . '`tt_weight_end`=?,`ft_psy1`=?,`ft_psy2`=?,`ft_psy3`=?,`ft_psy4`=?,`ft_psy5`=?,`ft_psy6`=?,`ft_psy7`=?,`ft_psy8`=?,'
-            . '`ft_psy9`=?,`ft_psy10`=?,`ft_psy11`=?,`ft_psy12`=?,`ft_psy13`=?,`ft_psy14`=?,`ft_psy15`=?,`ft_psy16`=?,`ft_psy17`=?,'
-            . '`ft_psy18`=?,`ft_psy19`=?,`ft_psy20`=?,`st_psy1`=?,`st_psy2`=?,`st_psy3`=?,`st_psy4`=?,`st_psy5`=?,`st_psy6`=?,'
-            . '`st_psy7`=?,`st_psy8`=?,`st_psy9`=?,`st_psy10`=?,`st_psy11`=?,`st_psy12`=?,`st_psy13`=?,`st_psy14`=?,`st_psy15`=?,'
-            . '`st_psy16`=?,`st_psy17`=?,`st_psy18`=?,`st_psy19`=?,`st_psy20`=?,`tt_psy1`=?,`tt_psy2`=?,`tt_psy3`=?,`tt_psy4`=?,`'
-            . 'tt_psy5`=?,`tt_psy6`=?,`tt_psy7`=?,`tt_psy8`=?,`tt_psy9`=?,`tt_psy10`=?,`tt_psy11`=?,`tt_psy12`=?,`tt_psy13`=?,'
-            . '`tt_psy14`=?,`tt_psy15`=?,`tt_psy16`=?,`tt_psy17`=?,`tt_psy18`=?,`tt_psy19`=?,`tt_psy20`=? WHERE std_id in(' . $stdIdsString . ')';
-        $val = [
-            $cp->height_beg, $cp->height_end, $cp->weight_beg, $cp->weight_end, $cp->height_beg, $cp->height_end, $cp->weight_beg,
-            $cp->weight_end, $cp->height_beg, $cp->height_end, $cp->weight_beg, $cp->weight_end, $cp->psy1, $cp->psy2, $cp->psy3, $cp->psy4,
-            $cp->psy5, $cp->psy6, $cp->psy7, $cp->psy8, $cp->psy9, $cp->psy10, $cp->psy11, $cp->psy12, $cp->psy13, $cp->psy14, $cp->psy15,
-            $cp->psy16, $cp->psy17, $cp->psy18, $cp->psy19, $cp->psy20, $cp->psy1, $cp->psy2, $cp->psy3, $cp->psy4, $cp->psy5, $cp->psy6,
-            $cp->psy7, $cp->psy8, $cp->psy9, $cp->psy10, $cp->psy11, $cp->psy12, $cp->psy13, $cp->psy14, $cp->psy15, $cp->psy16, $cp->psy17,
-            $cp->psy18, $cp->psy19, $cp->psy20, $cp->psy1, $cp->psy2, $cp->psy3, $cp->psy4, $cp->psy5, $cp->psy6, $cp->psy7, $cp->psy8,
-            $cp->psy9, $cp->psy10, $cp->psy11, $cp->psy12, $cp->psy13, $cp->psy14, $cp->psy15, $cp->psy16, $cp->psy17, $cp->psy18, $cp->psy19,
-            $cp->psy20
-        ];
-        return $this->_db->query($sql, $val);
     }
 
     //this function returns some basic details for a class

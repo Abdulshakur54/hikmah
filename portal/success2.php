@@ -8,7 +8,7 @@ spl_autoload_register(
 session_start(Config::get('session/options'));
 //end of initializatons
 
-if(Input::submitted('get')){
+if (Input::submitted('get')) {
     $user_type = Utility::escape(Input::get('user_type'));
 }
 ?>
@@ -68,6 +68,16 @@ if(Input::submitted('get')){
             if (Session::exists('new_user')) {
                 echo '<div class="success">' . Session::get_flash('new_user') . '</div>';
                 echo 'Login <a href="login.php">Here</a>';
+            }
+            if (Input::get('recoverPassword') == 'true') {
+                echo '<div class="success">' . Session::get_flash('recoverPassword') . '</div>';
+                exit(); //this page is exited here so as to stop script execution
+            }
+
+            if (Input::get('resetSuccess') == 'true') {
+                echo '<div class="success">' . Session::get_flash('resetSuccess') . '</div>';
+                echo '<div><a href="login.php">Click to Login</a></div>';
+                exit(); //this page is exited here so as to stop script execution
             }
             ?>
         </p>

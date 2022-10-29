@@ -22,6 +22,8 @@ if (Session::exists('user')) {
   $username = Session::get('user');
   $menu = new Menu();
   $menus = $menu->get($username);
+  $link = User::get_link($username);
+  $profile_image_path = User::get_profile_image_path($username);
 } else {
 
   Redirect::to('login.php');
@@ -90,6 +92,23 @@ if (Session::exists('user')) {
   <link rel="stylesheet" href="validation/validation.css" />
 
   <!-- My CSS-->
+  <style>
+    .count-indicator {
+      position: relative;
+      display: none;
+    }
+
+    .indicator {
+      position: absolute;
+      top: 4px;
+      left: 23px;
+    }
+    @media screen and (max-width:768px){
+      .content-wrapper{
+        background: rgb(255,255,255);
+      }
+    }
+  </style>
 
 </head>
 
@@ -159,31 +178,31 @@ if (Session::exists('user')) {
 
         <ul class="navbar-nav navbar-nav-right">
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown  mr-3">
 
-            <a class="nav-link count-indicator pr-5" id="notificationIcon" href="#">
+            <a class="nav-link count-indicator pr-5 text-primary" id="notificationLink" href="#" onclick="getPage('<?php echo $link . '/notifications.php' ?>')">
 
-              <i class="icon-bell"></i>
+              <i class="mdi mdi-information-outline"></i>
 
-              <span class="notificationCount">5</span>
+              <span id="notificationCount" class="indicator"></span>
 
             </a>
 
-            <a class="nav-link count-indicator" id="RequestIcon" href="#">
+            <a class="nav-link count-indicator mr-3 text-success" id="requestLink" href="#" onclick="getPage('<?php echo $link . '/requests.php' ?>')">
 
-              <i class="icon-bell"></i>
+              <i class="mdi mdi-email-outline"></i>
 
-              <span class="requestCount">7</span>
+              <span id="requestCount" class="indicator"></span>
 
             </a>
 
           </li>
 
-          <li class="nav-item nav-profile dropdown">
+          <li class="nav-item nav-profile dropdown mr-3">
 
             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
 
-              <img src="images/faces/face28.jpg" alt="profile" />
+              <img src="<?php echo $profile_image_path; ?>" alt="profile" />
 
             </a>
 
@@ -222,9 +241,6 @@ if (Session::exists('user')) {
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
 
         <ul class="nav">
-
-          <li class="nav-item pt-2 pb-2 bg-primary font-weight-bold text-center rounded-circle" id="welcomeMessage" style="color:#fff">Good Afternoon, Director</li>
-
           <li class="nav-item">
 
             <a class="nav-link" href="index.html">
@@ -256,9 +272,6 @@ if (Session::exists('user')) {
           <?php
 
           $counter  = 1;
-
-
-
           foreach ($menus as $menu) { ?>
 
 
@@ -315,12 +328,14 @@ if (Session::exists('user')) {
 
       <div class="main-panel">
 
-        <div class="content-wrapper">
+        <div class="content-wrapper px-0 px-md-4">
 
-          <div class="row  mb-0 pb-0">
+          <div class="row">
+            <div class="d-flex justify-content-end w-100 mr-md-5 px-0" id="welcomeMessage">
+              <div class="font-weight-bold d-flex flex-column align-items-center pr-3 pr-md-5" style="color:blue;"><?php echo Session::get_flash(Config::get('hikmah/flash_welcome')) ?></div>
+            </div>
 
-            <div class="col-md-12 grid-margin mb-0 pb-0" id="page">
-
+            <div class="col-md-12 grid-margin mb-0 pb-0 mx-0" id="page">
               <!-- page token -->
 
               <input type="hidden" name="page_token" id="page_token" value="<?php echo Token::generate(32, 'page_token') ?>">
@@ -384,7 +399,7 @@ if (Session::exists('user')) {
   <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap4.min.js"></script>
   <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
   <script src="https://cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap4.min.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>

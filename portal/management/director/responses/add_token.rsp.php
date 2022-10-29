@@ -19,7 +19,7 @@
          }
          $salary = Utility::escape(Input::get('salary'));
          $sch_abbr = Utility::escape(Input::get('sch_abbr'));
-         $asst = Management::getAsstVal($preRank);
+         $asst = (int)Utility::escape(Input::get('asst'));
          $db = DB::get_instance();
          $run = true;
          $db->query('select token from token where owner =? and pro_rank = ?',[$name,$rank]);

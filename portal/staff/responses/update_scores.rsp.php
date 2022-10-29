@@ -43,7 +43,7 @@ $currSession = $utils->getSession($sch_abbr);
         $errors = []; //to hold errors
         $utils = new Utils();
         $table = $utils->getFormatedSession($sch_abbr).'_score';
-        $scoreSettings = $staff->getScoreSettings($sch_abbr);
+        $scoreSettings = Subject::getScoreSettings($sch_abbr);
         $subject = new Subject($subId,$table,$scoreSettings);
         $columns = $subject->getNeededColumns($sch_abbr); //this returns an array  of the needed columns
         

@@ -84,33 +84,6 @@
                             return 17;
                     }
                 }
-                
-                
-                //function return 0 shows he is a boss, returns 1 shows he is a deputy, returns 2 shows he is a secretary
-                public static function getAsstVal($rank){
-                    switch($rank){
-                        //for management deputy
-                        case 21:
-                        case 22:
-                        case 23:
-                        case 24:
-                        case 25:
-                        case 26:
-                        case 27:
-                            return 1;
-                        //for management secretary
-                        case 31:
-                        case 32:
-                        case 33:
-                        case 34:
-                        case 35:
-                        case 36:
-                        case 37:
-                            return 2;
-                        //for management boss
-                        default:
-                            return 0;
-                    }
-                }
+            
 		
 	}

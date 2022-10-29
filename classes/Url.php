@@ -40,7 +40,7 @@
 				default:
 					$category = Config::get('url/home');
 			}
-			return $this->_baseUrl.'/'.$category.$url;
+			return $this->_baseUrl.$category.$url;
 		}
 
 		

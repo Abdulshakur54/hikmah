@@ -25,11 +25,14 @@ $user_col = $apm->getUsernameColumn();
 $id = $data->$id_col;
 $username = $data->$user_col;
 $rank = $apm->getRank();
+$utils = new Utils();
+
+
 if ($rank !== 2) {
     exit(); // exits the page if the user is not the Apm
 }
-if((Input::submitted('post') || Input::submitted('get')) && Token::check(Input::get('page_token'), 'page_token')){
-    if($_SERVER['REQUEST_METHOD'] === 'GET'){
+if ((Input::submitted('post') || Input::submitted('get')) && Token::check(Input::get('page_token'), 'page_token')) {
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $url = trim(Utility::escape($_SERVER['REQUEST_URI']));
         $url = str_replace('&amp;', '&', $url);
         $index = strpos($url, 'portal') + 7;
@@ -38,8 +41,7 @@ if((Input::submitted('post') || Input::submitted('get')) && Token::check(Input::
         $page_url = substr($url, $index, $len - 1);
         Session::setLastPage($page_url);
     }
-
-}else{
+} else {
     exit('Kindly Access this page properly');
 }
 
@@ -56,6 +58,12 @@ if ($req->hasRequests($rank) && basename(Utility::myself()) != 'requests.php') {
     $count_request = $req->getCount($rank);
 }
 $db = DB::get_instance();
+
+if (!empty(Input::get('school'))) {
+    $sch_abbr = Utility::escape(Input::get('school'));
+    $currTerm = $utils->getCurrentTerm($sch_abbr);
+    $currSession = $utils->getSession($sch_abbr);
+}
 ?>
 <input type="hidden" name="page_token" id="page_token" value="<?php echo Token::generate(32, 'page_token') ?>">
 <input type="hidden" name="notCount" id="notCount" value="<?php echo $count_alert ?>">

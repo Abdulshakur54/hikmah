@@ -3,6 +3,7 @@ var acceptAdm = _("acceptAdm");
 var declineAdm = _("declineAdm");
 var token = _("token");
 var form = _("form");
+var table = $("#admissionTable").DataTable(dataTableOptions);
 
 acceptAdm.addEventListener("click", acceptAdmission);
 declineAdm.addEventListener("click", declineAdmission);
@@ -132,7 +133,3 @@ function checkAll(event) {
 
 
 $(".js-example-basic-single").select2();
-
- $(document).ready(function () {
-   $("#admissionTable").DataTable(dataTableOptions);
- });

@@ -96,14 +96,13 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             $email =  Utility::escape($data->email);
             $sql2 = 'insert into student2(std_id,fathername,mothername,dob,address,phone,email,state,lga) values(?,?,?,?,?,?,?,?,?)';
             $val2 = [$newId, Utility::escape($data->fathername), Utility::escape($data->mothername), $data->dob, Utility::escape($data->address), Utility::escape($data->phone), $email,$data->state,$data->lga];
-            $sql3 = 'insert into student3(std_id) values(?)';
-            $sql4 = 'insert into student_psy(std_id) values(?)';
+            $sql3 = 'insert into student_psy(std_id) values(?)';
             //delete data from admission table
-            $sql5 = 'delete from admission where id = ?';
+            $sql4 = 'delete from admission where id = ?';
             //transfer details to student tables
             $db = DB::get_instance();
 
-            if ($db->trans_query([[$sql1, $val1], [$sql2, $val2], [$sql3, [$newId]], [$sql4, [$newId]], [$sql5, [$id]]])) {
+            if ($db->trans_query([[$sql1, $val1], [$sql2, $val2], [$sql3, [$newId]], [$sql4, [$id]]])) {
 
                 /*for hikmah only to help use the role and menu functionality*/
                 $role_id = $adm->get_role_id($newRank, 0);
@@ -134,13 +133,26 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                         $alert->sendToRank(4, $title, $message);
                     }
                 }
+               
 
                 //send email to the applicant with his studentid and password in the mail
                 $message = '<p>You have accepted our offer!. You are officially a student at ' . School::getFullName($sch_abbr) . '</p><p>Your Student Login details are show below<p>Username: <span>' . $newId . '</span></p><p>'
-                    . 'Password: <span>' . $newPwd . '</span></p> <p>It is recommended to change your password after login. <a href="' . $url->to('changepassword.php', 3) . '">Login and change password</a></p><p>Your data has also been transfered to the student portal.<br>This can be accessed at <a href="' . $url->to('index.php', 3) . '">' . $url->to('index.php', 3) . '</a></p>'; //email 
+                    . 'Password: <span>' . $newPwd . '</span></p> <p>It is recommended to change your password after login. </p><p>Your data has also been transfered to the student portal.<br>This can be accessed by clicking the link <a href="' . $url->to('dashboard.php', 0) . '">Open portal</a></p>'; //email 
                 $mail = new Email();
-                $mail->send($email, 'Your Login Details', $message);
-                Session::set_flash('acceptAdmission', 'You have successfully accepted our offer. Your Details have now been transfered to another portal. An email containing your login details to that portal has been sent to you');
+                $attachments = School::get_attachments($sch_abbr, $level);
+                $attachment_path = '../../management/apm/uploads';
+                $attachs = [];
+                foreach($attachments as $attachment){
+                    $attachs[] = $attachment_path.'/'.$attachment->attachment.', '.$attachment->name;
+                    
+                }
+                if(!empty($attachments)){
+                    $mail->send($email, 'Admission Acceptance', $message,['attachment'=>$attachs]);
+                }else{
+                    
+                    $mail->send($email, 'Admission Acceptance', $message);
+                }
+                Session::set_flash('acceptAdmission', 'You have successfully accepted our offer. Your Details have now been transfered to the student portal. An email containing your login details to that portal has been sent to you');
                 echo response(204);
             } else {
                 echo response(500, 'An Error prevents you from accepting our admission');
@@ -169,6 +181,133 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 }
             }
             echo response('204');
+            break;
+        case 'change_password':
+            $password = Utility::escape(Input::get('password'));
+            $new_password = Utility::escape(Input::get('new_password'));
+            $username = Utility::escape(Input::get('username'));
+            $rules = [
+                'password' => [
+                    'name' => 'Password',
+                    'required' => true,
+                    'pattern' => '^[A-Za-z0-9]+$'
+                ],
+                'new_password' => [
+                    'name' => 'New Password',
+                    'required' => true,
+                    'pattern' => '^[A-Za-z0-9]+$',
+                    'min' => 6,
+                    'max' => 32
+                ]
+            ];
+            if ($val->check($rules)) {
+                $db_pwd = $db->get('admission', 'password', "adm_id='$username'")->password;
+                if (password_verify($password, $db_pwd)) {
+                    $db->update('admission', ['password' => password_hash($new_password, PASSWORD_DEFAULT)]);
+                    echo response(204, 'Successfully changed password');
+                } else {
+                    echo response(400, 'Present Password is incorrectly entered');
+                }
+            } else {
+                $errors = $val->errors();
+                echo response(400, implode('<br />', $errors));
+            }
+            break;
+        case 'update_account':
+            $rules = [
+                'fname' => [
+                    'name' => 'First Name',
+                    'required' => true,
+                    'min' => 3,
+                    'max' => 20,
+                    'pattern' => '^[a-zA-Z]+$'
+                ],
+                'oname' => [
+                    'name' => 'Other Name',
+                    'min' => 3,
+                    'max' => 20,
+                    'pattern' => '^[a-zA-Z]+$'
+                ],
+                'lname' => [
+                    'name' => 'Last Name',
+                    'required' => true,
+                    'min' => 3,
+                    'max' => 20,
+                    'pattern' => '^[a-zA-Z]+$'
+                ],
+               
+                'dob' => [
+                    'name' => 'Date of Birth',
+                    'required' => true
+                ],
+                'state' => [
+                    'name' => 'State',
+                    'required' => true
+                ],
+                'lga' => [
+                    'name' => 'LGA',
+                    'required' => true
+                ],
+                'phone' => [
+                    'name' => 'Phone',
+                    'required' => true,
+                    'size' => 11,
+                    'pattern' => '^[0-9]{11}$'
+                ],
+                'email' => [
+                    'name' => 'Email',
+                    'required' => true,
+                    'pattern' => '^[a-zA-Z]+[a-zA-Z0-9]*@[a-zA-Z]+.[a-zA-Z]+$'
+                ],
+              
+            ];
+            $fileValues = [
+                'picture' => [
+                    'name' => 'Picture',
+                    'required' => false,
+                    'maxSize' => 100,
+                    'extension' => ['jpg', 'jpeg', 'png']
+                ]
+            ];
+            if ($val->check($rules) && $val->checkFile($fileValues) && Utility::noScript(Input::get('address'))) {
+                $fname = Utility::escape(Input::get('fname'));
+                $lname = Utility::escape(Input::get('lname'));
+                $oname = Utility::escape(Input::get('oname'));
+                $email = Utility::escape(Input::get('email'));
+                $address = Utility::escape(Input::get('address'));
+                $state = Utility::escape(Input::get('state'));
+                $lga = Utility::escape(Input::get('lga'));
+                $dob = Utility::escape(Input::get('dob'));
+                $phone = Utility::escape(Input::get('phone'));
+                $username = Utility::escape(Input::get('username'));
+                $values = [
+                    'fname' => $fname,
+                    'lname' => $lname,
+                    'oname' => $oname,
+                    'email' => $email,
+                    'address' => $address,
+                    'state' => $state,
+                    'lga' => $lga,
+                    'dob' => $dob,
+                    'phone' => $phone,
+                ];
+                if (!empty($_FILES['picture']['name'])) {
+                    $file = new File('picture');
+                    $pictureName = $username . '.' . $file->extension();
+                    $values['picture'] = $pictureName;
+                    $db->update('admission', $values, "adm_id='$username'");
+                    $file_path = '../uploads/passports/' . $pictureName;
+                    $file->move($file_path);
+                } else {
+                    $db->update('admission', $values, "adm_id='$username'");
+                }
+                echo response(201, 'Update was successful');
+            } else {
+                $errors = implode('<br />', $val->errors());
+                echo response(500, $errors);
+            }
+
+
             break;
     }
 } else {

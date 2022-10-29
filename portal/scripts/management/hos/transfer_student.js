@@ -2,6 +2,10 @@ var counter = _('counter');
 var form = _('form');
 var submitType = _('submittype');
 var studentIds = _('studentIds');
+var table = $("#studentsTable").DataTable(dataTableOptions);
+if ($(".js-example-basic-single").length) {
+  $(".js-example-basic-single").select2();
+}
 
 function submitForm(){
      getPostPage("studentForm", "management/hos/transfer_student.php");
@@ -46,11 +50,4 @@ function popId(){
     }
     return valObj;
 }
-
-$(document).ready(function () {
-  $("#studentsTable").DataTable(dataTableOptions);
-  if ($(".js-example-basic-single").length) {
-    $(".js-example-basic-single").select2();
-  }
-});
 

@@ -20,7 +20,7 @@ require_once './includes/director.inc.php';
                     </thead>
                     <tbody>
                         <?php
-                        $db->query('select id,owner,pro_rank,token from token where added_by = ? order by owner asc', [$rank]);
+                        $db->query('select id,owner,pro_rank,asst,token from token where added_by = ? order by owner asc', [$rank]);
                         $res = $db->get_result();
                         if (!empty($res)) {
                             foreach ($res as $val) {
@@ -28,7 +28,7 @@ require_once './includes/director.inc.php';
                             <td></td>
                             <td>' . Utility::escape(ucwords($val->owner)) . '</td>
                             <td>' . Utility::escape($val->token) . '</td>
-                            <td>' . $dir->getPosition($val->pro_rank) . '</td>
+                            <td>' . User::getPosition($val->pro_rank,(int)$val->asst) . '</td>
                             <td><button class="btn btn-danger btn-md" onclick="deleteToken(' . $val->id . ')">Delete</button></td>
                          </tr>';
                             }

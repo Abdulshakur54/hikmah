@@ -7,41 +7,24 @@ var msgDiv = _("genMsg");
 var importMsgDiv = _("importMsg");
 var subid = _("subid");
 var scoreColumns = JSON.parse(_("scorecolumns").innerHTML);
+var table = $("#scoresTable").DataTable(dataTableOptions);
 
-var dataTableOptions = {
-  pageLength: 10,
-  lengthChange: true,
-  lengthMenu: [
-    [10, 25, 50, -1],
-    [10, 25, 50, "All"],
-  ],
-  dom: "Bfrtip",
-  buttons: {
-    buttons: [
-      { extend: "excel", className: "btn btn-secondary btn-sm mb-3" },
-      { extend: "pdf", className: "btn btn-secondary btn-sm mb-3" },
-    ],
-  },
-  responsive: false,
-  columnDefs: [{ responsivePriority: 1, targets: 1 }],
-  fnRowCallback: function (nRow, aData, iDisplayIndex) {
-    $("td:first", nRow).html(iDisplayIndex + 1);
-    return nRow;
-  },
-};
-
-$(document).ready(function () {
-  scoreTable = $("#scoresTable").DataTable(dataTableOptions);
-});
 
 function runFirst() {
   hasProject = _("hasProject").value;
 }
 
-function update(scrId) {
+function update(scrId,e) {
+
   if (!scrIds.includes(scrId)) {
     scrIds.push(scrId);
   }
+  let newData = `<input class="p-2 pl-3 pr-3 rounded" type="number" min="0" max="${e.max}" value="${e.value}" onchange="update(${scrId},this)" id="${e.id}" />`;
+  table
+    .cell("#td_" + e.id)
+    .data(newData)
+    .draw();
+
 }
 
 function convertToValidFloat(x) {
@@ -100,6 +83,7 @@ function saveRsp() {
       swalNotify(msg, "error");
       break;
   }
+  resetInputStyling("scoresForm", "inputsuccess", "inputfailure");
 }
 
 function importFile(obj) {

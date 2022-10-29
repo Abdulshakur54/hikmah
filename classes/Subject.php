@@ -128,18 +128,35 @@ class Subject
         return $this->_db->get_result();
     }
 
+    public static function getStudentScore($table,$term,$std_id,$sub_id){
+        $db = DB::get_instance();
+        switch ($term) {
+            case 'ft':
+               $db->query('select ' . $table . '.id,' . $table . '.std_id,' . $table . '.ft_fa,' . $table . '.ft_sa,' . $table . '.ft_ft,' . $table . '.ft_st,' . $table . '.ft_pro,' . $table . '.ft_ex, student.fname,student.oname,student.lname from ' . $table . ' inner join student on ' . $table . '.std_id = student.std_id where ' . $table . '.subject_id=? and student.std_id=?', [$sub_id,$std_id]);
+                break;
+            case 'st':
+               $db->query('select ' . $table . '.id,' . $table . '.std_id,' . $table . '.st_fa,' . $table . '.st_sa,' . $table . '.st_ft,' . $table . '.st_st,' . $table . '.st_pro,' . $table . '.st_ex, student.fname,student.oname,student.lname from ' . $table . ' inner join student on ' . $table . '.std_id = student.std_id where ' . $table . '.subject_id=? and student.std_id=?', [$sub_id,$std_id]);
+                break;
+            case 'tt':
+               $db->query('select ' . $table . '.id,' . $table . '.std_id,' . $table . '.tt_fa,' . $table . '.tt_sa,' . $table . '.tt_ft,' . $table . '.tt_st,' . $table . '.tt_pro,' . $table . '.tt_ex, student.fname,student.oname,student.lname from ' . $table . ' inner join student on ' . $table . '.std_id = student.std_id where ' . $table . '.subject_id=? and student.std_id=?', [$sub_id,$std_id]);
+                break;
+        }
+        return$db->one_result();
+    }
+
 
     //this function returns the score settings for a school
-    function getScoreSettings($sch_abbr, $session = '')
+    public static function getScoreSettings($sch_abbr, $session = '')
     {
         if ($session != '') {
             $school_table = Utility::getFormatedSession($session) . '_school2';
         } else {
             $school_table = 'school2';
         }
+        $db = DB::get_instance();
 
-        $this->_db->query('select fa,sa,ft,st,pro,exam from ' . $school_table . ' where sch_abbr=?', [$sch_abbr]);
-        $res = $this->_db->one_result();
+        $db->query('select fa,sa,ft,st,pro,exam from ' . $school_table . ' where sch_abbr=?', [$sch_abbr]);
+        $res = $db->one_result();
         $scoreSetting = [];
         $scoreSetting['fa'] = $res->fa;
         $scoreSetting['sa'] = $res->sa;
@@ -155,7 +172,7 @@ class Subject
       */
     function getNeededColumns($sch_abbr, $session = '')
     {
-        $scoreSettings = $this->getScoreSettings($sch_abbr, $session);
+        $scoreSettings = Subject::getScoreSettings($sch_abbr, $session);
         $columns = [];
         if ($scoreSettings['fa'] > 0) {
             $columns[] = 'fa';
@@ -437,10 +454,10 @@ class Subject
         $db->insert('scheme_of_work', ['subject_id' => $sub_id, 'title' => $title, 'scheme' => $scheme, 'term' => $term, 'scheme_order' => $order]);
     }
 
-    public static function edit_scheme($scheme_id, $title, $scheme, $term, $order)
+    public static function edit_scheme($scheme_id, $title, $scheme, $order)
     {
         $db = DB::get_instance();
-        $db->update('scheme_of_work', ['title' => $title, 'scheme' => $scheme, 'term' => $term, 'scheme_order' => $order], "id = $scheme_id");
+        $db->update('scheme_of_work', ['title' => $title, 'scheme' => $scheme, 'scheme_order' => $order], "id = $scheme_id");
     }
 
     public static function delete_scheme($scheme_id)
@@ -449,10 +466,10 @@ class Subject
         $db->delete('scheme_of_work', "id=$scheme_id");
     }
 
-    public static function get_scheme($scheme_id, $term)
+    public static function get_scheme($scheme_id)
     {
         $db = DB::get_instance();
-        return $db->get('scheme_of_work', '*', "subject_id = $scheme_id and term = '$term'", 'scheme_order');
+        return $db->get('scheme_of_work', '*', "id = $scheme_id", 'scheme_order');
     }
     public static function get_schemes($sub_id, $term)
     {

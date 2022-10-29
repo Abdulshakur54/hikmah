@@ -56,14 +56,14 @@
             require_once 'nav.inc.php';
             //echo welcome flash message
             if(Session::exists('welcome')){
-                echo '<div class="message">Good '.ucfirst(Utility::getPeriod()).', '.$user->getPosition($rank).'</div>';
+                echo '<div class="message">Good '.ucfirst(Utility::getPeriod()).', '.User::getPosition($rank).'</div>';
                 Session::delete('welcome');
                 if(Session::exists('welcome back')){
                     Session::delete('welcome back');
                 }
             }else{
                 if(Session::exists('welcome back')){
-                    echo '<div class="message">Welcome '.$user->getPosition($rank).'</div>';
+                    echo '<div class="message">Welcome '.User::getPosition($rank).'</div>';
                     Session::delete('welcome back');
                 }
             }
