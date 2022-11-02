@@ -1,7 +1,8 @@
 <?php
 require_once './includes/std.inc.php';
 $passport_link = $url->to('uploads/passports/' . $data->picture, 3);
-
+$db = DB::get_instance();
+$data2 = $db->get('student2','phone,email,address',"std_id='$username'");
 
 ?>
 <div class="col-12 grid-margin stretch-card">
@@ -12,17 +13,17 @@ $passport_link = $url->to('uploads/passports/' . $data->picture, 3);
 
                 <div class="form-group">
                     <label for="phone">Phone No (Parent)</label>
-                    <input type="text" maxlength="11" class="form-control form-control-lg" id="phone" title="Phone No" required name="phone" pattern="^[0-9]{11}$" value="<?php echo $data->phone ?>">
+                    <input type="text" maxlength="11" class="form-control form-control-lg" id="phone" title="Phone No" required name="phone" pattern="^[0-9]{11}$" value="<?php echo $data2->phone ?>">
                 </div>
                 <div class="form-group">
                     <label for="email">Email (Parent)</label>
-                    <input type="email" class="form-control form-control-lg" id="email" title="Email" required name="email" value="<?php echo $data->email ?>">
+                    <input type="email" class="form-control form-control-lg" id="email" title="Email" required name="email" value="<?php echo $data2->email ?>">
                 </div>
 
 
                 <div class="form-group">
                     <label for="address">Residential Address</label>
-                    <input  type="text" id="address" name="address" value="<?php echo $data->address ?>" class="form-control" />
+                    <input  type="text" id="address" name="address" value="<?php echo $data2->address ?>" class="form-control" />
                 </div>
 
 

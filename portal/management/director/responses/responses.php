@@ -169,6 +169,21 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 echo response(500, $errors);
             }
             break;
+        case 'set_messaging_permission':
+            $menu_id = Input::get('menu_id');
+            $type = Input::get('type');
+            $checked = (int)Input::get('checked');
+            $subordinate = Utility::escape(Input::get('subordinate'));
+            $db = DB::get_instance();
+            $alert = new Alert();
+            if ($db->update('messaging_permission', [$type => $checked], "id=" . $menu_id)) {
+                $status = ($checked == 1) ? 'enabled to send' : 'disabled from sending';
+                $alert->send($subordinate,'Messaging Permissions','You have been '.$status.' '.strtolower($type));
+                echo response(204, '');
+            } else {
+                echo response(500, 'Something went wrong');
+            }
+            break;
     }
 } else {
     echo response(400, 'Invalid request method');

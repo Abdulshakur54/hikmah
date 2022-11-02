@@ -1,1 +1,0 @@
-You are to continue from HRM portal, staffs permission(manage_permission.php), a school should be selected at default, add loader when school changes

@@ -38,7 +38,8 @@ require_once './includes/apm.inc.php';
                             <td><a href="#" onclick="getPage(\'management/apm/ses_results.php?school=' . $school . '\')">sessional results</a></td>
                             <td><a href="#" onclick="getPage(\'management/apm/performance_chart.php?school=' . $school . '\')">performance chart</a></td>
                             <td><a href="#" onclick="getPage(\'management/apm/performance_summary.php?school=' . $school . '\')">performance summary</a></td>
-                            <td><a href="#" onclick="getPage(\'management/apm/manage_permission.php?school=' . $school . '\')">manage permissions</a></td>
+                             <td><a href="#" onclick="getPage(\'management/apm/send_message.php?school=' . $school . '\')">send messages</a></td>
+                            <td><a href="#" onclick="getPage(\'management/apm/manage_permission.php?school=' . $school . '\')">permissions</a></td>
                          </tr>';
                             }
                         } else {

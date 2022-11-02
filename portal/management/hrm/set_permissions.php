@@ -31,7 +31,7 @@ $menus = Permission::get_menus($staff_id);
                             <td></td>
                             <td>' . $mn->display_name . '</td>
                             <td>' . $mn->description . '</td>
-                           <td>
+                           <td id="td_' . $mn->id . '">
                             <div class="custom-control custom-switch">
                                     <input type="checkbox" class="custom-control-input" id="shown_' . $mn->id . '" ' . ($mn->shown == 1 ? "checked" : "") . ' onchange="setChecked(this,' . $mn->id . ')"><span id="ld_loader_shown_' . $mn->id . '"></span>
                                     <label class="custom-control-label" for="shown_' . $mn->id . '"></label>
@@ -51,12 +51,31 @@ $menus = Permission::get_menus($staff_id);
         <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
     </div>
     <script>
-        $(document).ready(function() {
-            $("#permissionTable").DataTable(dataTableOptions);
-        });
+        var table = $("#permissionTable").DataTable(dataTableOptions);
 
         function setChecked(event, menuId, type) {
             const checked = event.checked ? 1 : 0;
+            let newData;
+            if (checked === 1) {
+                newData = `
+                 <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="shown_${menuId}" checked onchange="setChecked(this,${menuId})"><span id="ld_loader_shown_${menuId}"></span>
+                                    <label class="custom-control-label" for="shown_${menuId}"></label>
+                </div>
+            `;
+            } else {
+                newData = `
+                 <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="shown_${menuId}" onchange="setChecked(this,${menuId})"><span id="ld_loader_shown_${menuId}"></span>
+                                    <label class="custom-control-label" for="shown_${menuId}"></label>
+                </div>
+            `;
+            }
+
+            table
+                .cell("#td_" + menuId)
+                .data(newData)
+                .draw();
             ld_startLoading("shown_" + menuId, "ld_loader_" + "shown_" + menuId);
             ajaxRequest(
                 "responses/responses.php",

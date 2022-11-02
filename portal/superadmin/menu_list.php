@@ -45,13 +45,13 @@ require_once './includes/val_page_request.inc.php';
                                         <td>' . $menu->parent_id . '</td>
                                         <td>' . $menu->icon . '</td>
                                         <td>' . $menu->parent_order . '</td>
-                                        <td>
+                                        <td id="td_shown_'.$menu->id.'">
                                             <div class="custom-control custom-switch">
                                                 <input type="checkbox" class="custom-control-input" id="shown_' . $menu->id . '" ' . ($menu->shown == 1 ? "checked" : "") . ' onchange="setChecked(this,' . $menu->id . ',\'shown\')"><span id="ld_loader_shown_' . $menu->id . '"></span>
                                                 <label class="custom-control-label" for="shown_' . $menu->id . '"></label>
                                             </div>
                                         </td>
-                                         <td>
+                                         <td id="td_active_' . $menu->id . '">
                                             <div class="custom-control custom-switch">
                                                 <input type="checkbox" class="custom-control-input" id="active_' . $menu->id . '" ' . ($menu->active == 1 ? "checked" : "") . ' onchange="setChecked(this,' . $menu->id . ',\'active\')"><span id="ld_loader_active_' . $menu->id . '"></span>
                                                 <label class="custom-control-label" for="active_' . $menu->id . '"></label>
