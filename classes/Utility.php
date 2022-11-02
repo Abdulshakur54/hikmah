@@ -297,7 +297,7 @@ class Utility
         }
     }
 
-    public static function convertToArray(array $result, $columns): array
+    public static function convertToArray(array $result, string|array $columns): array
     {
         $res = [];
         if (is_string($columns)) {

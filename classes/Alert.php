@@ -18,7 +18,7 @@
            
         
         //this method insert into the alert table, it makes use of 3 database connections and prepared statements if necessary so as to facilitate quick response 
-        public function send($receiver_id, $title, $message, $requery = false){
+        public function send(string $receiver_id, string $title, string $message, bool $requery = false){
             //check if max alert has been reached
             if($this->maxReached($receiver_id,$requery)){
                 if($requery){

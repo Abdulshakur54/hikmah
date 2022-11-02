@@ -1,8 +1,8 @@
-var table = $("#menusTable").DataTable(dataTableOptions);;
+var table = $("#menusTable").DataTable(dataTableOptions);
 function saveMenu(op) {
   const menu = _("menu").value;
-  const display_name = _('display_name').value;
-  const description = _('description').value;
+  const display_name = _("display_name").value;
+  const description = _("description").value;
   const menuId = _("menu_id").value;
   const token = _("token");
   const url = _("url").value;
@@ -29,7 +29,15 @@ function saveMenu(op) {
     }
     resetInputStyling("menuForm", "inputsuccess", "inputfailure");
     if (op === "add_menu") {
-      emptyInputs(["menu", "url", "menu_order", "parent_id", "parent_order","display_name","icon"]);
+      emptyInputs([
+        "menu",
+        "url",
+        "menu_order",
+        "parent_id",
+        "parent_order",
+        "display_name",
+        "icon",
+      ]);
     }
     _("token").value = rsp.token;
     const msgDiv = _("messageContainer");
@@ -41,7 +49,7 @@ function saveMenu(op) {
 async function deleteMenu(menuId) {
   const token = _("token");
   if (await swalConfirm("Confirm you want to delete menu", "warning")) {
-     ld_startLoading("delete_" + menuId, "ld_loader_delete_" + menuId);
+    ld_startLoading("delete_" + menuId, "ld_loader_delete_" + menuId);
     ajaxRequest(
       "superadmin/responses/responses.php",
       handleDeleteMenuReq,
@@ -65,9 +73,29 @@ async function deleteMenu(menuId) {
   }
 }
 
-
 function setChecked(event, menuId, type) {
   const checked = event.checked ? 1 : 0;
+  let newData;
+  if (checked === 1) {
+    newData = ` <td id="td_${type}_${menuId}">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="shown_${menuId}" checked onchange="setChecked(this,'${menuId}','${type}')"><span id="ld_loader_${type}_${menuId}"></span>
+                        <label class="custom-control-label" for="${type}_${menuId}"></label>
+                    </div>
+                </td>`;
+  } else {
+    newData = ` <td id="td_${type}_${menuId}">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="shown_${menuId}" onchange="setChecked(this,'${menuId}','${type}')"><span id="ld_loader_${type}_${menuId}"></span>
+                        <label class="custom-control-label" for="${type}_${menuId}"></label>
+                    </div>
+                </td>`;
+  }
+  table
+                .cell(`#td_${type}_${menuId}`)
+                .data(newData)
+                .draw();
+
   ld_startLoading(type + "_" + menuId, "ld_loader_" + type + "_" + menuId);
   ajaxRequest(
     "superadmin/responses/responses.php",

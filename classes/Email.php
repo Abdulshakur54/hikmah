@@ -55,7 +55,7 @@ class Email
 
 
     //this method sends the emails using the given parameter to individuals if $to is a string, to group of individuals if $to is an array
-    public function send($to, $subject, $body, $options = []): bool
+    public function send(string|array $to, string $subject, string $body, array $options = []): bool
     {
         if (count($options)) {
             $this->setOptions($options);
@@ -68,13 +68,14 @@ class Email
             $this->_mail->addAddress($to, $this->_name);
         }
         $this->_mail->Subject = $subject;
-        $this->_mail->Body = $this->emailMessageFormat($subject, $body);
+        //$this->_mail->Body = $this->emailMessageFormat($subject, $body);
+        $this->emailMessageFormat($subject, $body);
         return $this->sendEmail();
     }
 
-    private function emailMessageFormat($title, $body): string
+    private function emailMessageFormat($title, $body)
     {
-        return '
+        $message = '
             <!DOCTYPE html>
             <html lang="en">
                 <head>
@@ -160,6 +161,7 @@ class Email
             </html>
 
             ';
+        $this->_mail->msgHTML($message);
     }
 
 
@@ -188,8 +190,8 @@ class Email
     {
         foreach ($options as $option => $optionVal) {
             switch ($option) {
-                case 'fromName':
-                    $this->_mail->setFrom(Config::get('webmail/username'), $optionVal);
+                case 'from':
+                    $this->_mail->setFrom($optionVal);
                     break;
                 case 'attachment': //to use this, the $optionVal should be a string of the file path and intended name(name of the file at the receivers end) delimited by a comma
                     if (is_array($optionVal)) {
@@ -203,6 +205,8 @@ class Email
                     break;
                 case 'altBody':
                     $this->_mail->AltBody = $optionVal;
+                    break;
+
             }
         }
     }

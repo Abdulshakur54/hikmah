@@ -8,7 +8,7 @@ class Menu
         $users_menu = Config::get('users/menu_table');
         $menu_table = Config::get('menu/menu_table');
         $username_column = Config::get('users/username_column');
-        $sql = "select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1  and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = 0 order by $menu_table.parent_order asc";
+        $sql = "select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1 and $menu_table.shown=1 and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = 0 order by $menu_table.parent_order asc";
         $db->query($sql);
         if ($db->row_count() > 0) {
             $first_level_parents = $db->get_result();
@@ -17,7 +17,7 @@ class Menu
         }
         $output_menus = $first_level_parents;
         foreach ($output_menus as $menu) {
-            $db->query("select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1  and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = $menu->id order by $menu_table.menu_order asc", []);
+            $db->query("select $menu_table.* from $menu_table inner join $users_menu  on $menu_table.id = $users_menu.menu_id where $users_menu.shown = 1  and $menu_table.shown=1 and $users_menu.$username_column = '$user_id' and $menu_table.parent_id = $menu->id order by $menu_table.menu_order asc", []);
             if ($db->row_count() > 0) {
                 $childrenMenu = $db->get_result();
                 $menu->children = $childrenMenu;

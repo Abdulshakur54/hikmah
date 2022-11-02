@@ -161,8 +161,14 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             $vals1 = [$user_id, password_hash($password, PASSWORD_DEFAULT), $fname, $lname, $oname, $rank, $sch_abbr, Utility::escape(Input::get('phone')), $email, $dob, $state, $lga, $title, $pictureName];
             $sql2 = 'insert into account(receiver,no,bank,salary) values(?,?,?,?)';
             $vals2 = [$user_id, $account, $bank, $salary];
+            $sql3 = 'insert into messaging_permission(user_id,sms,email,notification) values(?,?,?,?)';
+            if($rank == 1 || $rank == 6){ //director or HRM
+              $vals3 = [$user_id, 1, 1, 1];
+            }else{
+              $vals3 = [$user_id, 0, 1, 1];
+            }
 
-            if ($db->trans_query([[$sql1, $vals1], [$sql2, $vals2]])) { //performs a transaction which consist of 2 queries
+            if ($db->trans_query([[$sql1, $vals1], [$sql2, $vals2], [$sql3, $vals3]])) { //performs a transaction which consist of 2 queries
 
               /*for hikmah only to help use the role and menu functionality*/
               $role_id = $user->get_role_id($rank, $asst);
