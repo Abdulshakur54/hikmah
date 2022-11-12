@@ -3,7 +3,7 @@ require_once './includes/std.inc.php';
 $term = (!empty(Input::get('term'))) ? Utility::escape(Input::get('term')) : $currTerm;
 $sub_id = (!empty(Input::get('subid'))) ? Utility::escape(Input::get('subid')) : '';
 $subject = new Subject();
-$formatted_session = Utility::getFormatedSession($currSession) . '_score';
+$formatted_session = Utility::getFormattedSession($currSession) . '_score';
 $registered_subjects = $subject->getRegisteredSubjectsId($formatted_session, $username);
 function selectedTerm($tm)
 {
@@ -60,7 +60,7 @@ function selected_sub_id($sid)
                     foreach ($schemes as $scheme) {
             ?>
                         <div class="card border border-1 rounded mb-3">
-                            <div class="card-header text-primary d-flex justify-content-between">
+                           <div class="card-header text-primary d-flex justify-content-between flex-wrap">
                                 <div class="font-weight-bold"><?php echo $scheme->title ?></div>
                                 <div class="font-italic "><?php echo 'Week ' . $counter ?></div>
                             </div>

@@ -50,7 +50,12 @@ async function updateAccount(event) {
   if(validate('updateAccountForm',{validateOnSubmit:true})){
      ld_startLoading('updateBtn');
      
-     await getPostPageWithUpload("updateAccountForm",'student/responses/responses.php','update_account',false);
+     await getPostPageWithUpload(
+       "updateAccountForm",
+       "student/responses/responses.php",
+       { op: "update_account" },
+       false
+     );
      ld_stopLoading('updateBtn');
     }
 }

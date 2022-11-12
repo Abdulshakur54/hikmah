@@ -40,6 +40,7 @@ function changeContent(userType){
 function register(event) {
   event.preventDefault();
   if (validate("regForm", { validateOnSubmit: true })) {
+    _("signUpBtn").disabled = true;
     event.target.submit();
   }
  

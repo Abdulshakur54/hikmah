@@ -51,14 +51,14 @@ function requestRsp() {
   if (rsp.confirm) {
     //handles response for accepted requests
     main.removeChild(divRow); //remove the div from the page
-    swalNotifyDismiss(
+    swalNotify(
       "You have successfully approve the request",
       "success",
       2000
     );
   } else {
     main.removeChild(divRow); //remove the div from the page
-    swalNotifyDismiss(
+    swalNotify(
       "You have successfully declined the request",
       "success",
       2000

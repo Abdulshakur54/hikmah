@@ -34,7 +34,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             <?php echo $msg; ?>
             <?php
             if (!empty($classId)) {
-                $regSubArr = $sub->getRegisteredSubjectsId(Utility::getFormatedSession($currSession) . '_score', $username);
+                $regSubArr = $sub->getRegisteredSubjectsId(Utility::getFormattedSession($currSession) . '_score', $username);
 
                 $minNoSub = $sub->getMinNoSub($classId);
                 $regSubsIdArray = Utility::convertToArray($regSubArr, 'id');

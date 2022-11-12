@@ -22,6 +22,9 @@ h2 {
 p {
     font-size: 0.875em;
 }
+img{
+object-fit: contain;
+}
 .success{
     color:rgb(16, 148, 16);
 }

@@ -49,7 +49,12 @@ async function updateAccount(event) {
   event.preventDefault();
   if(validate('updateAccountForm',{validateOnSubmit:true})){
     ld_startLoading("updateBtn");
-    await getPostPageWithUpload("updateAccountForm",'management/hrm/responses/responses.php','update_account',false);
+    await getPostPageWithUpload(
+      "updateAccountForm",
+      "management/hrm/responses/responses.php",
+      { op: "update_account" },
+      false
+    );
     ld_stopLoading("updateBtn");
   }
 }

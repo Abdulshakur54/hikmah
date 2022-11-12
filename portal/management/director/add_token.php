@@ -65,5 +65,5 @@ require_once './includes/director.inc.php';
 </div>
 <script src="scripts/management/director/add_token.js"></script>
 <script>
-    validate('tokenForm');;
+    validate('tokenForm');
 </script>

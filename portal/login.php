@@ -20,7 +20,7 @@
       'username' => array(
         'name' => 'Username',
         'required' => true,
-        'pattern' => '^[a-zA-Z`][a-zA-Z0-9`\/]+$'
+        'pattern' => '^[a-zA-Z1-9`][a-zA-Z0-9`\/]+$'
       ),
       'password' => array(
         'name' => 'Password',
@@ -58,7 +58,12 @@
           if ($remember) {
             Cookie::set('user', $username, time() + Config::get('cookie/expiry'));
           }
-          Redirect::to('dashboard.php');
+          if(User::is_active($username)){
+
+            Redirect::to('dashboard.php');
+          }else{
+            $errors[] = 'You are no longer allowed access in to this portal';
+          }
         }
       } else {
         $errors[] = 'Wrong username and password combination';
@@ -126,7 +131,7 @@
                  <input type="hidden" name="user_type" id="userType" />
                  <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
                  <div class="mt-3">
-                   <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" type="submit">SIGN IN</button>
+                   <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" type="submit" id="signInBtn">SIGN IN</button>
                  </div>
                  <div class="my-2 d-flex justify-content-between align-items-center">
                    <div class="form-check">

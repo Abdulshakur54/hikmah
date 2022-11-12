@@ -16,7 +16,7 @@ session_start(Config::get('session/options'));
 if (!empty(Input::get('page'))) {
   Session::setLastPage(Input::get('page'));
 }
-$last_page = (Session::lastPageExists()) ? Session::getLastPage() : '';
+$last_page = (Session::lastPageExists()) ? Session::getLastPage() : 'home.php';
 
 if (Session::exists('user')) {
   $username = Session::get('user');
@@ -103,9 +103,10 @@ if (Session::exists('user')) {
       top: 4px;
       left: 23px;
     }
-    @media screen and (max-width:768px){
-      .content-wrapper{
-        background: rgb(255,255,255);
+
+    @media screen and (max-width:768px) {
+      .content-wrapper {
+        background: rgb(255, 255, 255);
       }
     }
   </style>
@@ -117,16 +118,6 @@ if (Session::exists('user')) {
 <body>
 
   <?php
-  //this function is used to allow complete redirect into exam portal, this is done when the file url ends with new_exam.php
-
-  function is_new_exam($url): bool
-
-  {
-
-    return (substr($url, -12) == 'new_exam.php') ? true : false;
-  }
-
-
 
   ?>
 
@@ -138,9 +129,9 @@ if (Session::exists('user')) {
 
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
 
-        <a class="navbar-brand brand-logo mr-5" href="dashboard.php"><img src="images/logo.jpg" class="mr-2" alt="logo" /></a>
+        <a class="navbar-brand brand-logo mr-5" href="#" onclick="getPage('<?php echo $link . '/home.php' ?>')"><img src="images/logo.jpg" class="mr-2" alt="logo" /></a>
 
-        <a class="navbar-brand brand-logo-mini" href="dashboard.php"><img src="images/logo.jpg" alt="logo" /></a>
+        <a class="navbar-brand brand-logo-mini" href="#" onclick="getPage('<?php echo $link . '/home.php' ?>')"><img src="images/logo.jpg" alt="logo" /></a>
 
       </div>
 
@@ -152,7 +143,7 @@ if (Session::exists('user')) {
 
         </button>
 
-        
+
 
         <ul class="navbar-nav navbar-nav-right">
 
@@ -160,7 +151,7 @@ if (Session::exists('user')) {
 
             <a class="nav-link count-indicator pr-5 text-primary" id="notificationLink" href="#" onclick="getPage('<?php echo $link . '/notifications.php' ?>')">
 
-              <i class="mdi mdi-information-outline"></i>
+              <i class="mdi mdi-email-outline"></i>
 
               <span id="notificationCount" class="indicator"></span>
 
@@ -168,7 +159,7 @@ if (Session::exists('user')) {
 
             <a class="nav-link count-indicator mr-3 text-success" id="requestLink" href="#" onclick="getPage('<?php echo $link . '/requests.php' ?>')">
 
-              <i class="mdi mdi-email-outline"></i>
+              <i class="mdi mdi-human-greeting"></i>
 
               <span id="requestCount" class="indicator"></span>
 
@@ -221,7 +212,7 @@ if (Session::exists('user')) {
         <ul class="nav">
           <li class="nav-item">
 
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="#" onclick="getPage('<?php echo $link . '/home.php' ?>')">
 
               <i class="icon-grid menu-icon"></i>
 
@@ -278,7 +269,7 @@ if (Session::exists('user')) {
 
                   ?>
 
-                      <li class="nav-item"> <a class="nav-link" onclick="<?php echo (!is_new_exam($child->url)) ? 'getPage(\'' . Utility::escape($child->url) . '\')' : '#' ?>" href="<?php echo (is_new_exam($child->url)) ? Utility::escape($child->url) : '#' ?>"><?php echo Utility::escape($child->display_name) ?></a></li>
+                      <li class="nav-item"> <a class="nav-link" onclick="<?php echo (!Utility::is_new_exam($child->url)) ? 'getPage(\'' . Utility::escape($child->url) . '\')' : 'javascript:void(0)' ?>" href="<?php echo (Utility::is_new_exam($child->url)) ? Utility::escape($child->url) : '#' ?>"><?php echo Utility::escape($child->display_name) ?></a></li>
 
                   <?php
 

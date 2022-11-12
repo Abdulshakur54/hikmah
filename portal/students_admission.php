@@ -41,7 +41,7 @@ $pdf->AddFont('BreeSerif-Regular', '', 'BreeSerif-Regular.php');
 $pdf->AddFont('Lusitana-Bold', '', 'Lusitana-Bold.php');
 $pdf->AddFont('Rubik', '', 'Rubik-Regular.php');
 $pdf->AddFont('Rubik', 'B', 'Rubik-Medium.php');
-$pdf->AddFont('HindSiliguri', '', 'HindSiliguri-Medium.php');;
+$pdf->AddFont('HindSiliguri', '', 'HindSiliguri-Medium.php');
 
 $std_prefix = School::get_std_prefix($sch_abbr);
 $school_name = strtoupper(School::getFullName($sch_abbr));
@@ -75,8 +75,9 @@ $pdf->Cell(190, 4, $phone_and_email, 0, 1, 'C');
 $pdf->SetTextColor(0, 0, 0);
 $pdf->Ln(9);
 $pdf->SetFont('Rubik', '', 11);
+
 $greg_date_arr = explode('-',$adm_data->date_of_admission);
-$hijri_date_arr = $cal->GregorianToHijri($greg_date_arr[0],$greg_date_arr[1],$greg_date_arr[2]);
+$hijri_date_arr = $cal->GregorianToHijri($greg_date_arr[0],(int)$greg_date_arr[1],(int)$greg_date_arr[2]);
 $hijri_date = Utility::formatDate($adm_data->date_of_admission,1).' ('.$hijri_date_arr['d'].Utility::numSuffix((string)$hijri_date_arr['d']).' '.$cal->month_name($hijri_date_arr['m'],'en').', '.$hijri_date_arr['y'].')';
 $pdf->Ln(5);
 $pdf->Cell(190, 7,$hijri_date, 0, 1, 'R');

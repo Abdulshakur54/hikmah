@@ -34,7 +34,7 @@ require_once './includes/adm.inc.php';
                     <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
                 </form>
                 <script>
-                    validate('applyForm');;
+                    validate('applyForm');
                 </script>
             <?php
             }

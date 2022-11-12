@@ -47,7 +47,12 @@ function populateLGA(obj) {
 async function admitStudent() {
   if (validate("manualAdmissionForm", { validateOnSubmit: true })) {
     ld_startLoading('admitBtn');
-    await getPostPageWithUpload('manualAdmissionForm','management/apm/responses/responses.php','manual_admission',false);
+    await getPostPageWithUpload(
+      "manualAdmissionForm",
+      "management/apm/responses/responses.php",
+      { op: "manual_admission" },
+      false
+    );
     emptyInputs(["fname", "lname", "oname",'email','fatherName','motherName','stdid','dob','doa','state','lga','password']);
     resetInputStyling("manualAdmissionForm", "inputsuccess", "inputfailure");
     ld_stopLoading('admitBtn');

@@ -11,8 +11,8 @@ class Utils {
          return $this->_db->one_result()->current_session;
     }
     
-    public function getFormatedSession($sch_abbr){
-        return Utility::getFormatedSession($this->getSession($sch_abbr));
+    public function getFormattedSession($sch_abbr){
+        return Utility::getFormattedSession($this->getSession($sch_abbr));
     }
     
     public function getPreviousSession($sch_abbr){

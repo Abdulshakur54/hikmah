@@ -79,10 +79,10 @@ class Student extends User
     {
         $db = DB::get_instance();
         if ($std_id === '') {
-            $db->query('select student.std_id,student.fname,student.lname,student.oname, student_psy.' . $term . '_com, student_psy.' . $term . '_p_com from student inner join student_psy on student_psy.std_id = student.std_id where student.class_id=?', [$classId]);
+            $db->query('select student.std_id,student.fname,student.lname,student.oname, student_psy.' . $term . '_com, student_psy.' . $term . '_p_com from student inner join student_psy on student_psy.std_id = student.std_id where student.class_id=? and student.active = 1', [$classId]);
         } else {
 
-            $db->query('select student.std_id,student.fname,student.lname,student.oname, student_psy.' . $term . '_com, student_psy.' . $term . '_p_com from student inner join student_psy on student_psy.std_id = student.std_id where student.class_id=? and student.std_id=?', [$classId, $std_id]);
+            $db->query('select student.std_id,student.fname,student.lname,student.oname, student_psy.' . $term . '_com, student_psy.' . $term . '_p_com from student inner join student_psy on student_psy.std_id = student.std_id where student.class_id=? and student.std_id=? and student.active = 1', [$classId, $std_id]);
         }
         if ($db->row_count() > 0) {
             return $db->get_result();
@@ -94,6 +94,6 @@ class Student extends User
     public static function getStudents(string|int $classId): array
     {
         $db = DB::get_instance();
-        return  $db->select('student', 'fname,oname,lname,std_id,class_id', "class_id = '$classId'");
+        return  $db->select('student', 'fname,oname,lname,std_id,class_id', "class_id = '$classId' and active=1");
     }
 }

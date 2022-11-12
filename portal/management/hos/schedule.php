@@ -224,5 +224,5 @@ if (!empty($msg)) {
 ?>
 <script src="scripts/management/hos/schedule.js"></script>
 <script>
-    validate('scheduleForm');;
+    validate('scheduleForm');
 </script>

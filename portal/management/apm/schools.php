@@ -17,6 +17,9 @@ require_once './includes/apm.inc.php';
                             <th></th>
                             <th></th>
                             <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,6 +37,8 @@ require_once './includes/apm.inc.php';
                                 echo '<tr>
                             <td></td>
                             <td>' . $school . '</td>
+                            <td><a href="#" onclick="getPage(\'management/apm/students.php?school=' . $school . '\')">students</a></td>
+                            <td><a href="#" onclick="getPage(\'management/apm/time_table.php?school=' . $school . '\')">time table</a></td>
                             <td><a href="#" onclick="getPage(\'management/apm/results.php?school=' . $school . '\')">results</a></td>
                             <td><a href="#" onclick="getPage(\'management/apm/ses_results.php?school=' . $school . '\')">sessional results</a></td>
                             <td><a href="#" onclick="getPage(\'management/apm/performance_chart.php?school=' . $school . '\')">performance chart</a></td>

@@ -6,7 +6,7 @@ class Hos extends Management
 
     public function getNotClassTeachers($sch_abbr)
     {
-        if ($this->_db->query('select staff_id,fname,lname,oname from staff where class_id is null and active = ? and rank=? and sch_abbr=?', [true, 7, $sch_abbr])) {
+        if ($this->_db->query('select staff_id,fname,lname,oname from staff where class_id is null and active = ? and rank=? and sch_abbr=? and active = 1', [true, 7, $sch_abbr])) {
             return $this->_db->get_result();
         }
     }
@@ -14,7 +14,7 @@ class Hos extends Management
 
     public function getClassTeachers($sch_abbr)
     {
-        if ($this->_db->query('select staff_id,fname,lname,oname from staff where class_id is not null and active = ? and rank=? and sch_abbr=?', [true, 7, $sch_abbr])) {
+        if ($this->_db->query('select staff_id,fname,lname,oname from staff where class_id is not null and active = ? and rank=? and sch_abbr=? and active=1', [true, 7, $sch_abbr])) {
             return $this->_db->get_result();
         }
     }
@@ -71,7 +71,7 @@ class Hos extends Management
     //this method returns all the students in a class
     public function getAllClassStudents($classId)
     {
-        $this->_db->query('select std_id from student where class_id = ?', [$classId]);
+        $this->_db->query('select std_id from student where class_id = ? and active = 1', [$classId]);
         return $this->_db->get_result();
     }
 
@@ -250,7 +250,7 @@ class Hos extends Management
 
     public function getClassTeacherId($classId)
     {
-        $this->_db->query('select staff_id from staff where class_id =?', [$classId]);
+        $this->_db->query('select staff_id from staff where class_id =? and active=1', [$classId]);
         if ($this->_db->row_count() > 0) {
             return $this->_db->one_result()->staff_id;
         }
@@ -267,7 +267,7 @@ class Hos extends Management
 
     public function getStaffNames($staffId)
     {
-        $this->_db->query('select fname,lname,oname, title from staff where staff_id=?', [$staffId]);
+        $this->_db->query('select fname,lname,oname, title from staff where staff_id=? and active = 1', [$staffId]);
         return $this->_db->one_result();
     }
 
@@ -282,7 +282,7 @@ class Hos extends Management
         $val2 = [$classId];
         //delete from score table
         $utils = new Utils();
-        $formSession = $utils->getFormatedSession($sch_abbr);
+        $formSession = $utils->getFormattedSession($sch_abbr);
         $sql3 = 'delete from ' . $formSession . '_score where class_id = ?';
         $val3 = [$classId];
         //delete from the other tables(class_psy)
@@ -299,7 +299,7 @@ class Hos extends Management
         $val1 = [$subjectId];
         //delete from score table
         $utils = new Utils();
-        $formSession = $utils->getFormatedSession($sch_abbr);
+        $formSession = $utils->getFormattedSession($sch_abbr);
         $sql2 = 'delete from ' . $formSession . '_score where subject_id = ?';
         $val2 = [$subjectId];
         return $this->_db->trans_query([[$sql1, $val1], [$sql2, $val2]]);
@@ -330,13 +330,13 @@ class Hos extends Management
 
     function getNoStudentsNeedsClass($sch_abbr): int
     {
-        $this->_db->query('select count(id) as counter from student where class_id IS NULL and sch_abbr = ?', [$sch_abbr]);
+        $this->_db->query('select count(id) as counter from student where class_id IS NULL and sch_abbr = ? and active = 1', [$sch_abbr]);
         return $this->_db->one_result()->counter;
     }
 
     function getStudentsNeedsClass($sch_abbr, $level = null)
     {
-        $this->_db->query('select id,std_id, fname,oname,lname from student where class_id IS NULL and sch_abbr = ? and level = ?', [$sch_abbr, $level]);
+        $this->_db->query('select id,std_id, fname,oname,lname from student where class_id IS NULL and sch_abbr = ? and level = ? and active = 1', [$sch_abbr, $level]);
         return $this->_db->get_result();
     }
 
@@ -370,21 +370,21 @@ class Hos extends Management
     //this function get some teacher details
     function getTeacherDetail($teacher_id)
     {
-        $this->_db->query('select title,fname,lname,oname from staff where staff_id =?', [$teacher_id]);
+        $this->_db->query('select title,fname,lname,oname from staff where staff_id =? and active=1', [$teacher_id]);
         return $this->_db->one_result();
     }
 
     //this function checks if all students of a school have completed course registration
     function isStdsSubRegComplete($sch_abbr)
     {
-        $this->_db->query('select count(id) as counter from student where class_id is NOT NULL and sub_reg_comp is false and active = true and sch_abbr=?', [$sch_abbr]);
+        $this->_db->query('select count(id) as counter from student where class_id is NOT NULL and sub_reg_comp is false and active = 1 and sch_abbr=?', [$sch_abbr]);
         return ($this->_db->one_result()->counter) ? false : true;
     }
 
     //this function gets all students of a school that have not completed course registration
     function getStdsNotCompSubReg($sch_abbr)
     {
-        $this->_db->query('select student.fname,student.lname,student.oname,student.std_id,student.level,class.class from student inner join class on student.class_id = class.id where student.class_id is NOT NULL and student.sub_reg_comp = false and student.sch_abbr=?', [$sch_abbr]);
+        $this->_db->query('select student.fname,student.lname,student.oname,student.std_id,student.level,class.class from student inner join class on student.class_id = class.id where student.class_id is NOT NULL and student.sub_reg_comp = false and student.sch_abbr=? and student.active=1', [$sch_abbr]);
         return $this->_db->get_result();
     }
 

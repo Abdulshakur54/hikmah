@@ -10,8 +10,8 @@ class Apm extends Management
 
     function selectAdmissionApplicants($sch_abbr = null, $level = null)
     {
-        $sql = 'select id,adm_id,fname,lname,oname,level,score,sch_abbr from ' . $this->_table . ' where applied = ? and status =?';
-        $val = [true, 0];
+        $sql = 'select id,adm_id,fname,lname,oname,level,score,sch_abbr,status from ' . $this->_table . ' where applied = ?';
+        $val = [true];
         if (isset($sch_abbr) && isset($level)) {
             if ($sch_abbr !== 'ALL') {
                 $sql .= ' and sch_abbr = ?';

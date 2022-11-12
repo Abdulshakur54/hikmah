@@ -11,7 +11,7 @@ async function saveChanges(){
       await getPostPageWithUpload(
         "scheduleForm",
         "staff/responses/responses.php",
-        "update_schedules"
+        { op: "update_schedules" }
       );
     }
    resetInputStyling("scheduleForm", "inputsuccess", "inputfailure");

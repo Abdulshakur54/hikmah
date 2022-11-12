@@ -64,26 +64,8 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
   if ($val->check($formvalues) && $val->checkFile($fileValues) && Utility::noScript(Input::get('address'))) {
     $pin_from_table = $agg->lookUp('token', 'token', 'token,=,' . $pin);
     if (!empty($pin_from_table) && Utility::equals($pin, $pin_from_table)) { //confirm the token
-      switch ($user_type) {
-        case 'admission':
-          $user = new Admission();
-          $user_id = $util->getSession($sch_abbr) . '/'.'A' . Admission::genId(); //generates the admission id
-          $table = Config::get('users/table_name3');
-          $username_column = Config::get('users/username_column3');
-          break;
-        case 'staff':
-          $user = new Staff();
-          $user_id = 'S' . Staff::genId(); //generates the Staff id
-          $table = Config::get('users/table_name1');
-          $username_column = Config::get('users/username_column1');
-          break;
-        case 'management':
-          $user = new Management();
-          $user_id = 'M' . Management::genId(); //generates the Management i
-          $table = Config::get('users/table_name0');
-          $username_column = Config::get('users/username_column0');
-          break;
-      }
+      $class_name = ucfirst($user_type);
+      $user = new $class_name();
       $password = Utility::escape(Input::get('password'));
       $fname = Utility::escape(Input::get('fname'));
       $lname = Utility::escape(Input::get('lname'));
@@ -99,11 +81,19 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 
       switch ($user_type) {
         case 'admission':
+          $table = Config::get('users/table_name3');
+          $username_column = Config::get('users/username_column3');
           $level = (int) $res->level;
           $valid_ranks = [11, 12];
           $valid_rank = (in_array($rank, $valid_ranks));
+          if($valid_rank){
+            $user_id = $util->getSession($sch_abbr) . '/' . 'A' . Admission::genId(); //generates the admission id
+          }
           break;
         case 'staff':
+          $user_id = 'S' . Staff::genId(); //generates the Staff id
+          $table = Config::get('users/table_name1');
+          $username_column = Config::get('users/username_column1');
           $salary = $res->salary;
           $asst = $res->asst;
           $account = Utility::escape(Input::get('account'));
@@ -113,6 +103,9 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
           $valid_rank = (in_array($rank, $valid_ranks));
           break;
         case 'management':
+          $user_id = 'M' . Management::genId(); //generates the Management i
+          $table = Config::get('users/table_name0');
+          $username_column = Config::get('users/username_column0');
           $salary = $res->salary;
           $asst = $res->asst;
           $account = Utility::escape(Input::get('account'));
@@ -135,6 +128,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 
         switch ($user_type) {
           case 'admission':
+            $pictureName = Utility::format_student_id($user_id). '.' . $ext;
             $sql1 = 'insert into ' . $table . '(' . $username_column . ', password,fname,lname,oname,rank,sch_abbr,phone,email,level,dob,state,lga,picture) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
             $vals1 = [$user_id, password_hash($password, PASSWORD_DEFAULT), $fname, $lname, $oname, $rank, $sch_abbr, Utility::escape(Input::get('phone')), $email, $level, $dob, $state, $lga, $pictureName];
             if ($db->query($sql1, $vals1)) { //performs a query
@@ -181,7 +175,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
               $alert = new Alert(true);
               $req = new Request();
               //send a confirmation request to the accountant
-              $req->send($user_id, 3, 'Please, confirm a request of &#8358;' . $salary . ' as salary for ' . $title . ' ' . Utility::formatName($fname, $oname, $lname), 1);
+              $req->send($user_id, 3, 'Please, confirm a request of &#8358;' . $salary . ' as salary for ' . $title . ' ' . Utility::formatName($fname, $oname, $lname), RequestCategory::SALARY_CONFIRMATION);
 
               if ($user_type === 'management') {
                 //notify the director(s)
@@ -414,7 +408,7 @@ function formatManagementMsg($rank, $user)
                 </div>
                 <div class="form-group">
                   <label for="password">Password</label>
-                  <input type="password" class="form-control form-control-lg" id="password" title="Password" required name="password" pattern="^[a-zA-Z0-9`]$">
+                  <input type="password" class="form-control form-control-lg" id="password" title="Password" required name="password" pattern="^[a-zA-Z0-9`]+$">
                 </div>
                 <div class="form-group">
                   <label for="c_password">Confirm Password</label>
@@ -423,7 +417,7 @@ function formatManagementMsg($rank, $user)
                 <input type="hidden" name="user_type" id="userType" value="<?php echo $user_type ?>" />
                 <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
                 <div class="mt-3">
-                  <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" type="submit">SIGN UP</button>
+                  <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" type="submit" id="signUpBtn">SIGN UP</button>
                 </div>
                 <div class="text-center mt-4 font-weight-light">
                   Already have an account? <a href="login.php" class="text-primary">Login</a>

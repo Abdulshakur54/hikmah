@@ -173,5 +173,5 @@ if (!empty($operation)) {
 </div>
 <script src="scripts/management/hos/classes.js"></script>
 <script>
-    validate('classForm');;
+    validate('classForm');
 </script>

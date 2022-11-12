@@ -71,7 +71,7 @@ if (Input::submitted()) {
                     $ext = $file->extension();
                     $signatureName = $sch_abbr . '_' . $level . $class . '.' . $ext;
                     //update schedule
-                    if ($staff->updateSchedule($ft_passmark,$st_passmark,$tt_passmark,$classId, $punc, $hon, $dhw, $rap, $sot, $rwp, $ls, $atw, $ho, $car, $con, $wi, $ob, $hea, $vs, $pig, $pis, $ac, $pama, $ms, $a1, $b2, $b3, $c4, $c5, $c6, $d7, $e8, $f9, $height_beg, $height_end, $weight_beg, $weight_end, $signatureName)) {
+                    if ($staff->updateSchedule($ft_passmark, $st_passmark, $tt_passmark, $classId, $punc, $hon, $dhw, $rap, $sot, $rwp, $ls, $atw, $ho, $car, $con, $wi, $ob, $hea, $vs, $pig, $pis, $ac, $pama, $ms, $a1, $b2, $b3, $c4, $c5, $c6, $d7, $e8, $f9, $height_beg, $height_end, $weight_beg, $weight_end, $signatureName)) {
                         $file->move('../uploads/signatures/' . $signatureName); //move picture to the destination folder
 
                         $genMsg = 'Changes has been successfully updated';
@@ -83,7 +83,7 @@ if (Input::submitted()) {
                     }
                 } else {
                     //update schedule
-                    if ($staff->updateSchedule($ft_passmark, $st_passmark, $tt_passmark,$classId, $punc, $hon, $dhw, $rap, $sot, $rwp, $ls, $atw, $ho, $car, $con, $wi, $ob, $hea, $vs, $pig, $pis, $ac, $pama, $ms, $a1, $b2, $b3, $c4, $c5, $c6, $d7, $e8, $f9, $height_beg, $height_end, $weight_beg, $weight_end)) {
+                    if ($staff->updateSchedule($ft_passmark, $st_passmark, $tt_passmark, $classId, $punc, $hon, $dhw, $rap, $sot, $rwp, $ls, $atw, $ho, $car, $con, $wi, $ob, $hea, $vs, $pig, $pis, $ac, $pama, $ms, $a1, $b2, $b3, $c4, $c5, $c6, $d7, $e8, $f9, $height_beg, $height_end, $weight_beg, $weight_end)) {
 
                         $genMsg = 'Changes has been successfully updated';
                         Session::set_flash('post_method_success_message', $genMsg);
@@ -315,7 +315,7 @@ if (Input::submitted()) {
                 if (!empty($_FILES['picture']['name'])) {
                     $file = new File('picture');
                     $pictureName = $username . '.' . $file->extension();
-                    $values['picture']=$pictureName;
+                    $values['picture'] = $pictureName;
                     $db->update('staff', $values, "staff_id='$username'");
                     $file_path = '../uploads/passports/' . $pictureName;
                     $file->move($file_path);
@@ -330,6 +330,47 @@ if (Input::submitted()) {
             }
 
 
+            break;
+        case 'save_activity':
+            $operation = Utility::escape(Input::get('operation'));
+            $day = Utility::escape(Input::get('day'));
+            $activity = Utility::escape(Input::get('activity'));
+            $startTime = Utility::escape(Input::get('startTime')).':00';
+            $endTime = Utility::escape(Input::get('endTime')) . ':00';
+            $class_id = Utility::escape(Input::get('class_id'));
+            $id = Utility::escape(Input::get('id'));
+            if ($endTime <= $startTime) {
+                echo response(400, 'End must be greater than Start');
+                exit();
+            }
+            if (!empty(Input::get('other'))) {
+                $activity = Utility::escape(Input::get('other'));
+            }
+            $period_activity = TimeTable::get_period_activity($class_id, $startTime, $endTime);
+           if(!empty($period_activity)){
+                if(empty($period_activity->subject)){
+                    echo response(400, 'Part/all of selected period is allocated to '.ucwords(strtolower($period_activity->activity)));
+                }else{
+                    echo response(400, 'Part/all of selected period is allocated to ' . ucwords(strtolower($period_activity->subject)));
+                }
+                exit();
+           }
+            if ($operation === 'edit') {
+                $db->update('time_table', ['activity' => $activity, 'start_time' => $startTime, 'end_time' => $endTime, 'day' => $day], "id=$id");
+                echo response(204, 'Successfully saved activity');
+            } else {
+                $db->insert('time_table', ['activity' => $activity, 'start_time' => $startTime, 'end_time' => $endTime, 'class_id' => $class_id, 'day' => $day]);
+                echo response(201, 'Successfully added activity');
+            }
+
+            break;
+        case 'delete_activity':
+            $id = Utility::escape(Input::get('id'));
+            if ($db->delete('time_table', "id=$id")) {
+                echo response(200, 'Activity has been deleted');
+            } else {
+                echo response(500, 'An error is preventing activity from being deleted');
+            }
             break;
     }
 } else {

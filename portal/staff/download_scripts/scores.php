@@ -36,7 +36,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory as IOObj;
 
 $msg = '';
 $utils = new Utils();
-$table = $utils->getFormatedSession($sch_abbr) . '_score';
+$table = $utils->getFormattedSession($sch_abbr) . '_score';
 $scoreSettings = Subject::getScoreSettings($sch_abbr);
 $subject = new Subject($subId, $table, $scoreSettings);
 $scores = $subject->getScores($table, $currTerm);

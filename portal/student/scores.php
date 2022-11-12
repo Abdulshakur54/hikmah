@@ -3,7 +3,7 @@ require_once './includes/std.inc.php';
 $term = (!empty(Input::get('term'))) ? Utility::escape(Input::get('term')) : $currTerm;
 $sub_id = (!empty(Input::get('subid'))) ? Utility::escape(Input::get('subid')) : '';
 $subject = new Subject();
-$formatted_session = Utility::getFormatedSession($currSession) . '_score';
+$formatted_session = Utility::getFormattedSession($currSession) . '_score';
 $registered_subjects = $subject->getRegisteredSubjectsId($formatted_session, $username);
 $columns = $subject->getNeededColumns($sch_abbr); //this returns an array  of the needed columns
 /*

@@ -20,7 +20,7 @@ let msg =
       await getPostPageWithUpload(
         "scheduleForm",
         "management/hos/responses/responses.php",
-        "update_schedules"
+        { op: "update_schedules" }
       );
     }
     resetInputStyling("scheduleForm", "inputsuccess", "inputfailure");

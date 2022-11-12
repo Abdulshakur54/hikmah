@@ -22,7 +22,7 @@
 
 	$url = new Url();
 
-    $allowed = [2,4,5,7,15,17]; //stores the rank of people allowed
+    $allowed = [2,4,6,7,15,17]; //stores the rank of people allowed
 
     /*
 

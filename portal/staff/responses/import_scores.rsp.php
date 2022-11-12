@@ -38,7 +38,7 @@ header("Content-Type: application/json; charset=UTF-8");
 if (Input::submitted() && Token::check(Input::get('token'))) {
     $msg = '';
     $utils = new Utils();
-    $table = $utils->getFormatedSession($sch_abbr) . '_score';
+    $table = $utils->getFormattedSession($sch_abbr) . '_score';
     $scoreSettings = Subject::getScoreSettings($sch_abbr);
     $subject = new Subject($subId, $table, $scoreSettings);
 

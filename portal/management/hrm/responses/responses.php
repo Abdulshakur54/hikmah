@@ -170,6 +170,26 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 
 
             break;
+        case 'sack_staff':
+            $req = new Request();
+            $username = Utility::escape(Input::get('username'));
+            $user_id = Utility::escape(Input::get('id'));
+            $staff_detail = $db->get('staff', 'email,fname,lname,oname,rank,title,sch_abbr', "staff_id = '$user_id'");
+            $request = '<p>Your permission is needed to relief ' .$staff_detail->title.'. '. Utility::formatName($staff_detail->fname, $staff_detail->oname, $staff_detail->lname) . ' from ' . Utility::getGenderFromTitle($staff_detail->title, GenderEnum::DESCRIPTIVE_SUBJECT) . ' duties (sack)</p><p>'.Utility::getGenderFromTitle($staff_detail->title,GenderEnum::SUBJECT).' is a '.User::getFullPosition($staff_detail->rank).' at '.School::getFullName($staff_detail->sch_abbr). '.</p><p>' . ucfirst(Utility::getGenderFromTitle($staff_detail->title, GenderEnum::DESCRIPTIVE_SUBJECT)) . ' data would remain in the system but not accessible to the affected staff</p>';
+            $other = ['username'=>$username,'user_id'=>$user_id];
+            $req->send($username,1,$request,RequestCategory::SACK_STAFF,$other);
+            echo response(204,'A request has been sent to the Director to approve this action');
+            break;
+        case 'delete_staff':
+            $req = new Request();
+            $username = Utility::escape(Input::get('username'));
+            $user_id = Utility::escape(Input::get('id'));
+            $staff_detail = $db->get('staff', 'email,fname,lname,oname,rank,title,sch_abbr', "staff_id = '$user_id'");
+            $request = '<p>Your permission is needed to delete ' .$staff_detail->title.'. '. Utility::formatName($staff_detail->fname, $staff_detail->oname, $staff_detail->lname) . ' along with ' . Utility::getGenderFromTitle($staff_detail->title, GenderEnum::DESCRIPTIVE_SUBJECT) . ' data from the portal</p><p>'.Utility::getGenderFromTitle($staff_detail->title,GenderEnum::SUBJECT).' is a '.User::getFullPosition($staff_detail->rank).' at '.School::getFullName($staff_detail->sch_abbr).'.</p>';
+            $other = ['username'=>$username,'user_id'=>$user_id];
+            $req->send($username,1,$request,RequestCategory::DELETE_STAFF,$other);
+            echo response(204,'A request has been sent to the Director to approve this action');
+            break;
     }
 } else {
     echo response(400, 'Invalid request method');

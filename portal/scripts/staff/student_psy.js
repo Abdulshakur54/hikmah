@@ -6,10 +6,8 @@ function changeStudent() {
 
 
 async function saveChanges() {
-  await getPostPageWithUpload(
-    "scheduleForm",
-    "staff/responses/responses.php",
-    "update_student_psy"
-  );
+  await getPostPageWithUpload("scheduleForm", "staff/responses/responses.php", {
+    op: "update_student_psy",
+  });
   resetInputStyling("scheduleForm", "inputsuccess", "inputfailure");
 }

@@ -9,7 +9,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         $subIds = explode(',', Utility::escape(Input::get('subjectids')));
         $sub->registerSubjects($username, $subIds, $classId, $sch_abbr);
         $minNoSub = $sub->getMinNoSub($classId);
-        $regSubArr = $sub->getRegisteredSubjectsId(Utility::getFormatedSession($currSession) . '_score', $username);
+        $regSubArr = $sub->getRegisteredSubjectsId(Utility::getFormattedSession($currSession) . '_score', $username);
         if (($minNoSub <= count($regSubArr)) && !$data->sub_reg_comp) {
             //update table indicating that the minimum no of subjects has been registered
             $sub->updateCompSubReg($username);
@@ -34,7 +34,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             <?php
             if (!empty($classId)) {
                 if (empty($regSubArr)) {
-                    $regSubArr = $sub->getRegisteredSubjectsId(Utility::getFormatedSession($currSession) . '_score', $username);
+                    $regSubArr = $sub->getRegisteredSubjectsId(Utility::getFormattedSession($currSession) . '_score', $username);
                 }
 
                 $regListArr = $sub->getRegistrationList($classId);

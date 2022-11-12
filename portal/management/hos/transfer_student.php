@@ -45,7 +45,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         $db->query('update student set class_id = ? where std_id in(' . $sqlStdString . ')', [$classIdTo]);
         //update score table
         $utils = new Utils();
-        $formSession = $utils->getFormatedSession($sch_abbr);
+        $formSession = $utils->getFormattedSession($sch_abbr);
         $db->query('update ' . $formSession . '_score set class_id =? where std_id in(' . $sqlStdString . ')', [$classIdTo]);
         //notify the students
         $level = (int)$cDTo->level;

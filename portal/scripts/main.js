@@ -56,14 +56,14 @@ function loadPage() {
   const notCount = parseInt(_("notCount").value);
   const reqCount = parseInt(_("reqCount").value);
   if (notCount > 0) {
-    _('notificationLink').style.display = 'block';
-     _("notificationCount").innerHTML = notCount;
+    _("notificationLink").style.display = "block";
+    _("notificationCount").innerHTML = notCount;
   } else {
-     _("notificationLink").style.display = "none";
+    _("notificationLink").style.display = "none";
   }
   if (reqCount > 0) {
     _("requestLink").style.display = "block";
-     _("requestCount").innerHTML = reqCount;
+    _("requestCount").innerHTML = reqCount;
   } else {
     _("requestLink").style.display = "none";
   }
@@ -76,7 +76,6 @@ setTimeout(function () {
 function getAltPage(altPage) {
   getPage(altPage);
 }
-
 
 function swalNotify(message, icon) {
   Swal.fire({
@@ -145,7 +144,7 @@ function getPostPage(formId, url) {
   getPage(url, formvalues);
 }
 
-async function getPostPageWithUpload(formId, url, op, reload = true) {
+async function getPostPageWithUpload(formId, url, hiddenFields, reload = true) {
   reload &&
     $("#page").block({
       message: "<div>Loading...</div>",
@@ -161,8 +160,11 @@ async function getPostPageWithUpload(formId, url, op, reload = true) {
     });
   let form = _(formId);
   let formData = new FormData(form);
+  hiddenFields = Object.entries(hiddenFields);
+  for (let hiddenField of hiddenFields) {
+    formData.append(hiddenField[0], hiddenField[1]);
+  }
   formData.append("page_token", _("page_token").value);
-  formData.append("op", op);
   let rsp = await fetch(url, {
     method: "POST",
     body: formData,
@@ -174,7 +176,7 @@ async function getPostPageWithUpload(formId, url, op, reload = true) {
     swalNotify(rsp.message, "warning");
   } else {
     if (reload) {
-     $("#page").unblock();
+      $("#page").unblock();
       location.reload();
     } else {
       swalNotify(rsp.message, "success");
@@ -187,3 +189,5 @@ function convertStringToHTML(text) {
   let htmlDoc = domObj.parseFromString(text, "text/html");
   return htmlDoc.body.childNodes[0];
 }
+
+

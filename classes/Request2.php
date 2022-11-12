@@ -28,12 +28,12 @@ Request Categories
                 case 1: // allow deregistration of some subject
                     $sub = new Subject();
                     //get the school and classid of the student
-                    $this->_db->query('select student.sch_abbr, student.class_id, student.sub_reg_comp, class.nos from student inner join class on student.class_id = class.id where student.std_id =?',[$requester_id]);
+                    $this->_db->query('select student.sch_abbr, student.class_id, student.sub_reg_comp, class.nos from student inner join class on student.class_id = class.id where student.std_id =? and student.active=1',[$requester_id]);
                     $res = $this->_db->one_result();
                     $sub->deregisterSubjects($requester_id, array_keys($other),$res->sch_abbr);
                     $minNoSub = $res->nos;
                     $util = new Utils();
-                    $scoreTable = $util->getFormatedSession($res->sch_abbr).'_score';
+                    $scoreTable = $util->getFormattedSession($res->sch_abbr).'_score';
                     $regSubArr = $sub->getRegisteredSubjectsId($scoreTable,$requester_id);
                     $subRegComp = $res->sub_reg_comp;
                     if(($minNoSub <= count($regSubArr)) && !$subRegComp){
@@ -82,7 +82,7 @@ Request Categories
             //title the request relative to the category
             switch($category){
                 case 1: 
-                    $title = 'Subject Deregisteration';;
+                    $title = 'Subject Deregisteration';
                     break;
             }
                     

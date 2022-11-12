@@ -51,9 +51,7 @@ function selected($sch)
                            <td><a href="#" onclick="getPage(\'management/hrm/set_permissions.php?staff_id=' . $sb->staff_id . '\')">set permissions</a></td>
                          </tr>';
                                 }
-                            } else {
-                                echo '<tr><td colspan ="4" class="text-center">No management member found</td></tr>';
-                            }
+                            } 
 
                             ?>
                         </tbody>

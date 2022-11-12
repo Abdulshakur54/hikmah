@@ -14,7 +14,7 @@ require_once './includes/hrm.inc.php';
             ?>
 
                     <div class="card border border-1 rounded mb-3">
-                        <div class="card-header text-primary d-flex justify-content-between">
+                       <div class="card-header text-primary d-flex justify-content-between flex-wrap">
                             <div class="font-weight-bold"><?php echo $alertt->title ?></div>
                             <div class="text-muted font-italic "><?php echo Utility::get_past_time($alertt->created_at)?></div>
                         </div>

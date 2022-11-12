@@ -18,6 +18,18 @@ function outputScore($score)
     return (!empty($score)) ? $score : 'pending';
 }
 
+function getStatusText(int $status)
+{
+    switch ($status) {
+        case 0:
+            return '<span class="font-weight-bold">pending</span>';
+        case 1:
+            return '<span class="text-success font-weight-bold">offered</span>';
+        case 2:
+            return '<span class="text-danger font-weight-bold">rejected</span>';
+    }
+}
+
 if (Input::submitted('get') && (!empty(Input::get('sch_abbr')) && !empty(Input::get('level')))) {
     $sch_abbr = Utility::escape(Input::get('sch_abbr'));
     $level = (int)Input::get('level');
@@ -86,19 +98,29 @@ if (Input::submitted('get') && (!empty(Input::get('sch_abbr')) && !empty(Input::
                                         <th>Adm ID</th>
                                         <th>Name</th>
                                         <th>Score</th>
-                                        <th>Accept</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
                                     $res = $applicants;
-                                    $count = 1;
                                     foreach ($res as $val) {
                                         $idVal = Utility::escape(strtoupper($val->adm_id));
-                                        echo '<tr id="row' . $val->adm_id. '"><td></td><td>' . $idVal . '</td><td>' . Utility::escape(Utility::formatName($val->fname, $val->oname, $val->lname)) .
-                                            '</td><td>' . outputScore($val->score) . '</td><td><input type="checkbox" id="chk' . $count . '" checked /><input type="hidden" id="val' . $count . '" value="' . $idVal . '"/></td><td><button class="btn btn-lg bg-primary text-light" onclick="getPage(\'management/apm/application_preview.php?adm_id=' . $idVal . '\')">view application</button></td></tr>';
-                                        $count++;
+                                        $formatted_id = str_replace('/','_',$idVal);
+                                        $status = getStatusText((int)$val->status);
+                                        if ($val->status == 0) {
+                                            $check_row = '<input type="checkbox" id="chk' . $formatted_id . '" checked /><input type="hidden" id="val' . $formatted_id . '" value="' . $idVal . '"/>';
+                                            $reset_btn = '';
+                                        } else {
+                                            $check_row = '';
+                                            $reset_btn = '<button class="btn btn-sm btn-secondary" onclick="resetDecision(\'' . $idVal . '\')" id="reset_btn_' . $formatted_id . '">reset decision</button><span id="ld_loader_' . $formatted_id . '"></span>';
+                                        }
+                    
+                                        echo '<tr id="row' . $val->adm_id . '"><td></td><td>' . $idVal . '</td><td>' . Utility::escape(Utility::formatName($val->fname, $val->oname, $val->lname)) .
+                                            '</td><td>' . outputScore($val->score) . '</td><td><a href="#" onclick="getPage(\'management/apm/application_preview.php?adm_id=' . $idVal . '\')">view application</a></td><td id="status_' . $formatted_id . '">' . $status . '</td><td id="check_' . $formatted_id.'">'. $check_row . '</td><td id="reset_' . $formatted_id . '">'.$reset_btn.'</td></tr>';
                                     }
                                     ?>
                                 </tbody>
@@ -118,7 +140,7 @@ if (Input::submitted('get') && (!empty(Input::get('sch_abbr')) && !empty(Input::
                     </form>
                 </div>
             </div>
-            
+
         </div>
 
     </div>

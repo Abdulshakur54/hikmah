@@ -7,12 +7,16 @@ class Permission
         $position = strtolower($position);
         switch ($position) {
             case 'director':
-                return $db->select('management', 'mgt_id,fname,oname,lname,rank,asst,sch_abbr', 'rank != 1');
+                return $db->select('management', 'mgt_id,fname,oname,lname,rank,asst,sch_abbr', 'rank != 1 and active=1');
             case 'hrm':
-                return $db->select('staff', 'staff_id,fname,oname,lname,rank,sch_abbr', "sch_abbr='$school'");
+                return $db->select('staff', 'staff_id,fname,oname,lname,rank,sch_abbr', "sch_abbr='$school' and active=1");
             case 'hos':
             case 'apm':
-                return $db->select('student', 'std_id,fname,oname,lname,rank,sch_abbr', "sch_abbr='$school'");
+                $db->query('select student.std_id,student.fname,student.oname,student.lname,student.rank,student.sch_abbr,student.level,student.class_id,class.class from student inner join class on student.class_id = class.id where student.sch_abbr = ? and active = 1',[$school]);
+                if($db->row_count() >0){
+                    return $db->get_result();
+                }
+                return [];
             default:
                 return [];
         }

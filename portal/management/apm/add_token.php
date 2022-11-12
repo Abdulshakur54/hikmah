@@ -43,5 +43,5 @@ require_once './includes/apm.inc.php';
 </div>
 <script src="scripts/management/apm/add_token.js"></script>
 <script>
-    validate('tokenForm');;
+    validate('tokenForm');
 </script>
