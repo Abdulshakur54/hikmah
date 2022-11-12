@@ -15,7 +15,7 @@ class Hos2 extends Management{
     
     
     function getStudents($classId){
-        $this->_db->query('select id,std_id,fname,oname,lname from student where class_id = ?',[$classId]);
+        $this->_db->query('select id,std_id,fname,oname,lname from student where class_id = ? and active = 1',[$classId]);
         return $this->_db->get_result();
     }
     

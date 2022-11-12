@@ -6,9 +6,15 @@ var picMsg = _("picMsg");
 var token = _("token");
 
 function submitForm() {
-  submitType.value = "browse";
-  let formvalues = getFormData("schedulesForm");
-  getPage("management/apm/schedules.php", formvalues);
+  if(_('school').value.length > 0){
+
+    submitType.value = "browse";
+    let formvalues = getFormData("schedulesForm");
+    getPage("management/apm/schedules.php", formvalues);
+  }else{
+    swalNotify('Select a school first','warning');
+  }
+
 }
 
 async function saveChanges() {

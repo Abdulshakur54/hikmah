@@ -1,5 +1,8 @@
 <?php
 //initializations
+
+use Monolog\Handler\Curl\Util;
+
 spl_autoload_register(
     function ($class) {
         require_once '../../../../classes/' . $class . '.php';
@@ -395,7 +398,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                     <strong>Password: </strong>' . $password . '<br>
                     <strong>Login Link: </strong><a href="' . $url->to('login.php', 0) . '">' . $url->to('login.php', 0) . '</a></p>'; //email 
                     $attachments = School::get_attachments($sch_abbr, $level);
-                    $attachment_path = '../uploads/attachment';;
+                    $attachment_path = '../uploads/attachment';
                     $attachs = [];
                     foreach ($attachments as $attachment) {
                         $attachs[] = $attachment_path . '/' . $attachment->attachment . ', ' . $attachment->name;
@@ -413,6 +416,39 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             } else {
                 $errors = $val->errors();
                 echo response(204, implode("<br />", $errors));
+            }
+            break;
+        case 'expel_student':
+            $req = new Request();
+            $username = Utility::escape(Input::get('username'));
+            $user_id = Utility::escape(Input::get('id'));
+            $db->query('select student.std_id,student.fname,student.oname,student.lname,student.rank,student.sch_abbr,student.level,student.class_id,class.class from student inner join class on student.class_id = class.id where student.std_id = ?', [$user_id]);
+
+            $student_detail = $db->one_result();
+            $request = '<p>Your permission is needed to expel ' . Utility::formatName($student_detail->fname, $student_detail->oname, $student_detail->lname) . '.<p>' . Utility::formatName($student_detail->fname, $student_detail->oname, $student_detail->lname)  . ' is a student of ' . School::getLevelName($student_detail->sch_abbr, (int)$student_detail->level) . ' ' . $student_detail->class . ' of ' . $student_detail->sch_abbr . '.</p>His/Her data would remain in the system but not accessible to the student</p>';
+            $other = ['username' => $username, 'user_id' => $user_id];
+            $req->send($username, 1, $request, RequestCategory::EXPEL_STUDENT, $other);
+            echo response(204, 'A request has been sent to the Director to approve this action');
+            break;
+        case 'delete_student':
+            $req = new Request();
+            $username = Utility::escape(Input::get('username'));
+            $user_id = Utility::escape(Input::get('id'));
+            $db->query('select student.std_id,student.fname,student.oname,student.lname,student.rank,student.sch_abbr,student.level,student.class_id,class.class from student inner join class on student.class_id = class.id where student.std_id = ?', [$user_id]);
+
+            $student_detail = $db->one_result();
+            $request = '<p>Your permission is needed to delete ' . Utility::formatName($student_detail->fname, $student_detail->oname, $student_detail->lname) . ' from the portal along with his/her data.<p>' . Utility::formatName($student_detail->fname, $student_detail->oname, $student_detail->lname)  . ' is a student of ' . School::getLevelName($student_detail->sch_abbr, (int)$student_detail->level) . ' ' . $student_detail->class . ' of ' . $student_detail->sch_abbr . '.</p>';
+            $other = ['username' => $username, 'user_id' => $user_id];
+            $req->send($username, 1, $request, RequestCategory::DELETE_STUDENT, $other);
+            echo response(204, 'A request has been sent to the Director to approve this action');
+            break;
+        case 'reset_admission_decision':
+            $adm_id = Utility::escape(Input::get('adm_id'));
+            if($db->update('admission', ['status' => 0], "adm_id='$adm_id'")){
+
+                echo response(204, 'reset was successful');
+            }else{
+                echo response(500, 'Something went wrong while trying to reset');
             }
             break;
     }

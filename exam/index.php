@@ -124,7 +124,7 @@
 
                                     <a href="published_exams.php"><i class="fa fa-book"></i> Published Exams</a>
 
-                                    <a href="<?php echo $url->to('logout.php', $cat) ?>"><i class="fa fa-sign-out"></i>Logout</a>
+                                  
 
 				</div>
 
@@ -154,7 +154,7 @@
 
                                     <a href="completed_exams.php"><i class="fa fa-check-square"></i> Completed Exams</a>
 
-                                    <a href="<?php echo $url->to('logout.php', $cat) ?>"><i class="fa fa-sign-out"></i>Logout</a>
+                                
 
 				</div>
 
@@ -175,8 +175,6 @@
                             <a href="take_exams.php"><i class="fa fa-pencil"></i> Take Exam</a>
 
                             <a href="completed_exams.php"><i class="fa fa-check-square"></i> Completed Exams</a>
-
-                            <a href="<?php echo $url->to('logout.php', $cat) ?>"><i class="fa fa-sign-out"></i>Logout</a>
 
                         </div>
 

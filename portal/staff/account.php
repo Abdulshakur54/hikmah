@@ -26,7 +26,7 @@ function selectedValue($value, string $type): string
                 return 'selected';
             }
             return '';
-        case 'preffered email':
+        case 'preferred email':
             if ($value == $data->choosen_email) {
                 return 'selected';
             }
@@ -108,10 +108,10 @@ function selectedValue($value, string $type): string
                     <input type="email" class="form-control form-control-lg" value="<?php echo $data->official_email ?>" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="lga">Preffered Email</label> <span class="message" style="font-size: 0.75em;">(This email would be used for sending you emails)</span>
-                    <select class="js-example-basic-single w-100 p-2" id="prefferedEmail" title="Preffered Email" name="choosen_email" required>
-                       <option <?php echo selectedValue($data->email,'preffered email') ?>><?php echo $data->email?></option>
-                       <option <?php echo selectedValue($data->official_email,'preffered email') ?>><?php echo $data->official_email?></option>
+                    <label for="lga">Preferred Email</label> <span class="message" style="font-size: 0.75em;">(This email would be used for sending you emails)</span>
+                    <select class="js-example-basic-single w-100 p-2" id="prefferedEmail" title="Preferred Email" name="choosen_email" required>
+                       <option <?php echo selectedValue($data->email,'preferred email') ?>><?php echo $data->email?></option>
+                       <option <?php echo selectedValue($data->official_email,'preferred email') ?>><?php echo $data->official_email?></option>
                     </select>
                 </div>
 

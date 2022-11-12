@@ -94,5 +94,5 @@ if (Input::submitted('get') && !empty($operation)) {
 </div>
 <script src="scripts/management/hos/subjects.js"></script>
 <script>
-    validate('subjectForm');;
+    validate('subjectForm');
 </script>

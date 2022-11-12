@@ -25,7 +25,7 @@ $user_col = $std->getUsernameColumn();
 $id = $data->$id_col;
 $username = $data->$user_col;
 $rank = $std->getRank();
-$stdRank = [9,10];
+$stdRank = [9, 10];
 if (!in_array($rank, $stdRank)) {
     exit(); // exits the page if the user is not a student
 }

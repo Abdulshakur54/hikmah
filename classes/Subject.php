@@ -74,7 +74,7 @@ class Subject
     private function insertScore($stdId, $subIds, $classId, $sch_abbr)
     {
         $util = new Utils();
-        $currScoreTable = $util->getFormatedSession($sch_abbr) . '_score';
+        $currScoreTable = $util->getFormattedSession($sch_abbr) . '_score';
         if (count($subIds) > 1) { //prepare and requery if entries will be more than one
             $start = false;
             foreach ($subIds as $subId) {
@@ -149,7 +149,7 @@ class Subject
     public static function getScoreSettings($sch_abbr, $session = '')
     {
         if ($session != '') {
-            $school_table = Utility::getFormatedSession($session) . '_school2';
+            $school_table = Utility::getFormattedSession($session) . '_school2';
         } else {
             $school_table = 'school2';
         }
@@ -425,7 +425,7 @@ class Subject
     private function deleteScore($stdId, $subIds, $sch_abbr)
     {
         $util = new Utils();
-        $currScoreTable = $util->getFormatedSession($sch_abbr) . '_score';
+        $currScoreTable = $util->getFormattedSession($sch_abbr) . '_score';
         if (count($subIds) > 1) { //prepare and requery if entries will be more than one
             $start = false;
             foreach ($subIds as $subId) {
@@ -475,5 +475,14 @@ class Subject
     {
         $db = DB::get_instance();
         return $db->select('scheme_of_work', '*', "subject_id = $sub_id and term = '$term'", 'scheme_order');
+    }
+
+    public static function getClassSubjects(int $class_id) :array{
+        $db = DB::get_instance();
+        $db->query('select subject.subject,subject.level,subject.sch_abbr,subject2.class_id,subject2.teacher_id,subject2.id from subject inner join subject2 on subject.id = subject2.subject_id where subject2.class_id = ?',[$class_id]);
+        if($db->row_count() > 0){
+            return $db->get_result();
+        }
+        return [];
     }
 }

@@ -25,6 +25,7 @@ function login(event){
     event.preventDefault();
    if(validate("loginForm", { validateOnSubmit: true })){
         document.getElementById('userType').value = localStorage.getItem('user_type');
+        document.getElementById("signInBtn").disabled = true;
         event.target.submit();
    }
 }

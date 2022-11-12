@@ -87,9 +87,7 @@ function selected($sch)
                             </td>
                          </tr>';
                             }
-                        } else {
-                            echo '<tr><td colspan ="4">No Staff found</td></tr>';
-                        }
+                        } 
 
                         ?>
                     </tbody>

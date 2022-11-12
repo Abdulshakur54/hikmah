@@ -41,7 +41,7 @@ require_once './includes/sub_teacher.inc.php';
 
 if (Input::submitted() && Token::check(Input::get('token'))) { //page has been submitted via post method
     $utils = new Utils();
-    $table = $utils->getFormatedSession($sch_abbr) . '_score';
+    $table = $utils->getFormattedSession($sch_abbr) . '_score';
     $column = Utility::escape(Input::get('dtn'));
     $maxScore = Utility::escape(Input::get('maxscore'));
     switch ($currTerm) {

@@ -12,11 +12,10 @@ require_once './includes/adm.inc.php';
             if (!empty($alerts)) {
                 foreach ($alerts as $alertt) {
             ?>
-
-                    <div class="card border border-1 rounded mb-3">
-                        <div class="card-header text-primary d-flex justify-content-between">
+                    <div class="card border border-primary rounded mb-3">
+                        <div class="card-header text-primary d-flex justify-content-between flex-wrap">
                             <div class="font-weight-bold"><?php echo $alertt->title ?></div>
-                            <div class="text-muted font-italic "><?php echo Utility::get_past_time($alertt->created_at)?></div>
+                            <div class="text-muted font-italic"><?php echo Utility::get_past_time($alertt->created_at) ?></div>
                         </div>
                         <div class="card-body"><?php echo $alertt->message; ?></div>
                     </div>

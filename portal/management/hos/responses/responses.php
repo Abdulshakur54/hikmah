@@ -84,7 +84,7 @@ if (Input::submitted()) {
                     $genMsg = '<div class="failure">The scores must sum up to 100</div>';
                     echo response(400, $genMsg);
                 } else {
-                    $scoreTable = $utils->getFormatedSession($sch_abbr) . '_score'; //the current score table
+                    $scoreTable = $utils->getFormattedSession($sch_abbr) . '_score'; //the current score table
 
                     if (!empty($_FILES['signature']['name'])) {
                         $file = new File('signature');

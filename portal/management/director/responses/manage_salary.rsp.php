@@ -21,12 +21,12 @@
             $req->delRequest($receiver, 1);// 1 as a parameter here shows the category is salary
             $account->updateSalary($receiver,$salary); //update salary
             //send a confirmation request to the accountant
-            $req->send($receiver, 3,'Please, confirm a request of &#8358;'.$salary.' as salary for '.$name, 1);
+            $req->send($receiver, 3,'Please, confirm a request of &#8358;'.$salary.' as salary for '.$name, RequestCategory::SALARY_CONFIRMATION);
             echo json_encode(['success'=>true,'token'=>Token::generate(),'id'=>$id,'category'=>$category,'receiver'=>$receiver]);
          }else{
    
             //send a confirmation request to the accountant
-            if($status = $req->send($receiver, 3,'Please, confirm a request of &#8358;'.$salary.' as salary for '.$name, 1)){
+            if($status = $req->send($receiver, 3,'Please, confirm a request of &#8358;'.$salary.' as salary for '.$name, RequestCategory::SALARY_CONFIRMATION)){
                 if($status === 1){
                     echo json_encode(['success'=>true,'token'=>Token::generate(),'id'=>$id, 'category'=>$category, 'code'=>1]); //this means that a request has already been sent
                 }else{

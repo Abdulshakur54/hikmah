@@ -18,8 +18,7 @@ $req = new Request();
 $acct = new Accountant();
 if (!$acct->isRemembered()) { //runs for people that are not logged in and automatically log in those that have cookie
     Session::setLastPage($url->getCurrentPage());
-    Session::set_flash('welcome back', '');
-    Redirect::home('login.php', 1);
+    Redirect::home('login.php', 0);
 }
 $data = $acct->data();
 $id_col = $acct->getIdColumn();
@@ -27,6 +26,9 @@ $user_col = $acct->getUsernameColumn();
 $id = $data->$id_col;
 $username = $data->$user_col;
 $rank = $acct->getRank();
+if ($data->active != 1) {
+    exit('Sorry! you have been made inactive on the portal');
+}
 if ($rank !== 3) {
     exit(); // exits the page if the user is not the Accountant
 }

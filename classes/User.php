@@ -539,19 +539,19 @@ class User
 
 			switch (strtoupper($first_letter)) {
 				case 'H':
-					$db->query('select student.*,student2.*,class.class,states.name as state_of_origin,local_governments.name as lga_of_origin from student inner join student2 on student.std_id=student2.std_id inner join class on student.class_id = class.id inner join states on states.id = student2.state inner join local_governments on local_governments.id = student2.lga where student.std_id = ?', [$username]);
+					$db->query('select student.*,student2.*,class.class,states.name as state_of_origin,local_governments.name as lga_of_origin from student inner join student2 on student.std_id=student2.std_id inner join class on student.class_id = class.id inner join states on states.id = student2.state inner join local_governments on local_governments.id = student2.lga where student.std_id = ? and student.active=1', [$username]);
 					if ($db->row_count() > 0) {
 						$data = $db->one_result();
 					}
 					break;
 				case 'M':
-					$db->query('select management.*,states.name as state_of_origin,local_governments.name as lga_of_origin from management inner join states on states.id = management.state inner join local_governments on local_governments.id = management.lga where management.mgt_id = ?', [$username]);
+					$db->query('select management.*,states.name as state_of_origin,local_governments.name as lga_of_origin from management inner join states on states.id = management.state inner join local_governments on local_governments.id = management.lga where management.mgt_id = ? and management.active = 1', [$username]);
 					if ($db->row_count() > 0) {
 						$data = $db->one_result();
 					}
 					break;
 				case 'S':
-					$db->query('select staff.*,states.name as state_of_origin,local_governments.name as lga_of_origin from staff inner join states on states.id = staff.state inner join local_governments on local_governments.id = staff.lga where staff.staff_id = ?', [$username]);
+					$db->query('select staff.*,states.name as state_of_origin,local_governments.name as lga_of_origin from staff inner join states on states.id = staff.state inner join local_governments on local_governments.id = staff.lga where staff.staff_id = ? and staff.active = 1', [$username]);
 					if ($db->row_count() > 0) {
 						$data = $db->one_result();
 					}
@@ -592,7 +592,8 @@ class User
 		return $specifics;
 	}
 
-	public static function get_link(string $username):string{
+	public static function get_link(string $username): string
+	{
 		$first_letter = substr($username, 0, 1);
 		if (is_numeric($first_letter)) {
 			return 'admission';
@@ -603,9 +604,9 @@ class User
 					return 'student';
 				case 'M':
 					$db = DB::get_instance();
-					$rank = $db->get('management','rank',"mgt_id='$username'")->rank;
+					$rank = $db->get('management', 'rank', "mgt_id='$username'")->rank;
 					$pos = User::getPosition($rank);
-					switch($pos){
+					switch ($pos) {
 						case 'Director':
 							return 'management/director';
 						case 'A.P.M':
@@ -622,7 +623,27 @@ class User
 				case 'S':
 					return 'staff';
 				default:
-				return '';
+					return '';
+			}
+		}
+	}
+
+	public static function is_active(string $username): bool
+	{
+		$db = DB::get_instance();
+		$first_letter = strtoupper(substr($username, 0, 1));
+		if (is_numeric($first_letter)) {
+			return ($db->get('admission', 'active', "adm_id='$username'")->active == 1) ? true : false;
+		} else {
+			switch ($first_letter) {
+				case 'H':
+					return ($db->get('student', 'active', "std_id='$username'")->active == 1) ? true : false;
+				case 'S':
+					return ($db->get('staff', 'active', "staff_id='$username'")->active == 1) ? true : false;
+				case 'M':
+					return ($db->get('management', 'active', "mgt_id='$username'")->active == 1) ? true : false;
+				default:
+					return false;
 			}
 		}
 	}
@@ -678,14 +699,15 @@ class User
 		}
 	}
 
-	public static function get_profile_image_path($username) :string{
+	public static function get_profile_image_path($username): string
+	{
 
 		$db = DB::get_instance();
 		$url = new Url();
 		$first_letter = substr($username, 0, 1);
 		if (is_numeric($first_letter)) {
 			$picture = $db->get('admission', 'picture', "adm_id ='$username'")->picture;
-			return $url->to('uploads/passports/'.$picture,5);
+			return $url->to('uploads/passports/' . $picture, 5);
 		} else {
 
 			switch (strtoupper($first_letter)) {
@@ -702,7 +724,6 @@ class User
 					return '';
 			}
 		}
-	
 	}
 
 	public static function hikmahDashboardRememberMe(): bool
@@ -729,13 +750,14 @@ class User
 			$remembered =  $user->isRemembered();
 			if ($remembered) {
 				$username = Cookie::get('user');
-				Session::set('user',$username);
+				Session::set('user', $username);
 				$greeting = User::get_user_greeting($username);
-				Session::set_flash(Config::get('hikmah/flash_welcome'),$greeting);
+				Session::set_flash(Config::get('hikmah/flash_welcome'), $greeting);
 				return true;
 			}
 			return false;
 		}
 		return false;
 	}
+	
 }

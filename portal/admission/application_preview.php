@@ -1,6 +1,6 @@
 <?php
 require_once './includes/adm.inc.php';
-$download_link = $url->to('students_admission.php?adm_id=' . $data->adm_id . '&school=' . $data->sch_abbr . '&token=' . Token::generate(), 0);
+//$download_link = $url->to('students_admission.php?adm_id=' . $data->adm_id . '&school=' . $data->sch_abbr . '&token=' . Token::generate(), 0);
 function getStatus()
 {
     global $data;
@@ -124,12 +124,9 @@ $admId = $username;
 
                 </div>
             </div>
-            <div>
-                <a href="<?php echo $download_link ?>" class="d-block text-center"><button type="button" class="btn btn-primary">Download</button></a>
-            </div>
+           
         </div>
 
     </div>
 </div>
 </div>
-<!-- <script src="scripts/management/apm/add_token.js"></script> -->

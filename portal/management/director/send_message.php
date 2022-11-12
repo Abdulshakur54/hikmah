@@ -59,10 +59,7 @@ require_once './includes/director.inc.php';
                             </td>
                          </tr>';
                             }
-                        } else {
-                            echo '<tr><td colspan ="4">No management member found</td></tr>';
                         }
-
                         ?>
                     </tbody>
                 </table>

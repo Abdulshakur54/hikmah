@@ -122,5 +122,5 @@ function selectedSchool($abbr)
 </div>
 <script src="scripts/management/apm/schedules.js"></script>
 <script>
-    validate('schedulesForm');;
+    validate('schedulesForm');
 </script>

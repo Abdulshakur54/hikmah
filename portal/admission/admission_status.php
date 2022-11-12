@@ -1,6 +1,7 @@
 <?php
 require_once './includes/adm.inc.php';
-$download_link = $url->to('students_admission.php?adm_id=' . $data->adm_id . '&school=' . $data->sch_abbr . '&token=' . Token::generate(), 0);
+$token = Token::generate();
+$download_link = $url->to('students_admission.php?adm_id=' . $data->adm_id . '&school=' . $data->sch_abbr . '&token=' . $token, 0);
 ?>
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
@@ -21,14 +22,14 @@ $download_link = $url->to('students_admission.php?adm_id=' . $data->adm_id . '&s
                     break;
                 case 1:
             ?>
-                    <div class="card">
+                    <div class="card rounded border border-secondary">
                         <div class="card-header text-center">
                             <h4>OFFER OF ADMISSION</h4>
                         </div>
                         <div class="card-body">
                             <?php
                             echo '<p>Congratulations! ' . Utility::formatName($data->fname, $data->oname, $data->lname) . ' with Applicant ID: ' . $data->adm_id . '</p><p>You have been offered admission into <span class="font-weight-bold">' . School::getLevelName($data->sch_abbr, $data->level) . ', ' . School::getFullName($data->sch_abbr) . '</span></p>';
-                            echo '<input type="hidden" id="token" value="' . Token::generate() . '"  name="token"/>';
+                            echo '<input type="hidden" id="token" value="' . $token. '"  name="token"/>';
                             ?>
                         </div>
                         <div class="card-footer d-flex justify-content-center flex-wrap">

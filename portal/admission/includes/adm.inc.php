@@ -12,12 +12,10 @@ date_default_timezone_set('Africa/Lagos');
 
 $url = new Url();
 $alert = new Alert();
-$req = new Request();
 $adm = new Admission();
 if (!$adm->isRemembered()) { //runs for people that are not logged in and automatically log in those that have cookie
     Session::setLastPage($url->getCurrentPage());
-    Session::set_flash('welcome back', '');
-    Redirect::home('login.php', 1);
+    Redirect::home('login.php', 0);
 }
 $data = $adm->data();
 $id_col = $adm->getIdColumn();
@@ -26,10 +24,12 @@ $id = $data->$id_col;
 $username = $data->$user_col;
 $rank = $adm->getRank();
 $admRank = [11, 12];
+if ($data->active != 1) {
+    exit('Sorry! you have been made inactive on the portal');
+}
 if (!in_array($rank, $admRank)) {
     exit();
 }
-
 
 if ((Input::submitted('post') || Input::submitted('get')) && Token::check(Input::get('page_token'), 'page_token')) {
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -53,10 +53,6 @@ if ($alert->hasAlerts($username) && basename(Utility::myself()) != 'notification
     $count_alert = $alert->getUnseenCount($username);
 }
 
-//display request
-if ($req->hasRequests($rank) && basename(Utility::myself()) != 'requests.php') {
-    $count_request = $req->getCount($rank);
-}
 $db = DB::get_instance();
 ?>
 <input type="hidden" name="page_token" id="page_token" value="<?php echo Token::generate(32, 'page_token') ?>">

@@ -65,14 +65,14 @@ class Staff extends User
     //this function checks if all students of a class have completed course registration
     function isStdsSubRegComplete($classId)
     {
-        $this->_db->query('select count(id) as counter from student where class_id = ? and sub_reg_comp = false', [$classId]);
+        $this->_db->query('select count(id) as counter from student where class_id = ? and sub_reg_comp = false and active=1', [$classId]);
         return ($this->_db->one_result()->counter) ? false : true;
     }
 
     //this function gets all students of a class that have not completed course registration
     function getStdsNotCompSubReg($classId)
     {
-        $this->_db->query('select fname,lname,oname,std_id from student where class_id=? and sub_reg_comp = false', [$classId]);
+        $this->_db->query('select fname,lname,oname,std_id from student where class_id=? and sub_reg_comp = false and active = 1', [$classId]);
         return $this->_db->get_result();
     }
 
@@ -101,14 +101,14 @@ class Staff extends User
 
     function getStudents($classId)
     {
-        $this->_db->query('select std_id,fname,lname,oname from student where class_id=? order by fname,lname,oname asc', [$classId]);
+        $this->_db->query('select std_id,fname,lname,oname from student where class_id=? and active = 1 order by fname,lname,oname asc', [$classId]);
         return $this->_db->get_result();
     }
    
 
     function getStudentsIds($classId)
     {
-        $this->_db->query('select std_id from student where class_id=?  order by fname,lname,oname asc', [$classId]);
+        $this->_db->query('select std_id from student where class_id=? and active=1  order by fname,lname,oname asc', [$classId]);
         $ids = [];
         if ($this->_db->row_count() > 0) {
             $res = $this->_db->get_result();

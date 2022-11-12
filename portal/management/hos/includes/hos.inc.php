@@ -16,8 +16,7 @@ $req = new Request();
 $hos = new Hos();
 if (!$hos->isRemembered()) { //runs for people that are not logged in and automatically log in those that have cookie
     Session::setLastPage($url->getCurrentPage());
-    Session::set_flash('welcome back', '');
-    Redirect::home('login.php', 1);
+    Redirect::home('login.php', 0);
 }
 $data = $hos->data();
 $id_col = $hos->getIdColumn();
@@ -25,6 +24,9 @@ $user_col = $hos->getUsernameColumn();
 $id = $data->$id_col;
 $username = $data->$user_col;
 $rank = $hos->getRank();
+if ($data->active != 1) {
+    exit('Sorry! you have been made inactive on the portal');
+}
 if ($rank !== 5 && $rank !== 17) {
     exit(); // exits the page if the user is not the HOS
 }

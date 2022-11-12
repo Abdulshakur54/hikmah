@@ -12,7 +12,7 @@ class Result
         $this->_db2 = DB::get_instance2();
         $util = new Utils();
         $current_session = $util->getSession($sch_abbr);
-        $formatted_session = Utility::getFormatedSession($session);
+        $formatted_session = Utility::getFormattedSession($session);
         $this->_score_table = $formatted_session . '_score';
         if ($current_session === $session) {
             $this->_subject_table = 'subject';
@@ -164,7 +164,7 @@ class Result
     {
         $db = DB::get_instance();
         $util = new Utils();
-        $formatted_session = $util->getFormatedSession($sch_abbr);
+        $formatted_session = $util->getFormattedSession($sch_abbr);
         $db->query('select distinct std_id from ' . $formatted_session . '_score where class_id=?', [$class_id]);
         if ($db->row_count() > 0) {
             return $db->get_result();
@@ -223,7 +223,7 @@ class Result
     public static function get_class_term_totals($session, $class_id, $term)
     {
         $db = DB::get_instance();
-        $score_table = Utility::getFormatedSession($session) . '_score';
+        $score_table = Utility::getFormattedSession($session) . '_score';
         $db->query('select ' . $score_table . '.' . $term . '_tot from ' . $score_table . ' inner join student on student.std_id = ' . $score_table . '.std_id where student.class_id = ?', [$class_id]);
         if ($db->row_count() > 0) {
             return $db->get_result();
@@ -234,7 +234,7 @@ class Result
     public static function get_class_ses_totals($session, $class_id)
     {
         $db = DB::get_instance();
-        $score_table = Utility::getFormatedSession($session) . '_score';
+        $score_table = Utility::getFormattedSession($session) . '_score';
         $db->query('select ' . $score_table . '.ft_tot,' . $score_table . '.st_tot,' . $score_table . '.tt_tot from ' . $score_table . ' inner join student on student.std_id = ' . $score_table . '.std_id where student.class_id = ?', [$class_id]);
         if ($db->row_count() > 0) {
             return $db->get_result();
@@ -248,7 +248,7 @@ class Result
              $db->requery([$std_id]);
         } else {
 
-            $score_table = Utility::getFormatedSession($session) . '_score';
+            $score_table = Utility::getFormattedSession($session) . '_score';
             $db->query('select ' . $term . '_tot from ' . $score_table . ' where std_id = ?', [$std_id]);
         }
         if ($db->row_count() > 0) {
@@ -262,7 +262,7 @@ class Result
         if($requery){
             $db->requery([$std_id]);
         }else{
-            $score_table = Utility::getFormatedSession($session) . '_score';
+            $score_table = Utility::getFormattedSession($session) . '_score';
             $db->query('select ft_tot,st_tot,tt_tot from ' . $score_table . ' where std_id = ?', [$std_id]);
         }
         if ($db->row_count() > 0) {

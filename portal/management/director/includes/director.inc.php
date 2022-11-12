@@ -1,4 +1,5 @@
 <?php
+use Monolog\Handler\Curl\Util;
 
 require_once '../../error_reporting.php';
 //initializations
@@ -17,8 +18,7 @@ $req = new Request();
 $dir = new Director();
 if (!$dir->isRemembered()) { //runs for people that are not logged in and automatically log in those that have cookie
     Session::setLastPage($url->getCurrentPage());
-    Session::set_flash('welcome back', '');
-    Redirect::home('login.php', 1);
+    Redirect::home('login.php', 0);
 }
 $data = $dir->data();
 $id_col = $dir->getIdColumn();
@@ -26,6 +26,9 @@ $user_col = $dir->getUsernameColumn();
 $id = $data->$id_col;
 $username = $data->$user_col;
 $rank = $dir->getRank();
+if ($data->active != 1) {
+    exit('Sorry! you have been made inactive on the portal');
+}
 if ($rank !== 1) {
     exit(); // exits the page if the user is not the director
 }
@@ -56,6 +59,12 @@ if ($alert->hasAlerts($username) && basename(Utility::myself()) != 'notification
 //display request
 if ($req->hasRequests($rank) && basename(Utility::myself()) != 'requests.php') {
     $count_request = $req->getCount($rank);
+}
+$utils = new Utils();
+if (!empty(Input::get('school'))) {
+    $sch_abbr = Utility::escape(Input::get('school'));
+    $currTerm = $utils->getCurrentTerm($sch_abbr);
+    $currSession = $utils->getSession($sch_abbr);
 }
 $db = DB::get_instance();
 ?>

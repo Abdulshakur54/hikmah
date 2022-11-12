@@ -14,7 +14,7 @@ class Utility
 
     public static function notEmpty($val): bool
     {
-        
+
         return (!empty($val) || $val === (float) 0 || $val === (int) 0) ? true : false;
     }
 
@@ -247,7 +247,7 @@ class Utility
         return self::escape(Input::get($name));
     }
 
-    public static function getFormatedSession($session)
+    public static function getFormattedSession($session)
     {
         $arr = explode('/', $session);
         return $arr[0] . '_' . $arr[1];
@@ -265,7 +265,7 @@ class Utility
             case 'ses':
                 return 'Sessional';
             default:
-            return '';
+                return '';
         }
     }
 
@@ -316,6 +316,37 @@ class Utility
         return $res;
     }
 
+    public static function getGenderFromTitle(string $title, GenderEnum $category): string
+    {
+        switch (strtolower($title)) {
+            case 'mall':
+            case 'mr':
+                switch ($category->value) {
+                    case 'subject':
+                        return 'He';
+                    case 'object':
+                        return 'him';
+                    case 'descriptive_subject':
+                        return 'his';
+                    default:
+                        return '';
+                }
+            case 'mallama':
+            case 'mrs':
+            case 'miss':
+                switch ($category->value) {
+                    case 'subject':
+                        return 'She';
+                    case 'object':
+                        return 'her';
+                    case 'descriptive_subject':
+                        return 'his';
+                    default:
+                        return '';
+                }
+        }
+    }
+
     public static function format_student_id(string $student_id)
     {
         $arr = explode('/', $student_id);
@@ -327,4 +358,96 @@ class Utility
         $db = DB::get_instance();
         return $db->get('account', 'bank,no', "receiver='$username'");
     }
+
+    public static function getDay(int $pos): string
+    {
+        switch ($pos) {
+            case 1:
+                return 'Monday';
+            case 2:
+                return 'Tuesday';
+            case 3:
+                return 'Wednesday';
+            case 4:
+                return 'Thursday';
+            case 5:
+                return 'Friday';
+            case 6:
+                return 'Saturday';
+            case 7:
+                return 'Sunday';
+            default:
+                return '';
+        }
+    }
+
+    public static function getDayPos(string $day): int|null
+    {
+        switch (strtolower($day)) {
+            case 'monday':
+                return 1;
+            case 'tuesday':
+                return 2;
+            case 'wednesday':
+                return 3;
+            case 'thursday':
+                return 4;
+            case 'friday':
+                return 5;
+            case 'saturday':
+                return 6;
+            case 'sunday':
+                return 7;
+            default:
+                return null;
+        }
+    }
+
+    public static function getDays(): array
+    {
+        return [
+            'Monday' => 1,
+            'Tuesday' => 2,
+            'Wednesday' => 3,
+            'Thursday' => 4,
+            'Friday' => 5,
+            'Saturday' => 6,
+            'Sunday' => 7
+        ];
+    }
+
+    public static function formatTime(string $time): string
+    {
+        if (strlen($time) > 5) {
+            //remove the seconds part of the time
+            $time = substr($time, 0, strlen($time) - 3);
+        }
+        $hour = substr($time, 0, 2);
+        if ($hour == '12') {
+            return $time . ' PM';
+        } else if ($hour > '12') {
+            $cal_hour = (int)$hour - 12;
+            $cal_hour = (strlen($cal_hour) < 2) ? '0' . $cal_hour : $cal_hour;
+            return $cal_hour . ':' . substr($time, strlen($time) - 2) . ' PM';
+        } else {
+            return $time . ' AM';
+        }
+    }
+
+    public static function in_session(string $school) :bool{
+        $now = date('Y-m-d');
+        $db = DB::get_instance();
+        $current_term = $db->get('school','current_term',"sch_abbr = '$school'")->current_term;
+        $school_data = $db->get('school2',$current_term.'_res_date,'.$current_term.'_close_date',"sch_abbr = '$school'");
+        return ($school_data->{$current_term.'_res_date'} < $now && $school_data->{$current_term . '_close_date'} > $now)?true:false;
+    }
+
+      //this function is used to allow complete redirect into exam portal, this is done when the file url ends with new_exam.php
+    public static function is_new_exam($url): bool
+
+    {
+
+        return (substr($url, -12) == 'new_exam.php') ? true : false;
+    }
+
 }
