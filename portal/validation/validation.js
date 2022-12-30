@@ -38,7 +38,7 @@ function validate(formId, options = {}, customMessages = {}) {
     "input[type=email],[type=date],[type=number],[type=password],[type=month],[type=tel],[type=time],[type=url],[type=week]"
   );
 
-  //form is to be submitted by setting validateOnSubmit propery of options to true;
+  //form is to be submitted by setting validateOnSubmit property of options to true;
   if (options.validateOnSubmit) {
     const allElements = [
       ...textInput,

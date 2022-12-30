@@ -1,0 +1,1 @@
+when adding new session, populate the salary and school fee table with the necessary data

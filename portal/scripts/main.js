@@ -119,45 +119,60 @@ function clearHTML(elementId) {
   _(elementId).innerHTML = "";
 }
 
-function typeheadInput(elementId, dataSource) {
-  const engine = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.whitespace,
-    queryTokenizer: Bloodhound.tokenizers.whitespace,
-    local: dataSource,
-  });
+// function typeheadInput(elementId, dataSource) {
+//   const engine = new Bloodhound({
+//     datumTokenizer: Bloodhound.tokenizers.whitespace,
+//     queryTokenizer: Bloodhound.tokenizers.whitespace,
+//     local: dataSource,
+//   });
 
-  $("#" + elementId).typeahead(
-    {
-      hint: true,
-      highlight: true,
-      minLength: 1,
-    },
-    {
-      name: elementId + "_name",
-      source: engine,
-    }
-  );
-}
+//   $("#" + elementId).typeahead(
+//     {
+//       hint: true,
+//       highlight: true,
+//       minLength: 1,
+//     },
+//     {
+//       name: elementId + "_name",
+//       source: engine,
+//     }
+//   );
+// }
 
 function getPostPage(formId, url) {
   let formvalues = getFormData(formId);
   getPage(url, formvalues);
 }
 
-async function getPostPageWithUpload(formId, url, hiddenFields, reload = true) {
-  reload &&
-    $("#page").block({
-      message: "<div>Loading...</div>",
-      css: {
-        display: "flex",
-        width: "100%",
-        height: "100vh",
-        justifyContent: "center",
-        alignItems: "center",
-        border: "none",
-        fontWeight: "bold",
-      },
-    });
+/**
+ *
+ * @param {*} formId
+ * @param {*} url
+ * @param {*} hiddenFields
+ * @param {*} reload
+ * @param {*} returnResponse  'response would only be returned when reload is set to false'
+ * @returns
+ */
+async function getPostPageWithUpload(
+  formId,
+  url,
+  hiddenFields,
+  reload = true,
+  returnResponse = false
+) {
+  // reload &&
+  //   $("#page").block({
+  //     message: "<div>Loading...</div>",
+  //     css: {
+  //       display: "flex",
+  //       width: "100%",
+  //       height: "100vh",
+  //       justifyContent: "center",
+  //       alignItems: "center",
+  //       border: "none",
+  //       fontWeight: "bold",
+  //     },
+  //   });
   let form = _(formId);
   let formData = new FormData(form);
   hiddenFields = Object.entries(hiddenFields);
@@ -172,14 +187,19 @@ async function getPostPageWithUpload(formId, url, hiddenFields, reload = true) {
 
   rsp = await rsp.json();
   let status = rsp.status;
-  if (!(status == 200 || status == 201 || status == 204)) {
-    swalNotify(rsp.message, "warning");
+  _("token").value = rsp.token;
+  if (!reload && returnResponse) {
+    return rsp;
   } else {
-    if (reload) {
-      $("#page").unblock();
-      location.reload();
+    if (!(status == 200 || status == 201 || status == 204)) {
+      swalNotify(rsp.message, "warning");
     } else {
-      swalNotify(rsp.message, "success");
+      if (reload) {
+        $("#page").unblock();
+        location.reload();
+      } else {
+        swalNotify(rsp.message, "success");
+      }
     }
   }
 }
@@ -189,5 +209,3 @@ function convertStringToHTML(text) {
   let htmlDoc = domObj.parseFromString(text, "text/html");
   return htmlDoc.body.childNodes[0];
 }
-
-

@@ -1,4 +1,4 @@
-<?php [2,4,6,7,15,17]
+<?php
 
 	//initializations
 

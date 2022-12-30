@@ -51,7 +51,7 @@ require_once './includes/director.inc.php';
                 </div>
                 <div class="form-group">
                     <label for="salary">Salary(&#8358;)</label>
-                    <input type="text" class="form-control" id="salary" onfocus="clearHTML('messageContainer')" title="Salary" required pattern="^[0-9]+\.?[0-9]+$">
+                    <input type="text" class="form-control" id="salary" onfocus="clearHTML('messageContainer')" title="Salary" required pattern="^[0-9][0-9]*([.][0-9]+)?$">
                 </div>
 
                 <div id="messageContainer"></div>

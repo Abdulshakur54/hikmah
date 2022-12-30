@@ -345,8 +345,30 @@ class School
         return $db->select('attachment', 'name,attachment', "sch_abbr in('$sch_abbr','ALL') AND level in('$level','ALL')");
     }
 
-    public static function get_classes($sch_abbr){
+    public static function get_classes($sch_abbr)
+    {
         $db = DB::get_instance();
-        return $db->select('class','id,level,class',"sch_abbr = '$sch_abbr'");
+        return $db->select('class', 'id,level,class', "sch_abbr = '$sch_abbr'");
+    }
+
+    public static function getRemainingTerms(string $sch_abbr): array
+    {
+        $utils = new Utils();
+        $current_term = $utils->getCurrentTerm($sch_abbr);
+        switch ($current_term) {
+            case 'ft':
+                return ['ft', 'st', 'tt'];
+            case 'st':
+                return ['st', 'tt'];
+            case 'tt':
+                return ['tt'];
+            default:
+                return [];
+        }
+    }
+    public static function getCurrentSession(string $sch_abbr): string
+    {
+        $utils = new Utils();
+        return $utils->getSession($sch_abbr);
     }
 }

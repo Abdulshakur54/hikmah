@@ -152,9 +152,25 @@ class DB
 		}
 	}
 
+	public function getLastInsertId():int{
+		return $this->_pdo->lastInsertId();
+	}
+
 	public function row_count()
 	{
 		return $this->_row_count;
+	}
+
+	public function beginTransaction(){
+		$this->_pdo->beginTransaction();
+	}
+
+	public function rollBack(){
+		$this->_pdo->rollBack();
+	}
+
+	public function commit(){
+		$this->_pdo->commit();
 	}
 
 

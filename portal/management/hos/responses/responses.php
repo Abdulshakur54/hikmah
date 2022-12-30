@@ -302,5 +302,5 @@ if (Input::submitted()) {
 
 function response(int $status, $message = '', array $data = [])
 {
-    return json_encode(['status' => $status, 'message' => $message, 'data' => $data, 'token' => Token::generate()]);
+    return Utility::response($status, $message, $data);
 }

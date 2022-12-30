@@ -92,7 +92,11 @@ $GLOBALS['configuration'] = array(
 		'subject_teacher_role' => 23,
 		'class_teacher_role' => 24,
 		'staff_role' => 6,
-		'flash_welcome'=>'greeting'
+		'flash_welcome'=>'greeting',
+		'management_account'=> 'HIKMAH',
+	],
+	'transaction'=>[
+		'token_length'=>8
 	],
 	'sms' => [
 		'email' => 'mabdulshakur54@gmail.com',

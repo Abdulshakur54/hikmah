@@ -15,10 +15,10 @@
          $confirm = Input::get('confirm');
          $req = new Request();
          if($confirm === 'true'){ //request accepted
-             $req->requstConfirm($id, $requester_id, $category);
+             $req->requestConfirm($id, $requester_id, $category);
              echo json_encode(['success'=>true,'token'=>Token::generate(),'confirm'=>true]);
          }else{
-             $req->requstDecline($id, $requester_id, $category);
+             $req->requestDecline($id, $requester_id, $category);
              echo json_encode(['success'=>true,'token'=>Token::generate(),'confirm'=>false]);
          }
         

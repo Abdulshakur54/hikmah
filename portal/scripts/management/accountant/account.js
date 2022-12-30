@@ -51,7 +51,7 @@ async function updateAccount(event) {
     ld_startLoading("updateBtn");
     await getPostPageWithUpload(
       "updateAccountForm",
-      "management/account/responses/responses.php",
+      "management/accountant/responses/responses.php",
       { op: "update_account" },
       false
     );

@@ -124,7 +124,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                     }
                 } else {
                     if ($apm->updateSchedule($sch_abbr, $term, $formFee, $regFee, $ftsf, $stsf, $ttsf)) {
-                        echo response(204, 'Update was successful2');
+                        echo response(204, 'Update was successful');
                     } else {
                         echo response(500, 'An error is preventing changes to being saved');
                     }
@@ -459,5 +459,5 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 
 function response(int $status, $message = '', array $data = [])
 {
-    return json_encode(['status' => $status, 'message' => $message, 'data' => $data, 'token' => Token::generate()]);
+    return Utility::response($status, $message, $data);
 }

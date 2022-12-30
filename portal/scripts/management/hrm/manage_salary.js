@@ -10,7 +10,7 @@ async function updateSalary(user_id,id){
     let salary = salaryElement.value;
     let name = _('name'+id).innerHTML;
     //validate salary
-    if(salary.search(/^[0-9]+\.?[0-9]+$/) > -1){ //valid salary
+    if(salary.search(/^[0-9][0-9]*([.][0-9]+)?$/) > -1){ //valid salary
         //send ajax request
         ajaxRequest('management/hrm/responses/manage_salary.rsp.php', manageSalaryRsp,'receiver='+user_id+'&salary='+salary+'&token='+token.value+'&category=updatesalary&name='+name+'&id='+id);
     }else{

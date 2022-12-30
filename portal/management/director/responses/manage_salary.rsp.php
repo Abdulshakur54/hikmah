@@ -18,15 +18,15 @@
         $req = new Request();
         if($category === 'updatesalary'){
             //delete the request if it exists before
-            $req->delRequest($receiver, 1);// 1 as a parameter here shows the category is salary
+            $req->delRequest($receiver, RequestCategory::UPDATE_SALARY);// 6 as a parameter here shows the category is salary
             $account->updateSalary($receiver,$salary); //update salary
             //send a confirmation request to the accountant
-            $req->send($receiver, 3,'Please, confirm a request of &#8358;'.$salary.' as salary for '.$name, RequestCategory::SALARY_CONFIRMATION);
+            $req->send($receiver, 3,'Please, confirm a request of &#8358;'.$salary.' as salary for '.$name, RequestCategory::UPDATE_SALARY, ['sender_office' => 'Office of the Director']);
             echo json_encode(['success'=>true,'token'=>Token::generate(),'id'=>$id,'category'=>$category,'receiver'=>$receiver]);
          }else{
    
             //send a confirmation request to the accountant
-            if($status = $req->send($receiver, 3,'Please, confirm a request of &#8358;'.$salary.' as salary for '.$name, RequestCategory::SALARY_CONFIRMATION)){
+            if($status = $req->send($receiver, 3,'Please, confirm a request of &#8358;'.$salary.' as salary for '.$name, RequestCategory::UPDATE_SALARY, ['sender_office' => 'Office of the Director'])){
                 if($status === 1){
                     echo json_encode(['success'=>true,'token'=>Token::generate(),'id'=>$id, 'category'=>$category, 'code'=>1]); //this means that a request has already been sent
                 }else{

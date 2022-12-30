@@ -434,15 +434,16 @@ class Utility
         }
     }
 
-    public static function in_session(string $school) :bool{
+    public static function in_session(string $school): bool
+    {
         $now = date('Y-m-d');
         $db = DB::get_instance();
-        $current_term = $db->get('school','current_term',"sch_abbr = '$school'")->current_term;
-        $school_data = $db->get('school2',$current_term.'_res_date,'.$current_term.'_close_date',"sch_abbr = '$school'");
-        return ($school_data->{$current_term.'_res_date'} < $now && $school_data->{$current_term . '_close_date'} > $now)?true:false;
+        $current_term = $db->get('school', 'current_term', "sch_abbr = '$school'")->current_term;
+        $school_data = $db->get('school2', $current_term . '_res_date,' . $current_term . '_close_date', "sch_abbr = '$school'");
+        return ($school_data->{$current_term . '_res_date'} < $now && $school_data->{$current_term . '_close_date'} > $now) ? true : false;
     }
 
-      //this function is used to allow complete redirect into exam portal, this is done when the file url ends with new_exam.php
+    //this function is used to allow complete redirect into exam portal, this is done when the file url ends with new_exam.php
     public static function is_new_exam($url): bool
 
     {
@@ -450,4 +451,87 @@ class Utility
         return (substr($url, -12) == 'new_exam.php') ? true : false;
     }
 
+    public static function get_remaining_months(int $pos): array
+    {
+        $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        return array_slice($months, $pos - 1);
+    }
+
+    public static function get_months()
+    {
+        return ['1' => 'January', '2' => 'February', '3' => 'March', '4' => 'April', '5' => 'May', '6' => 'June', '7' => 'July', '8' => 'August', '9' => 'September', '10' => 'October', '11' => 'November', '12' => 'December'];
+    }
+
+    public static function get_month(string|int $month): string|int
+    {
+        if (is_numeric($month)) {
+            switch ($month) {
+                case 1:
+                    return 'January';
+                case 2:
+                    return 'February';
+                case 3:
+                    return 'March';
+                case 4:
+                    return 'April';
+                case 5:
+                    return 'May';
+                case 6:
+                    return 'June';
+                case 7:
+                    return 'July';
+                case 8:
+                    return 'August';
+                case 9:
+                    return 'September';
+                case 10:
+                    return 'October';
+                case 11:
+                    return 'November';
+                case 12:
+                    return 'December';
+                default:
+                    return '';
+            }
+        } else {
+            switch ($month) {
+                case 'January':
+                    return 1;
+                case 'February':
+                    return 2;
+                case 'March':
+                    return 3;
+                case 'April':
+                    return 4;
+                case 'May:
+                    return 5';
+                case 'June':
+                    return 6;
+                case 'July':
+                    return 7;
+                case 'August':
+                    return 8;
+                case 'September':
+                    return 9;
+                case 'October':
+                    return 10;
+                case 'November':
+                    return 11;
+                case 'December':
+                    return 12;
+                default:
+                    return '';
+            }
+        }
+    }
+
+    public static function get_years()
+    {
+        return [2050,2049,2048,2047,2046,2045,2044,2043,2042,2041,2040,2039,2038,2037,2036,2035,2034,2033,2032,2031,2030,2029,2028,2027,2026,2025,2024,2023,2022,2021,2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003, 2002];
+    }
+
+    public static function response(int $status, $message = '', array $data = [])
+    {
+        return json_encode(['status' => $status, 'message' => $message, 'data' => $data, 'token' => Token::generate()]);
+    }
 }

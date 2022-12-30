@@ -85,7 +85,9 @@ class Apm extends Management
 
     public function getSchedules($sch_abbr)
     {
-        $this->_db->query('select * from school where sch_abbr = ?', [$sch_abbr]);
+        $utils = new Utils();
+        $current_session = $utils->getSession($sch_abbr);
+        $this->_db->query('select school.*, fee.reg_fee,fee.form_fee,fee.ft_fee,fee.st_fee,fee.tt_fee from school inner join fee on school.sch_abbr = fee.sch_abbr  where school.sch_abbr = ? and fee.session = ?', [$sch_abbr,$current_session]);
         return $this->_db->one_result();
     }
 
@@ -93,10 +95,15 @@ class Apm extends Management
     //this method updates the settings(schedules) for the selected school
     public function updateSchedule($sch_abbr, $term, $formFee, $regFee, $ftsf, $stsf, $ttsf, $logoName = null): bool
     {
+        $utils = new Utils();
+        $current_session = $utils->getSession($sch_abbr);
+        $this->_db->update('fee', ['form_fee' => $formFee, 'reg_fee' => $regFee, 'ft_fee' => $ftsf, 'st_fee' => $stsf, 'tt_fee' => $ttsf], "sch_abbr = '$sch_abbr' and session='$current_session'");
         if ($logoName !== null) {
-            return $this->_db->query('update school set current_term=?, form_fee=?, reg_fee=?, ft_fee=?, st_fee=?, tt_fee=?, logo=? where sch_abbr=?', [$term, $formFee, $regFee, $ftsf, $stsf, $ttsf, $logoName, $sch_abbr]);
+            $response =  $this->_db->query('update school set current_term=?, logo=? where sch_abbr=?', [$term, $logoName, $sch_abbr]);
         } else {
-            return $this->_db->query('update school set current_term=?, form_fee=?, reg_fee=?, ft_fee=?, st_fee=?, tt_fee=? where sch_abbr=?', [$term, $formFee, $regFee, $ftsf, $stsf, $ttsf, $sch_abbr]);
+
+            $response =  $this->_db->query('update school set current_term=? where sch_abbr=?', [$term, $sch_abbr]);
         }
+        return $response;
     }
 }

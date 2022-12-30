@@ -54,6 +54,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
       'extension' => ['jpg', 'jpeg', 'png']
     ]
   ];
+  
 
   $file = new File('picture');
   if (!$file->isUploaded()) {
@@ -141,7 +142,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 
               $file->move($file_path . $pictureName); //move picture to the destination folder
               $agg->rowDelete('token', 'token,=,' . $pin); //delete the token from the token table
-              $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registeration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong> <a href="' . $url->to('login.php', 0) . '">Login Here</a></div>';
+              $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong> <a href="' . $url->to('login.php', 0) . '">Login Here</a></div>';
               $mail->send($email, 'Registration Completion', $message);
               Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>use it to login along with the password you created during registration. Your username has also be sent to your email for backup</em></div>');
               Redirect::to('success2.php?user_type=admission');
@@ -151,8 +152,8 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             break;
           case 'staff':
           case 'management':
-            $sql1 = 'insert into ' . $table . '(' . $username_column . ', password,fname,lname,oname,rank,sch_abbr,phone,email,dob,state,lga,title,picture) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-            $vals1 = [$user_id, password_hash($password, PASSWORD_DEFAULT), $fname, $lname, $oname, $rank, $sch_abbr, Utility::escape(Input::get('phone')), $email, $dob, $state, $lga, $title, $pictureName];
+            $sql1 = 'insert into ' . $table . '(' . $username_column . ', password,fname,lname,oname,rank,sch_abbr,phone,email,choosen_email,dob,state,lga,title,picture) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+            $vals1 = [$user_id, password_hash($password, PASSWORD_DEFAULT), $fname, $lname, $oname, $rank, $sch_abbr, Utility::escape(Input::get('phone')), $email,$email, $dob, $state, $lga, $title, $pictureName];
             $sql2 = 'insert into account(receiver,no,bank,salary) values(?,?,?,?)';
             $vals2 = [$user_id, $account, $bank, $salary];
             $sql3 = 'insert into messaging_permission(user_id,sms,email,notification) values(?,?,?,?)';
@@ -174,20 +175,23 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
               $file->move($file_path . $pictureName); //move picture to the destination folder
               $alert = new Alert(true);
               $req = new Request();
-              //send a confirmation request to the accountant
-              $req->send($user_id, 3, 'Please, confirm a request of &#8358;' . $salary . ' as salary for ' . $title . ' ' . Utility::formatName($fname, $oname, $lname), RequestCategory::SALARY_CONFIRMATION);
+             
 
               if ($user_type === 'management') {
+                //send a confirmation request to the accountant
+                $req->send($user_id, 3, 'Please, confirm a request of &#8358;' . $salary . ' as salary for ' . $title . ' ' . Utility::formatName($fname, $oname, $lname), RequestCategory::SALARY_CONFIRMATION,['sender_office'=>'Office of the Director']);
                 //notify the director(s)
                 $alert->sendToRank(1, 'Registration Completion', 'This is to inform you that ' . Utility::formatName($fname, $oname, $lname) . ' has successfully registered as ' . formatManagementMsg($rank, $user) . '.<br>A request has been sent to the accountant to confirm his salary of &#8358;' . $salary);
 
-                $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registeration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong>  <a href="' . $url->to('login.php', 0) . '">Login Here</a></div>';
+                $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong>  <a href="' . $url->to('login.php', 0) . '">Login Here</a></div>';
                 $mail->send($email, 'Registration Completion', $message);
 
                 Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>use it to login along with the password you created during registration. Your username has also be sent to your email for backup</em></div>');
                 Redirect::to('success2.php?user_type=management');
               } else {
                 if ($user_type === 'staff') {
+                  //send a confirmation request to the accountant
+                  $req->send($user_id, 3, 'Please, confirm a request of &#8358;' . $salary . ' as salary for ' . $title . ' ' . Utility::formatName($fname, $oname, $lname), RequestCategory::SALARY_CONFIRMATION,['sender_office'=>'Human Resource Office']);
                   //notify the APM(s)
                   $notMessage = 'This is to inform you that ' . $title . ' ' . Utility::formatName($fname, $oname, $lname) . ' has successfully registered as ' . formatStaffMsg($rank, $user);
                   $alert->sendToRank(2, 'Registration Completion', $notMessage);
@@ -202,7 +206,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                   $alert->reset(); //this will help reset the object for another prepared query
                   $alert->sendToRank(5, 'Registration Completion', $notMessage, 'sch_abbr,=,' . $sch_abbr);
 
-                  $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registeration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong>  <a href="' . $url->to('login.php', 0) . '">Login Here</a> </div>';
+                  $message = '<div style="padding:11px">Dear <strong>' . Utility::formatName($fname, $lname, $oname) . '</strong>, Your registration have been approved,  you can login to your portal with the username: <strong>' . $user_id . '</strong>  <a href="' . $url->to('login.php', 0) . '">Login Here</a> </div>';
                   $mail->send($email, 'Registration Completion', $message);
 
                   Session::set_flash('new_user', '<div>Thanks for Registering. You can now Login to your account</div><div>Your Username is <strong>' . $user_id . '</strong><br><em>use it to login along with the password you created during registration. Your username has also be sent to your email for backup</em></div>');

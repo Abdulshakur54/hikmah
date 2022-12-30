@@ -92,10 +92,10 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 
 
             $sql1 = 'insert into student(std_id,adm_id,password,fname,lname,oname,rank,active,sch_abbr,level,picture,date_of_admission)values(?,?,?,?,?,?,?,?,?,?,?,?)';
-            $val1 = [$newId,$adm_id, $hashedNewPwd, Utility::escape($data->fname), Utility::escape($data->lname), Utility::escape($data->oname), $newRank,true, $sch_abbr, $data->level, $newPicture,$data->date_of_admission];
+            $val1 = [$newId, $adm_id, $hashedNewPwd, Utility::escape($data->fname), Utility::escape($data->lname), Utility::escape($data->oname), $newRank, true, $sch_abbr, $data->level, $newPicture, $data->date_of_admission];
             $email =  Utility::escape($data->email);
             $sql2 = 'insert into student2(std_id,fathername,mothername,dob,address,phone,email,state,lga) values(?,?,?,?,?,?,?,?,?)';
-            $val2 = [$newId, Utility::escape($data->fathername), Utility::escape($data->mothername), $data->dob, Utility::escape($data->address), Utility::escape($data->phone), $email,$data->state,$data->lga];
+            $val2 = [$newId, Utility::escape($data->fathername), Utility::escape($data->mothername), $data->dob, Utility::escape($data->address), Utility::escape($data->phone), $email, $data->state, $data->lga];
             $sql3 = 'insert into student_psy(std_id) values(?)';
             //delete data from admission table
             $sql4 = 'delete from admission where id = ?';
@@ -103,14 +103,14 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             $db = DB::get_instance();
 
             if ($db->trans_query([[$sql1, $val1], [$sql2, $val2], [$sql3, [$newId]], [$sql4, [$id]]])) {
-
+                Accounting::populate_student_accounting_tables($newId);
                 /*for hikmah only to help use the role and menu functionality*/
                 $role_id = $adm->get_role_id($newRank, 0);
-                $old_role_id = $adm->get_role_id($rank,0);
+                $old_role_id = $adm->get_role_id($rank, 0);
                 $db->insert(Config::get('users/table_name'), ['user_id' => $newId, 'role_id' => $role_id]);
                 Menu::add_available_menus($newId, $role_id); //add menus for real students
-                Menu::delete_available_menus($adm_id,$old_role_id); //delete menus as an admission student
-              /*for hikmah only to help use the role and menu functionality*/
+                Menu::delete_available_menus($adm_id, $old_role_id); //delete menus as an admission student
+                /*for hikmah only to help use the role and menu functionality*/
 
                 if (!empty($newPicture)) {
                     $oldPicDtn = '../uploads/passports/' . $data->picture;
@@ -122,8 +122,8 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 //send notification to APM or IC
                 $alert = new Alert(true);
                 $message = '<div><p>This is to inform you that ' .
-                Utility::formatName($data->fname, $data->oname, $data->lname) .
-                    ' has accepted the admission offer to '.School::getLevelName($sch_abbr, $data->level) . ' of ' . School::getFullName($sch_abbr).'</p>';
+                    Utility::formatName($data->fname, $data->oname, $data->lname) .
+                    ' has accepted the admission offer to ' . School::getLevelName($sch_abbr, $data->level) . ' of ' . School::getFullName($sch_abbr) . '</p>';
                 $title = 'Acceptance of Admission';
                 $rank = $data->rank;
                 if ($rank == 11) {
@@ -133,7 +133,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                         $alert->sendToRank(4, $title, $message);
                     }
                 }
-               
+
 
                 //send email to the applicant with his studentid and password in the mail
                 $message = '<p>You have accepted our offer!. You are officially a student at ' . School::getFullName($sch_abbr) . '</p><p>Your Student Login details are show below<p>Username: <span>' . $newId . '</span></p><p>'
@@ -142,14 +142,13 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 $attachments = School::get_attachments($sch_abbr, $level);
                 $attachment_path = '../../management/apm/uploads';
                 $attachs = [];
-                foreach($attachments as $attachment){
-                    $attachs[] = $attachment_path.'/'.$attachment->attachment.', '.$attachment->name;
-                    
+                foreach ($attachments as $attachment) {
+                    $attachs[] = $attachment_path . '/' . $attachment->attachment . ', ' . $attachment->name;
                 }
-                if(!empty($attachments)){
-                    $mail->send($email, 'Admission Acceptance', $message,['attachment'=>$attachs]);
-                }else{
-                    
+                if (!empty($attachments)) {
+                    $mail->send($email, 'Admission Acceptance', $message, ['attachment' => $attachs]);
+                } else {
+
                     $mail->send($email, 'Admission Acceptance', $message);
                 }
                 Session::set_flash('acceptAdmission', 'You have successfully accepted our offer. Your Details have now been transfered to the student portal. An email containing your login details to that portal has been sent to you');
@@ -169,7 +168,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             //send notification to APM or IC
             $alert = new Alert(true);
             $message = '<div><p>This is to inform you that ' .
-            Utility::formatName($data->fname, $data->oname, $data->lname) .
+                Utility::formatName($data->fname, $data->oname, $data->lname) .
                 ' has declined the admission offer to ' . School::getLevelName($sch_abbr, $data->level) . ' of ' . School::getFullName($sch_abbr) . '</p>';
             $title = 'Declination of Admission';
             $rank = $data->rank;
@@ -235,7 +234,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                     'max' => 20,
                     'pattern' => '^[a-zA-Z]+$'
                 ],
-               
+
                 'dob' => [
                     'name' => 'Date of Birth',
                     'required' => true
@@ -259,7 +258,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                     'required' => true,
                     'pattern' => '^[a-zA-Z]+[a-zA-Z0-9]*@[a-zA-Z]+.[a-zA-Z]+$'
                 ],
-              
+
             ];
             $fileValues = [
                 'picture' => [
@@ -317,5 +316,5 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 
 function response(int $status, $message = '', array $data = [])
 {
-    return json_encode(['status' => $status, 'message' => $message, 'data' => $data, 'token' => Token::generate()]);
+    return Utility::response($status, $message, $data);
 }

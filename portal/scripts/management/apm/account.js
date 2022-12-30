@@ -24,9 +24,9 @@ function populateLGA(obj) {
 }
 
 function showImage(event) {
-    const image = _('image');
-    const hiddenPic = _('hiddenPic');
-    const picMsg = _('picMsg');
+  const image = _("image");
+  const hiddenPic = _("hiddenPic");
+  const picMsg = _("picMsg");
   if (objLength(event.files) > 0) {
     if (event.files[0].size > 100 * 1024) {
       image.style.display = "none";
@@ -47,7 +47,7 @@ function showImage(event) {
 
 async function updateAccount(event) {
   event.preventDefault();
-  if(validate('updateAccountForm',{validateOnSubmit:true})){
+  if (validate("updateAccountForm", { validateOnSubmit: true })) {
     ld_startLoading("updateBtn");
     await getPostPageWithUpload(
       "updateAccountForm",
@@ -59,6 +59,5 @@ async function updateAccount(event) {
   }
 }
 
- validate("updateAccountForm");
- $(".js-example-basic-single").select2();
-
+validate("updateAccountForm");
+$(".js-example-basic-single").select2();

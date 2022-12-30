@@ -1,80 +1,80 @@
 <?php
+
+/**
+ * Payment class handles operations of payments that concerns transaction operation and the school account(accounts)
+ * it handles recordings in the transaction table, accounts table
+ */
 class Payment
 {
-    public static function accept($amount, $email, $name, $phone)
+    private $db;
+    private $schoolBalance;
+    private $payer;
+    private $payment_month;
+    private $type;
+    private $category;
+    private $paySalRequery;
+    public function __construct()
     {
-        $tx_ref = Token::create(6);
-        $url = new Url();
-        $redirect_url = $url->to('test2_redirect.php', 0);
-        $customer = ['name' => $name, 'email' => $email, 'phonenumber' => $phone];
-        $data = ['tx_ref' => $tx_ref, 'amount' => $amount, 'currency' => 'NGN', 'redirect_url' => $redirect_url, 'customer' => $customer];
-        $ch = curl_init('https://api.flutterwave.com/v3/payments');
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        //curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($data_string)));
-        $headers = [];
-        $headers[] = 'Content-Type:application/json';
-        $token = "FLWSECK_TEST-65de94da82ba58636eb09e4810a6cdf1-X";
-        $headers[] = "Authorization: Bearer " . $token;
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $result = curl_exec($ch);
-        $res_obj = json_decode($result);
+        $this->db = DB::newConnection();
+    }
 
-        if ($res_obj->status === 'success') {
-            $link = $res_obj->data->link;
-            header('Location: ' . $link);
-            exit();
+    public function setPaySalariesInitial(float $balance, string $payer, int $payment_month, TransactionType $type, TransactionCategory $category)
+    {
+        $this->schoolBalance = $balance;
+        $this->payer = $payer;
+        $this->payment_month = $payment_month;
+        $this->type = $type->value;
+        $this->category = $category->value;
+    }
+
+    //this method requeries i.e use prepared statements
+    public function paySalary(string $receiver, float $amount)
+    {
+        $balance = round(($this->schoolBalance - $amount), 2);
+        $this->schoolBalance = $balance;
+        if ($this->paySalRequery) {
+            $this->db->requery([
+                'trans_id' => Token::create(Config::get('transaction/token_length')),
+                'payer' => $this->payer,
+                'receiver' => $receiver,
+                'amount' => $amount,
+                'school_balance' => $balance,
+                'type' => $this->type,
+                'category' => $this->category,
+                'payment_month_id' => $this->payment_month
+            ]);
         } else {
-            echo 'Not successful';
+            $this->db->insert('transaction', [
+                'trans_id' => Token::create(Config::get('transaction/token_length')),
+                'payer' => $this->payer,
+                'receiver' => $receiver,
+                'amount' => $amount,
+                'school_balance' => $balance,
+                'type' => $this->type,
+                'category' => $this->category,
+                'payment_month_id' => $this->payment_month
+            ]);
+            $this->paySalRequery = true;
         }
     }
 
-    public static function get_banks()
+    public function getSchoolBalance(): float
     {
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://api.flutterwave.com/v3/banks/NG",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "Authorization: Bearer FLWSECK_TEST-65de94da82ba58636eb09e4810a6cdf1-X"
-            ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        echo $response;
+        return $this->schoolBalance;
     }
 
-    public static function send($title,$bulk_data){
-        $details = [
-            "title" =>  "Staff salary for April",
-            "bulk_data" => [
-                [
-                    "bank_code" => "044",
-                    "account_number" => "0690000032",
-                    "amount" => 690000,
-                    "currency" => "NGN",
-                    "narration" => "Salary payment for April",
-                ],
-                [
-                    "bank_code" => "044",
-                    "account_number" => "0690000034",
-                    "amount" => 420000,
-                    "currency" => "NGN",
-                    "narration" => "Salary payment for April",
-                ]
-            ]
-        ];
-        $response = $transferService->bulkTransfer($details);
+    public function beginTransaction()
+    {
+        $this->db->beginTransaction();
+    }
+
+    public function rollBack()
+    {
+        $this->db->rollBack();
+    }
+
+    public function commit()
+    {
+        $this->db->commit();
     }
 }

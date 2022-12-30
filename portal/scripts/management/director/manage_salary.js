@@ -1,34 +1,64 @@
-var token = _('token');
+var token = _("token");
 var user_ids = {};
 var user_names = {};
 var currentSalary = null;
-var hiddenIds = _('hiddenIds');
-var hiddenNames = _('hiddenNames');
+var hiddenIds = _("hiddenIds");
+var hiddenNames = _("hiddenNames");
 
-async function updateSalary(user_id,id){
-    let salaryElement = _('salary'+id);
-    let salary = salaryElement.value;
-    let name = _('name'+id).innerHTML;
-    //validate salary
-    if(salary.search(/^[0-9]+\.?[0-9]+$/) > -1){ //valid salary
-        //send ajax request
-        ajaxRequest('management/director/responses/manage_salary.rsp.php', manageSalaryRsp,'receiver='+user_id+'&salary='+salary+'&token='+token.value+'&category=updatesalary&name='+name+'&id='+id);
-    }else{
-        alert('Invalid amount entered for Salary');
-        salaryElement.setFocus = true;
-    }
-}
-
-
-
-function approveSalary(user_id, id){
-    let salaryElement = _('salary'+id);
-    let salary = salaryElement.value;
-    let name = _('name'+id).innerHTML;
+async function updateSalary(user_id, id) {
+  let salaryElement = _("salary" + id);
+  let salary = salaryElement.value;
+  let username = _('username').value;
+  let name = _("name" + id).innerHTML;
+  //validate salary
+  if (salary.search(/^[0-9][0-9]*([.][0-9]+)?$/) > -1) {
+    //valid salary
     //send ajax request
-    ajaxRequest('management/director/responses/manage_salary.rsp.php', manageSalaryRsp,'receiver='+user_id+'&salary='+salary+'&token='+token.value+'&category=approvesalary&name='+name+'&id='+id);
+    ajaxRequest(
+      "management/director/responses/manage_salary.rsp.php",
+      manageSalaryRsp,
+      "receiver=" +
+        user_id +
+        "&salary=" +
+        salary +
+        "&token=" +
+        token.value +
+        "&category=updatesalary&name=" +
+        name +
+        "&id=" +
+        id +
+        "&requester=" +
+        username
+    );
+  } else {
+    alert("Invalid amount entered for Salary");
+    salaryElement.setFocus = true;
+  }
 }
 
+function approveSalary(user_id, id) {
+  let salaryElement = _("salary" + id);
+  let salary = salaryElement.value;
+  let name = _("name" + id).innerHTML;
+  let username = _('username').value;
+  //send ajax request
+  ajaxRequest(
+    "management/director/responses/manage_salary.rsp.php",
+    manageSalaryRsp,
+    "receiver=" +
+      user_id +
+      "&salary=" +
+      salary +
+      "&token=" +
+      token.value +
+      "&category=approvesalary&name=" +
+      name +
+      "&id=" +
+      id +
+      "&requester=" +
+      username
+  );
+}
 
 function manageSalaryRsp() {
   let rsp = JSON.parse(xmlhttp.responseText);
@@ -57,7 +87,6 @@ function manageSalaryRsp() {
     }
   }
 }
-
 
 $(document).ready(function () {
   $("#manageSalaryTable").DataTable(dataTableOptions);

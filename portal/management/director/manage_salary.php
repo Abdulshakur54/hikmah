@@ -56,5 +56,7 @@ require_once './includes/director.inc.php';
             </div>
         </div>
         <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
+        <input type="hidden" value="<?php echo $username ?>" name="username" id="username" />
+       
     </div>
     <script src="scripts/management/director/manage_salary.js"></script>

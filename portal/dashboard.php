@@ -16,13 +16,14 @@ session_start(Config::get('session/options'));
 if (!empty(Input::get('page'))) {
   Session::setLastPage(Input::get('page'));
 }
-$last_page = (Session::lastPageExists()) ? Session::getLastPage() : 'home.php';
+
 
 if (Session::exists('user')) {
   $username = Session::get('user');
   $menu = new Menu();
   $menus = $menu->get($username);
   $link = User::get_link($username);
+  $last_page = (Session::lastPageExists()) ? Session::getLastPage() : $link.'/home.php';
   $profile_image_path = User::get_profile_image_path($username);
 } else {
 
