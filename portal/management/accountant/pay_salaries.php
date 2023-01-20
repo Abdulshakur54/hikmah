@@ -3,6 +3,15 @@ require_once './includes/accountant.inc.php';
 $acct = new Account();
 $payment_months = $acct->getPaymentMonths();
 $recipients = Utility::escape(Input::get('recipients'));
+$payment_month = Utility::escape(Input::get('payment_month'));
+
+function selectedPaymentMonth($pm)
+{
+    global $payment_month;
+    if ($payment_month == $pm) {
+        return 'selected';
+    }
+}
 ?>
 <style>
     tr>td:nth-child(3)>input {
@@ -17,11 +26,10 @@ $recipients = Utility::escape(Input::get('recipients'));
                 <div class="form-group">
                     <label for="month">Payment Month</label>
                     <select class="js-example-basic-single w-100 p-2" id="payment_month" title="Payment Month" name="payment_month" required onchange="reload()">
-                        <option value="">:::Select Payment Month:::</option>
                         <?php
                         foreach ($payment_months as $pm) {
                         ?>
-                            <option value="<?php echo $pm->id ?>"><?php echo $pm->month . ', ' . $pm->year ?></option>
+                            <option value="<?php echo $pm->id ?>" <?php echo selectedPaymentMonth($pm->id) ?>><?php echo $pm->month . ', ' . $pm->year ?></option>
                         <?php
                         }
                         ?>
@@ -64,9 +72,6 @@ $recipients = Utility::escape(Input::get('recipients'));
                         <option value="manual">Manual</option>
                     </select>
                 </div>
-                <div class="my-3">
-                    <button class="btn btn-info w-100" onclick="getRecipients()">Search</button>
-                </div>
                 <div class="m-3 text-right">
                     <label for="selectAll" id="selectAll">Select all</label>
                     <input type="checkbox" name="selectAll" onclick="checkAll(this)" checked />
@@ -104,6 +109,10 @@ $recipients = Utility::escape(Input::get('recipients'));
     $(".js-example-basic-single").select2();
     var table = $("#paymentTable").DataTable(dataTableOptions);
     var recipients = _('recipients').value;
+    var rowCount = 0; //stores the no of table rows to help determines the no of recipients
+    if (recipients == 'management') {
+        reload(); //populate on table load if it is management
+    }
 
     function reload() {
         const payment_month = _('payment_month').value;
@@ -149,11 +158,11 @@ $recipients = Utility::escape(Input::get('recipients'));
                     let amount;
                     for (let dt of data) {
                         amount = getAmount(parseFloat(dt.salary), parseFloat(dt.paid), percentage);
-                        table.row.add(['', `${dt.title}. ${formatName(dt.fname,dt.oname,dt.lname)}`, `<input type="text" class="p-2 rounded" pattern="^[0-9][0-9]*([.][0-9]+)?$" id="txt_${dt.receiver}" value="${amount}" onchange="update(this,${row},'${dt.receiver}')" />`, `${formatMoney(dt.paid)}`, `${formatMoney(dt.salary)}`, `${getStatus(dt.status)}`, `<input type="checkbox" value="${dt.receiver}" checked />`]);
+                        table.row.add(['', `${dt.title}. ${formatName(dt.fname,dt.oname,dt.lname)}`, `<input type="text" class="p-2 rounded" pattern="^[0-9][0-9]*([.][0-9]+)?$" id="txt_${dt.receiver}" value="${amount}" onchange="update(this,${row},'${dt.receiver}')" />`, `${formatMoney(dt.paid)}`, `${formatMoney(dt.salary)}`, `${getStatus(dt.status,row)}`, `<input type="checkbox" value="${dt.receiver}" checked />`]);
                         row++;
                     }
                     table.draw();
-
+                    rowCount = row++;
                 } else {
                     swalNotify(rsp.message, 'error');
                 }
@@ -163,18 +172,7 @@ $recipients = Utility::escape(Input::get('recipients'));
                 return round((payable - paid) * (percentage / 100), 2);
             }
 
-            function getStatus(status) {
-                switch (status) {
-                    case 0:
-                        return '<p class="text-danger">Not Payed</p>';
-                    case 1:
-                        return '<p class="message">Part Payed</p>';
-                    case 2:
-                        return '<p class="text-success">Fully Payed</p>';
-                    default:
-                        return '';
-                }
-            }
+
         } else {
             swalNotify('All input fields should be filled with proper values', 'danger');
         }
@@ -206,16 +204,21 @@ $recipients = Utility::escape(Input::get('recipients'));
             const payment_type = _('payment_type').value;
             const username = _('username').value;
             if (await swalConfirm('Are you sure you want to proceed with <span style="font-weight: bold">' + payment_type + '</span> salary payment')) {
+                if (rowCount > 0) {
+                    const recipientsData = getRecipientsData();
+
+                    if (recipients == 'staff') {
+                        const school = _('school').value;
+                        ajaxRequest('management/accountant/responses/responses.php', getPaymentRsp, 'token=' + token + '&school=' + school + '&payment_month=' + payment_month + '&op=' + op + '&recipients=' + recipients + '&recipientsData=' + JSON.stringify(recipientsData) + '&payment_type=' + payment_type + '&username=' + username + '&percentage=' + percentage);
+                    } else {
+                        ajaxRequest('management/accountant/responses/responses.php', getPaymentRsp, 'token=' + token + '&payment_month=' + payment_month + '&op=' + op + '&recipients=' + recipients + '&recipientsData=' + JSON.stringify(recipientsData) + '&payment_type=' + payment_type + '&username=' + username + '&percentage=' + percentage);
+                    }
+                }else{
+                    swalNotify('No salary receiver is selected','warning');
+                }
 
             }
-            const recipientsData = getRecipientsData();
 
-            if (recipients == 'staff') {
-                const school = _('school').value;
-                ajaxRequest('management/accountant/responses/responses.php', getPaymentRsp, 'token=' + token + '&school=' + school + '&payment_month=' + payment_month + '&op=' + op + '&recipients=' + recipients + '&recipientsData=' + JSON.stringify(recipientsData) + '&payment_type=' + payment_type + '&username=' + username + '&percentage=' + percentage);
-            } else {
-                ajaxRequest('management/accountant/responses/responses.php', getPaymentRsp, 'token=' + token + '&payment_month=' + payment_month + '&op=' + op + '&recipients=' + recipients + '&recipientsData=' + JSON.stringify(recipientsData) + '&payment_type=' + payment_type + '&username=' + username + '&percentage=' + percentage);
-            }
 
         } else {
             swalNotify('Ensure form fields are properly filled', 'warning');
@@ -227,6 +230,7 @@ $recipients = Utility::escape(Input::get('recipients'));
             const validStatus = [200, 201, 204];
             if (validStatus.includes(rsp.status)) {
                 swalNotify(rsp.message, 'success');
+                table.draw();
 
             } else {
                 swalNotify(rsp.message, 'error');
@@ -255,5 +259,18 @@ $recipients = Utility::escape(Input::get('recipients'));
             .data(newData)
             .draw();
 
+    }
+
+    function getStatus(status, row) {
+        switch (status) {
+            case 0:
+                return `<p class="text-danger" row="status_${row}">Not Payed</p>`;
+            case 1:
+                return `<p class="message" row="status_${row}">Part Payed</p>`;
+            case 2:
+                return `<p class="text-success" row="status_${row}">Fully Payed</p>`;
+            default:
+                return '';
+        }
     }
 </script>

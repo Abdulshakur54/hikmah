@@ -73,7 +73,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             $data = $adm->getData($adm_id);
             $sch_abbr = $data->sch_abbr;
             $std = new Student();
-            $newId = $std->genId($sch_abbr, $data->level);
+            $newId = $std->genId($sch_abbr, $level);
             $newPwd = Token::create(5);
             $rank = $data->rank;
             switch ($rank) {
@@ -91,19 +91,43 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             }
 
 
-            $sql1 = 'insert into student(std_id,adm_id,password,fname,lname,oname,rank,active,sch_abbr,level,picture,date_of_admission)values(?,?,?,?,?,?,?,?,?,?,?,?)';
-            $val1 = [$newId, $adm_id, $hashedNewPwd, Utility::escape($data->fname), Utility::escape($data->lname), Utility::escape($data->oname), $newRank, true, $sch_abbr, $data->level, $newPicture, $data->date_of_admission];
+            $sql1 = 'insert into student(std_id,adm_id,password,fname,lname,oname,rank,active,sch_abbr,level,picture,date_of_admission,term_of_entry)values(?,?,?,?,?,?,?,?,?,?,?,?,?)';
+            $val1 = [$newId, $adm_id, $hashedNewPwd, Utility::escape($data->fname), Utility::escape($data->lname), Utility::escape($data->oname), $newRank, true, $sch_abbr, $data->level, $newPicture, $data->date_of_admission,$term_of_entry];
             $email =  Utility::escape($data->email);
             $sql2 = 'insert into student2(std_id,fathername,mothername,dob,address,phone,email,state,lga) values(?,?,?,?,?,?,?,?,?)';
             $val2 = [$newId, Utility::escape($data->fathername), Utility::escape($data->mothername), $data->dob, Utility::escape($data->address), Utility::escape($data->phone), $email, $data->state, $data->lga];
             $sql3 = 'insert into student_psy(std_id) values(?)';
             //delete data from admission table
             $sql4 = 'delete from admission where id = ?';
-            //transfer details to student tables
+            $utils = new Utils();
+            $session = $utils->getSession($sch_abbr);
             $db = DB::get_instance();
+            $fee_details = $db->get('fee', 'reg_fee,form_fee,ft_fee,st_fee,tt_fee', "sch_abbr = '$sch_abbr' and level = $data->level and session = '$session'");
+            $sql5 = 'insert into school_fee(std_id,amount,term,session) values(?,?,?,?)';
+            $sql8 = 'insert into reg_fee(std_id,session) values(?,?)';
+            $val5 = [$newId, $fee_details->ft_fee, 'ft', $session];
+            $val6 = [$newId, $fee_details->st_fee, 'st', $session];
+            $val7 = [$newId, $fee_details->tt_fee, 'tt', $session];
+            $val8 = [$newId, $session];
+            //transfer details to student tables
 
-            if ($db->trans_query([[$sql1, $val1], [$sql2, $val2], [$sql3, [$newId]], [$sql4, [$id]]])) {
-                Accounting::populate_student_accounting_tables($newId);
+            $queries = [[$sql1, $val1], [$sql2, $val2], [$sql3, [$newId]], [$sql4, [$id]], [$sql8, $val8]];
+            switch ($term_of_entry) {
+                case 'ft':
+                    $queries[] = [$sql5, $val5];
+                    $queries[] = [$sql5, $val6];
+                    $queries[] = [$sql5, $val7];
+                    break;
+                case 'st':
+                    $queries[] = [$sql5, $val6];
+                    $queries[] = [$sql5, $val7];
+                    break;
+                case 'tt':
+                    $queries[] = [$sql5, $val7];
+                    break;
+            }
+            if ($db->trans_query($queries)) {
+                Ses::updateStudentCount($sch_abbr, $session); //update student count
                 /*for hikmah only to help use the role and menu functionality*/
                 $role_id = $adm->get_role_id($newRank, 0);
                 $old_role_id = $adm->get_role_id($rank, 0);

@@ -119,7 +119,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             $fileValues = [
                 'picture' => [
                     'name' => 'Picture',
-                    'required' => false,
+                    'required' => true,
                     'maxSize' => 100,
                     'extension' => ['jpg', 'jpeg', 'png']
                 ]
@@ -170,6 +170,27 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             }
 
 
+            break;
+        case 'update_accountant_signature':
+            $fileValues = [
+                'picture' => [
+                    'name' => 'Picture',
+                    'required' => false,
+                    'maxSize' => 100,
+                    'extension' => ['jpg', 'jpeg', 'png']
+                ]
+            ];
+            if ($val->checkFile($fileValues)) {
+                $file = new File('picture');
+                $pictureName = 'sign_' . Token::create(7) . '.' . $file->extension();
+                $db->update('sing_val', ['accountant_signature' => $pictureName], "id=1");
+                $file_path = '../signature/' . $pictureName;
+                $file->move($file_path);
+                echo response(201, 'Update was successful');
+            } else {
+                $errors = implode('<br />', $val->errors());
+                echo response(500, $errors);
+            }
             break;
         case 'initiate_payment':
             $year = (int)Utility::escape(Input::get('year'));
@@ -235,8 +256,15 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             $payment_type = Utility::escape(Input::get('payment_type'));
             $username = Utility::escape(Input::get('username'));
             $percentage = Utility::escape(Input::get('percentage'));
+            if ($recipients == 'management') {
+                $payer = Config::get('hikmah/management_account');
+                $cat = 'M';
+            } else {
+                $payer = $school;
+                $cat = 'S';
+            }
             //ensure request does not exist for the same payment month
-            if (!empty($db->get('payment_exist', 'id', "payment_month = $payment_month"))) {
+            if (!empty($db->get('payment_exist', 'id', "payment_month = $payment_month and category='$cat'"))) {
                 echo response(400, "<p>Payment request already sent to the Director for this month</p><p>The Director would have to respond to it before you can make another request for the same month</p>");
                 exit();
             }
@@ -251,6 +279,10 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                         $res = $db->one_result();
                         if (isOverpayment($res->salary, $res->paid, (float)$rd[1])) {
                             echo response(400, "$rd[0] cannot be paid higher than his stipulated salary");
+                            exit();
+                        }
+                        if (!preg_match("/^[0-9][0-9]*([.][0-9]+)?$/", $rd[1])) {
+                            echo response(400, "$rd[0] is an invalid amount");
                             exit();
                         }
                     } else {
@@ -274,11 +306,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 $total_payable += (float) $rd[1];
             }
             //get account balance and ensure it is enough to pay salary;
-            if ($recipients == 'management') {
-                $payer = Config::get('hikmah/management_account');
-            } else {
-                $payer = $school;
-            }
+
             $payer_balance = (float)$db->get('accounts', 'balance', "account_name='$payer'")->balance;
             if ($total_payable >= $payer_balance) {
                 echo response(400, "There is no enough money in $payer account to process this operation");
@@ -293,7 +321,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 <p><span class='font-weight-bold'>Category: </span><span>" . ucfirst($recipients) . "</span></p>
             ";
             if ($recipients == 'staff') {
-                $msg .= "<p><span class='font-weight-bold'>school: </span><span>ucfirst($school)</span></p>";
+                $msg .= "<p><span class='font-weight-bold'>school: </span><span>" . $school . "</span></p>";
             }
             sort($recipients_data);
             $other = [
@@ -305,10 +333,18 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 'username' => $username,
                 'percentage' => $percentage
             ];
-            $req->send($username, 1, $msg, RequestCategory::PAY_SALARY, $other, false, 1);
-            //insert into to payment exist table to avoid duplicate request for the same payment month
-            $db->insert('payment_exist', ['payment_month' => $payment_month]);
-            echo response(201, '<p>A request has been sent to the Director for approval</p><p>Payment would automatically take effect if the Director approves it</p>');
+            try {
+                $db->beginTransaction();
+                $req->send($username, 1, $msg, RequestCategory::PAY_SALARY, $other, false, 1);
+                //insert into to payment exist table to avoid duplicate request for the same payment month
+                $db->insert('payment_exist', ['payment_month' => $payment_month, 'category' => $cat]);
+                $db->commit();
+                echo response(201, '<p>A request has been sent to the Director for approval</p><p>Payment would automatically take effect if the Director approves it</p>');
+            } catch (PDOException $e) {
+                $db->rollBack();
+                echo response(500, 'A server error was encountered while trying to perform operation');
+            }
+
             break;
         case 'transfer_money':
             $source = Utility::escape(Input::get('source'));
@@ -374,6 +410,8 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         case 'transactions':
             $from = Utility::escape(Input::get('from'));
             $to = Utility::escape(Input::get('to'));
+            //add 23hrs 59s to $to to replicate how humans think
+            $to = date('Y-m-d H:i:s', strtotime($to) + (60 * 60 * 23) + 59);
             $category = (int) Utility::escape(Input::get('category'));
             if ($from > $to) {
                 echo response(400, 'From date should not be later than To date');
@@ -381,7 +419,163 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             }
             $acct = new Account();
             $transactions = $acct->getTransactions($from, $to, $category);
-            echo response(200,'',$transactions);
+            echo response(200, '', $transactions);
+            break;
+        case 'school_fee_transactions':
+            $from = Utility::escape(Input::get('from'));
+            $to = Utility::escape(Input::get('to'));
+            //add 23hrs 59s to $to to replicate how humans think
+            $to = date('Y-m-d H:i:s', strtotime($to) + (60 * 60 * 23) + 59);
+            $category = TransactionCategory::SCHOOL_FEES->value;
+            if ($from > $to) {
+                echo response(400, 'From date should not be later than To date');
+                exit();
+            }
+            $acct = new Account();
+            $transactions = $acct->getTransactions($from, $to, $category);
+            echo response(200, '', $transactions);
+            break;
+        case 'reg_fee_transactions':
+            $from = Utility::escape(Input::get('from'));
+            $to = Utility::escape(Input::get('to'));
+            //add 23hrs 59s to $to to replicate how humans think
+            $to = date('Y-m-d H:i:s', strtotime($to) + (60 * 60 * 23) + 59);
+            $category = TransactionCategory::REGISTRATION_FEES->value;
+            if ($from > $to) {
+                echo response(400, 'From date should not be later than To date');
+                exit();
+            }
+            $acct = new Account();
+            $transactions = $acct->getTransactions($from, $to, $category);
+            echo response(200, '', $transactions);
+            break;
+        case 'school_fee_details':
+            $std_id = Utility::escape(Input::get('std_id'));
+            $term = Utility::escape(Input::get('term'));
+            $session = Utility::escape(Input::get('session'));
+            $acct = new Account();
+            $detail = $acct->getSchoolFeeDetail($std_id, $term, $session);
+            echo response(200, '', [$detail]);
+            break;
+        case 'reg_fee_details':
+            $std_id = Utility::escape(Input::get('std_id'));
+            $acct = new Account();
+            $detail = $acct->getRegFeeDetail($std_id);
+            echo response(200, '', [$detail]);
+            break;
+        case 'pay_school_fee':
+            $std_id = Utility::escape(Input::get('std_id'));
+            $term = Utility::escape(Input::get('term'));
+            $session = Utility::escape(Input::get('session'));
+            $amount = (float)Utility::escape(Input::get('amount'));
+            $type = TransactionType::MANUAL;
+            $acct = new Account();
+            $detail = $acct->getSchoolFeeDetail($std_id, $term, $session);
+            //ensure student is eligible to pay that amount;
+            $remaining = (float) $detail->amount - (float)$detail->paid;
+            if (($amount  - $remaining) >= 0.5) {
+                echo response(400, 'You cannot pay more than the Student School Fee');
+                exit();
+            }
+            $val = new Validation();
+            $form_values = [
+                'amount' => [
+                    'name' => 'Amount',
+                    'required' => true,
+                    'pattern' => '^[0-9][0-9]*([.][0-9]+)?$'
+                ]
+            ];
+            if (!$val->check($form_values)) {
+                echo response(400, 'Invalid Amount');
+                exit();
+            }
+            Payment::paySchoolFees($std_id, $term, $session, $amount, $type);
+            $detail = $acct->getSchoolFeeDetail($std_id, $term, $session);
+            echo response(200, 'Payment was successful', [$detail]);
+        case 'pay_reg_fee':
+            $std_id = Utility::escape(Input::get('std_id'));
+            $type = TransactionType::MANUAL;
+            $acct = new Account();
+            $payment_status = $db->get('reg_fee', 'status', "std_id='$std_id'")->status;
+            if ($payment_status == 2) {
+                echo response(400, 'Student already paid Registration Fee');
+                exit();
+            }
+            Payment::payRegFees($std_id, $type);
+            echo response(200, 'Payment was successful');
+            break;
+        case 'get_salary_payables':
+            $payment_month = Utility::escape(Input::get('salary_month'));
+            $sch_abbr = Utility::escape(Input::get('school'));
+            $acct = new Account();
+            $school = (Utility::equals($sch_abbr, 'All')) ? '' : $sch_abbr;
+            $pm = (Utility::equals($payment_month, 'All')) ? 0 : $payment_month;
+            $payables = $acct->getMonthlySalaryPayables((int)$pm, $school);
+            echo response(200, '', $payables);
+            break;
+        case 'change_salary_debt_status';
+            $sal_id = Utility::escape(Input::get('sal_id'));
+            $operation = Utility::escape(Input::get('operation'));
+            $res = Account::changeSalaryDebtStatus((int)$sal_id, $operation);
+            echo response(200, '', ['status' => $res->status, 'cancelled' => $res->cancelled]);
+            break;
+        case 'get_school_fee_receivables':
+            $term = Utility::escape(Input::get('term'));
+            $term = (Utility::equals($term, 'All')) ? '' : $term;
+            $session = Utility::escape(Input::get('session'));
+            $session = (Utility::equals($session, 'All')) ? '' : $session;
+            $sch_abbr = Utility::escape(Input::get('school'));
+            $sch_abbr = (Utility::equals($sch_abbr, 'All')) ? '' : $sch_abbr;
+            $acct = new Account();
+            $receivables = $acct->getSchoolFeeReceivables($sch_abbr, $session, $term);
+            echo response(200, '', $receivables);
+            break;
+        case 'change_school_fee_debt_status':
+            $fee_id = Utility::escape(Input::get('fee_id'));
+            $operation = Utility::escape(Input::get('operation'));
+            $res = Account::changeSchoolFeeDebtStatus((int)$fee_id, $operation);
+            echo response(200, '', ['status' => $res->status, 'cancelled' => $res->cancelled]);
+            break;
+        case 'get_reg_fee_receivables':
+            $session = Utility::escape(Input::get('session'));
+            $session = (Utility::equals($session, 'All')) ? '' : $session;
+            $sch_abbr = Utility::escape(Input::get('school'));
+            $sch_abbr = (Utility::equals($sch_abbr, 'All')) ? '' : $sch_abbr;
+            $level = Utility::escape(Input::get('level'));
+            $level = (Utility::equals($level, 'All')) ? '' : $level;
+            $acct = new Account();
+            $receivables = $acct->getRegFeeReceivables($sch_abbr, $session, $level);
+            echo response(200, '', $receivables);
+            break;
+        case 'change_reg_fee_debt_status':
+            $fee_id = Utility::escape(Input::get('fee_id'));
+            $operation = Utility::escape(Input::get('operation'));
+            $res = Account::changeRegFeeDebtStatus((int)$fee_id, $operation);
+            echo response(200, '', ['status' => $res->status, 'cancelled' => $res->cancelled]);
+            break;
+        case 'get_session_and_levels':
+            $sch_abbr = Utility::escape(Input::get('school'));
+            $levels = School::getLevels($sch_abbr);
+            $sessions = Ses::get($sch_abbr);
+            echo response(200, '', ['levels' => $levels, 'sessions' => $sessions]);
+            break;
+        case 'get_account_payables':
+            $account = Utility::escape(Input::get('account'));
+            $acct = new Account();
+            $res = $acct->getAccountPayablesDetails($account);
+            echo response(200, '', $res);
+            break;
+        case 'get_school_fees_receivable_balance':
+            $account = Utility::escape(Input::get('account'));
+            $acct = new Account();
+            $res = $acct->getAccountSchoolFeeReceivablesDetails($account);
+            echo response(200, '', $res);
+            break;
+        case 'get_reg_fees_receivable_balance':
+            $account = Utility::escape(Input::get('account'));
+            $acct = new Account();
+            $res = $acct->getAccountRegFeeReceivablesDetails($account);
+            echo response(200, '', $res);
             break;
     }
 } else {
@@ -396,5 +590,5 @@ function response(int $status, $message = '', array $data = [])
 
 function isOverpayment($salary, $paid, $amount): bool
 {
-    return ((($paid + $amount) - $salary) > 0.9) ? true : false;
+    return ((($paid + $amount) - $salary) > 0.5) ? true : false;
 }

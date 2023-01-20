@@ -1,10 +1,16 @@
 <?php
 require_once './includes/apm.inc.php';
-function selectedTerm($val)
+function selectedLevel($lev)
 {
-    global $schedules;
-    $curr_term = Utility::escape($schedules->current_term);
-    if (strtolower($curr_term) == $val) {
+    global $level;
+    if ($level == $lev) {
+        return 'selected';
+    }
+}
+function selectedTerm($term)
+{
+    global $currTerm;
+    if ($currTerm == $term) {
         return 'selected';
     }
 }
@@ -12,22 +18,29 @@ function selectedTerm($val)
 function selectedSchool($abbr)
 {
 
-    if (Input::submitted()) {
-        $sch_abbr = Input::get('school');
-        if ($sch_abbr == $abbr) {
-            return 'selected';
-        }
+    global $sch_abbr;
+    if ($sch_abbr == $abbr) {
+        return 'selected';
     }
+}
+$sch_abbr = Utility::escape(Input::get('school'));
+$level = Utility::escape(Input::get('level'));
+$currTerm = Utility::escape(Input::get('currTerm'));
+if (empty($currTerm)) { //set default current term
+    $currTerm = 'ft';
 }
 ?>
 <style>
     @media only screen and (max-width:465px) {
-        #scheduleBtn, #saveBtn {
+
+        #scheduleBtn,
+        #saveBtn {
             width: 100% !important;
         }
     }
-    @media only screen and (max-width:765px){
-        #logoContainer{
+
+    @media only screen and (max-width:765px) {
+        #logoContainer {
             text-align: center;
         }
     }
@@ -42,79 +55,89 @@ function selectedSchool($abbr)
                     <label for="school">School</label>
                     <select class="js-example-basic-single w-100" id="school" title="School" name="school" onchange="submitForm()" required>
                         <?php
-                        $schools = School::getConvectionalSchools();
-                        $genHtml = '<option value="">:::Select School:::</option>';
-                        foreach ($schools as $sch => $sch_abbr) {
-                            $genHtml .= '<option value="' . $sch_abbr . '" ' . selectedSchool($sch_abbr) . '>' . $sch . '</option>';
+                        if ($rank) {
+                            $schools = School::getConvectionalSchools();
+                        } else {
+                            $schools = School::getIslamiyahSchools();
+                        }
+                        $genHtml = '';
+                        foreach ($schools as $sch => $abbr) {
+                            $genHtml .= '<option value="' . $abbr . '" ' . selectedSchool($abbr) . '>' . $sch . '</option>';
                         }
                         echo $genHtml;
                         ?>
                     </select>
                 </div>
-                <input type="hidden" name="submittype" id="submitType" /> <!-- To help detect the type of submission -->
-                <?php
-                if (Input::submitted() && Token::check(Input::get('token'))) {
-                    $submitType = Input::get('submittype');
-                    $sch_abbr = Input::get('school');
-                    if ($submitType === 'browse') {
-                        $schedules = $apm->getSchedules($sch_abbr);
-                        $formFee = Utility::escape($schedules->form_fee);
-                        $regFee = Utility::escape($schedules->reg_fee);
-                        $ftsf = Utility::escape($schedules->ft_fee);
-                        $stsf = Utility::escape($schedules->st_fee);
-                        $ttsf = Utility::escape($schedules->tt_fee);
-                        $logo = Utility::escape($schedules->logo);
-                ?>
-                        <div class="form-group">
-                            <label for="term">Current Term</label>
-                            <select class="js-example-basic-single w-100" id="term" title="term" name="term" required>
-                                <option value="ft">First Term</option>
-                                <option value="st">Second Term</option>
-                                <option value="tt">Third Term</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="formfee">Form Fees(&#8358;)</label>
-                            <input type="text" class="form-control" id="formfee" onfocus="clearHTML('messageContainer')" title="Form Fees" required pattern="^[0-9.]+$" name="formfee" value="<?php echo $formFee; ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="regfee">Registration Fees(&#8358;)</label>
-                            <input type="text" class="form-control" id="regfee" onfocus="clearHTML('messageContainer')" title="Registration Fees" required pattern="^[0-9.]+$" name="regfee" value="<?php echo $regFee; ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="ftsf">First Term School Fees(&#8358;)</label>
-                            <input type="text" class="form-control" id="ftsf" onfocus="clearHTML('messageContainer')" title="First Term School Fees" required pattern="^[0-9.]+$" name="ftsf" value="<?php echo $ftsf; ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="stsf">Second Term School Fees(&#8358;)</label>
-                            <input type="text" class="form-control" id="stsf" onfocus="clearHTML('messageContainer')" title="Second Term School Fees" required pattern="^[0-9.]+$" name="stsf" value="<?php echo $stsf; ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="ttsf">Third Term School Fees(&#8358;)</label>
-                            <input type="text" class="form-control" id="ttsf" onfocus="clearHTML('messageContainer')" title="Third Term School Fees" required pattern="^[0-9.]+$" name="ttsf" value="<?php echo $ttsf; ?>">
-                        </div>
+                <div class="form-group">
+                    <label for="level">Level</label>
+                    <select class="js-example-basic-single w-100" id="level" title="Level" name="level" onchange="submitForm()" required>
+                        <?php
 
-                    <?php
-                        //for school logo
-                        echo '<div id="logoContainer">
-                                    <label for = "logo" id="uploadTrigger" style="cursor: pointer; color:blue;">Change Logo</label>
-                                    <div>
-                                        <input type="file" name="logo" id="logo" style="display: none" onchange="showImage(this)" accept="image/jpg, image/jpeg, image/png"/>
-                                        <img id="image" width="100" height="100" src="management/apm/uploads/logo/' . $logo . '" />
-                                        <input type="hidden" name="hiddenPic" value="" id="hiddenPic"/>
-                                        <div id="picMsg" class="errMsg"></div>
-                                    </div>
-                                </div>';
+                        $genHtml = '';
+                        $levels = School::getLevels($sch_abbr);
+
+                        foreach ($levels as $levName => $lev) {
+                            $genHtml .= '<option value="' . $lev . '" ' . selectedLevel($lev) . '>' . $levName . '</option>';
+                        }
+                        echo $genHtml;
+                        ?>
+                    </select>
+                </div>
+                <?php if (empty($level)) { //select first level by default when no level is selected
+                    foreach ($levels as $levName => $lev) {
+                        $level = $lev;
+                        break;
                     }
-                    ?>
-                    <div id="messageContainer"></div>
-                    <div class="text-center mt-3">
-                        <button type="button" class="btn btn-primary mr-2" id="saveBtn" onclick="saveChanges()">Save Changes</button><span id="ld_loader"></span>
-                    </div>
+                } ?>
                 <?php
-                }
 
+                $schedules = $apm->getSchedules($sch_abbr, (int)$level);
+                $formFee = Utility::escape($schedules->form_fee);
+                $regFee = Utility::escape($schedules->reg_fee);
+                $ftsf = Utility::escape($schedules->ft_fee);
+                $stsf = Utility::escape($schedules->st_fee);
+                $ttsf = Utility::escape($schedules->tt_fee);
                 ?>
+                <div class="form-group">
+                    <label for="currTerm">Current Term</label>
+                    <select class="js-example-basic-single w-100" id="currTerm" title="Current Term" name="currTerm" required onchange="submitForm()">
+                        <option value="ft" <?php echo selectedTerm('ft') ?>>First Term</option>
+                        <option value="st" <?php echo selectedTerm('st') ?>>Second Term</option>
+                        <option value="tt" <?php echo selectedTerm('tt') ?>>Third Term</option>
+                    </select>
+                </div>
+                <div class="card card-body border border-1 mb-3">
+                    <h5 class="text-primary">Sessional</h5>
+                    <div class="form-group">
+                        <label for="formfee">Form Fees(&#8358;)</label>
+                        <input type="text" class="form-control" id="formfee" onfocus="clearHTML('messageContainer')" title="Form Fees" required pattern="^[0-9.]+$" name="formfee" value="<?php echo $formFee; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="regfee">Registration Fees(&#8358;)</label>
+                        <input type="text" class="form-control" id="regfee" onfocus="clearHTML('messageContainer')" title="Registration Fees" required pattern="^[0-9.]+$" name="regfee" value="<?php echo $regFee; ?>">
+                    </div>
+                </div>
+                <div class="card card-body border border-1">
+                    <h5 class="text-primary">Termly</h5>
+                    <div class="form-group">
+                        <label for="ftsf">First Term School Fees(&#8358;)</label>
+                        <input type="text" class="form-control" id="ftsf" onfocus="clearHTML('messageContainer')" title="First Term School Fees" required pattern="^[0-9.]+$" name="ftsf" value="<?php echo $ftsf; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="stsf">Second Term School Fees(&#8358;)</label>
+                        <input type="text" class="form-control" id="stsf" onfocus="clearHTML('messageContainer')" title="Second Term School Fees" required pattern="^[0-9.]+$" name="stsf" value="<?php echo $stsf; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="ttsf">Third Term School Fees(&#8358;)</label>
+                        <input type="text" class="form-control" id="ttsf" onfocus="clearHTML('messageContainer')" title="Third Term School Fees" required pattern="^[0-9.]+$" name="ttsf" value="<?php echo $ttsf; ?>">
+                    </div>
+                </div>
+
+                <div id="messageContainer"></div>
+                <div class="text-center mt-3">
+                    <button type="button" class="btn btn-primary mr-2" id="saveBtn" onclick="saveChanges()">Save Changes</button><span id="ld_loader"></span>
+                </div>
+
                 <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
             </form>
         </div>

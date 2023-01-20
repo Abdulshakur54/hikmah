@@ -33,6 +33,15 @@ require_once './includes/apm.inc.php';
                     </select>
                     <div id="showLevel" class="p-2"></div>
                 </div>
+                <div class="form-group">
+                    <label for="term">Term of entry <i class="mdi mdi-comment-question-outline" style="font-size:1.2rem" onmouseenter="document.getElementById('term_message').style.display='inline'" onmouseleave="document.getElementById('term_message').style.display='none'"></i> <span class="message" style="display:none" id="term_message">This determines the term the student would start paying school fees</span></label>
+                    <select class="js-example-basic-single w-100 p-2" id="term" title="Term of entry" name="term" required>
+                        <option value="ft">First Term</option>
+                        <option value="st">Second Term</option>
+                        <option value="tt">Third Term</option>
+                    </select>
+                </div>
+
                 <div id="messageContainer"></div>
                 <button type="button" class="btn btn-primary mr-2" id="generatePin" onclick="addToken()">Generate Pin</button><span id="ld_loader"></span>
                 <button type="button" class="btn btn-light" onclick="getAltPage('<?php echo Utility::escape(Session::getAltLastPage()) ?>')" id="returnBtn">Return</button>

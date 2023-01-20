@@ -19,6 +19,7 @@ $payment_months = $acct->getSalaryMonths();
                             <th>pay management salaries</th>
                             <th>salary status</th>
                             <th>transactions</th>
+                            <th>debt</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -29,10 +30,11 @@ $payment_months = $acct->getSalaryMonths();
                             <tr>
                                 <td></td>
                                 <td><?php echo $pm->month . ', ' . $pm->year ?></td>
-                                <td><a href="#" onclick="getPage('management/accountant/pay_salaries.php?recipients=staff')">pay staff salaries</a></td>
-                                <td><a href="#" onclick="getPage('management/accountant/pay_salaries.php?recipients=management')">pay management salaries</a></td>
+                                <td><a href="#" onclick="getPage('management/accountant/pay_salaries.php?recipients=staff&payment_month=<?php echo $pm->id ?>')">pay staff salaries</a></td>
+                                <td><a href="#" onclick="getPage('management/accountant/pay_salaries.php?recipients=management&payment_month=<?php echo $pm->id ?>')">pay management salaries</a></td>
                                 <td><a href="#" onclick="getPage('management/accountant/salary_status.php?payment_month=<?php echo $pm->id ?>')">salaries status</a></td>
                                 <td><a href="#" onclick="getPage('management/accountant/salary_transactions.php?payment_month=<?php echo $pm->id ?>')">transactions</a></td>
+                                <td><a href="#" onclick="getPage('management/accountant/salary_payables.php?payment_month=<?php echo $pm->id ?>')">debt</a></td>
                             </tr>
                         <?php
                         }

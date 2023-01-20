@@ -66,8 +66,8 @@ $accounts = $acct->getSchoolAccounts();
                     swalNotify(rsp.message, 'warning')
                 }
                 ld_stopLoading("withdrawBtn");
-                emptyInputs(["amount","description","recipient"]);
-                resetInputStyling("depositForm", "inputsuccess", "inputfailure");
+                emptyInputs(["amount", "description", "recipient"]);
+                resetInputStyling("withdrawForm", "inputsuccess", "inputfailure");
             }
         }
 

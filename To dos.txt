@@ -1,1 +1,5 @@
+
 **implement the error pages and the custom error handlers**
+
+add term option while token is generated for admission students to know when they would start paying school fees from, same for manual admission
+add an option to pay reg_fee during manual admission

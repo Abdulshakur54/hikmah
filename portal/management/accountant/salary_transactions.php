@@ -42,7 +42,7 @@ $management_report = $acct->getMonthlySalaryTransactionDetails($payment_month, '
                                 <td><?php echo number_format($tr->amount, 2) ?></td>
                                 <td><?php echo number_format($tr->school_balance, 2) ?></td>
                                 <td><?php echo ($tr->type == 1) ? "online" : "manual" ?></td>
-                                <td><?php echo date('jS M, Y g:i A', strtotime($tr->created)) ?></td>
+                                <td><?php echo Utility::formatFullDate($tr->created) ?></td>
 
                             </tr>
                         <?php

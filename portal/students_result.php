@@ -74,7 +74,7 @@ if (in_array('pro', $columns)) {
 }
 $post_sub_pos = 10 + $sub_width;
 $pdf = new FPDF();
-$pdf->SetMargins(10, 5, 10);
+$pdf->SetMargins(10, 10, 10);
 $pdf->SetAutoPageBreak(true, 5);
 
 //add fonts
@@ -113,7 +113,7 @@ foreach ($student_ids as $std_id) {
     $height_eot =  $agg_data->{$term . '_height_end'};
     $weight_bot =  $agg_data->{$term . '_weight_beg'};
     $weight_eot =  $agg_data->{$term . '_weight_end'};
-    $title = Utility::format_student_id($std_id) . '_' . $term . '_result.png';
+    $title = Utility::format_student_id($std_id) . '_'.Utility::getFormattedSession($session).'_' . $term . '_result.png';
     $qr_data = QRC::get_code($title, ['student_id' => $std_id, 'session' => $session, 'term' => $term, 'school' => $sch_abbr]);
     $link = $url->to('students_result.php?identifier=' . $qr_data->identifier . '&token=' . $qr_data->token, 0);
     if (!file_exists('barcodes/' . $title)) {

@@ -77,4 +77,95 @@ class Payment
     {
         $this->db->commit();
     }
+
+    public static function paySchoolFees(string $std_id, string $term, string $session, float $amount, TransactionType $type)
+    {
+        $db = DB::get_instance();
+        $acct = new Account();
+        $detail = $acct->getSchoolFeeDetail($std_id, $term, $session);
+        $school_balance = Account::getAccountBalance($detail->sch_abbr);
+        $paid = ((float) $detail->paid) + $amount;
+        if (round($paid, 1) < round((float)$detail->amount, 1)) {
+            $status = 1;
+        } else {
+            $status = 2;
+        }
+        try {
+            $db->beginTransaction();
+            $db->update('school_fee', [
+                'paid' => $paid,
+                'status' => $status
+            ], "std_id='$std_id' and term='$term' and session = '$session'");
+            $new_balance = $school_balance + $amount;
+            $db->insert('transaction', [
+                'trans_id' => Token::create(Config::get('transaction/token_length')),
+                'payer' => $std_id,
+                'receiver' => $detail->sch_abbr,
+                'amount' => $amount,
+                'school_balance' => $new_balance,
+                'type' => $type->value,
+                'category' => TransactionCategory::SCHOOL_FEES->value,
+                'school_fee_id' => (int)$detail->id
+            ]);
+            $db->update('accounts', [
+                'balance' => $new_balance
+            ], "account_name='$detail->sch_abbr'");
+            $db->commit();
+        } catch (PDOException $e) {
+            $db->rollBack();
+            echo Utility::response(500, 'Error encountered while trying to pay School Fee');
+        }
+    }
+    public static function payRegFees(string $std_id,TransactionType $type)
+    {
+        $db = DB::get_instance();
+        $acct = new Account();
+        $detail = $acct->getRegFeeDetail($std_id);
+        $school_balance = Account::getAccountBalance($detail->sch_abbr);
+        $amount = (float)$detail->reg_fee;
+        try {
+            $db->beginTransaction();
+            $new_balance = $school_balance + $amount;
+            $db->insert('transaction', [
+                'trans_id' => Token::create(Config::get('transaction/token_length')),
+                'payer' => $std_id,
+                'receiver' => $detail->sch_abbr,
+                'amount' => $amount,
+                'school_balance' => $new_balance,
+                'type' => $type->value,
+                'category' => TransactionCategory::REGISTRATION_FEES->value,
+            ]);
+            $insertId = $db->getLastInsertId();
+            $db->update('reg_fee', [
+                'ref_id'=>$insertId,
+                'status' => 2
+            ], "std_id='$std_id'");
+            $db->update('accounts', [
+                'balance' => $new_balance
+            ], "account_name='$detail->sch_abbr'");
+            $db->commit();
+        } catch (PDOException $e) {
+            $db->rollBack();
+            echo Utility::response(500, 'Error encountered while trying to pay School Fee');
+        }
+    }
+
+    public static function getPayerOrRecipientCategory(string $payer): string
+    {
+        $schools = array_merge(School::getSchools(2),['HIKMAH']);
+        if (in_array($payer, $schools)) {
+            return 'school';
+        }
+        $first_letter = strtolower(substr($payer, 0, 1));
+        switch ($first_letter) {
+            case 'm':
+                return 'management';
+            case 's':
+                return 'staff';
+            case 'h':
+                return 'student';
+            default:
+                return '';
+        }
+    }
 }

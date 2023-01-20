@@ -122,12 +122,21 @@ class Utility
         switch ($formatType) {
             case 0:
                 return date('l, ', $date) . $day . date(' F, Y', $date);
-                break;
             case 1:
                 return $day . date(' F, Y', $date);
-                break;
+            default:
+                return '';
         }
     }
+
+   public static function formatFullDate(string $date, $fullMonth = false):string{
+    if($fullMonth){
+            return date('jS F, Y g:i A', strtotime($date));
+    }else{
+            return date('jS M, Y g:i A', strtotime($date));
+    }
+       
+   } 
 
     //this method returns an array of randum numbers
     public static function randNums($start, $end, $count = null)
@@ -534,4 +543,5 @@ class Utility
     {
         return json_encode(['status' => $status, 'message' => $message, 'data' => $data, 'token' => Token::generate()]);
     }
+    
 }

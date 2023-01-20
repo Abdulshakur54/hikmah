@@ -51,6 +51,7 @@ $categories = TransactionCategory::cases();
                                 <th>Type</th>
                                 <th>Description</th>
                                 <th>Created</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -68,7 +69,7 @@ $categories = TransactionCategory::cases();
     </div>
     <script>
         var table = $("#transactions").DataTable(dataTableOptions);
-        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
         async function search() {
             if (validate('transactionsForm', {
@@ -93,7 +94,7 @@ $categories = TransactionCategory::cases();
                     let row = 0;
                     let amount;
                     for (let dt of data) {
-                        table.row.add(['', `${dt.trans_id}`, `${dt.payer}`, `${dt.receiver}`, `${formatMoney(dt.amount)}`, `${formatBalance(dt.school_balance,dt.trans_cat)}`, `${dt.trans_cat}`, `${dt.trans_type}`, `${formatDescription(dt.description)}`, `${formatDate(dt.created)}`]);
+                        table.row.add(['', `${dt.trans_id}`, `${dt.payer}`, `${dt.receiver}`, `${formatMoney(dt.amount)}`, `${formatBalance(dt.school_balance,dt.trans_cat)}`, `${dt.trans_cat}`, `${dt.trans_type}`, `${formatDescription(dt.description)}`, `${formatDate(dt.created)}`, `${formatDownloadReceipt(dt.trans_id)}`]);
                         row++;
                     }
                     table.draw();
@@ -109,6 +110,10 @@ $categories = TransactionCategory::cases();
                 return '';
             }
             return formatMoney(balance);
+        }
+
+        function formatDownloadReceipt(trans_id) {
+            return `<span class = "message" onclick = "downloadReceipt('${trans_id}')"style = "cursor:pointer"> download receipt </span>`;
         }
 
         function formatDescription(description) {
@@ -127,6 +132,15 @@ $categories = TransactionCategory::cases();
             const minute = dateObj.getMinutes();
             return day + ' ' + month.substr(0, 3) + ', ' + year + ' : ' + hour + ':' + minute;
 
+        }
+
+        let startedDownloadingReceipt = false;
+        async function downloadReceipt(trans_id) {
+            if (!startedDownloadingReceipt) {
+                startedDownloadingReceipt = true;
+                await window.location.assign('receipts.php?trans_id=' + trans_id + '&token=' + _('token').value);
+                startedDownloadingReceipt = false;
+            }
         }
         validate('transactionsForm');
         $(".js-example-basic-single").select2();

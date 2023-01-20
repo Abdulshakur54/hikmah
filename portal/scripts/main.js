@@ -20,34 +20,37 @@ var dataTableOptions = {
     return nRow;
   },
 };
-
+let loaderHaveStartedLoading = false;
 function getPage(url, postData = null) {
-  // $("#page").block({
-  //   message: "<div>Loading...</div>",
-  //   css: {
-  //     display: "flex",
-  //     width: "100%",
-  //     height: "100vh",
-  //     justifyContent: "center",
-  //     alignItems: "center",
-  //     border:'none',
-  //     fontWeight:'bold'
-  //   },
-  // });
-  if (postData == null) {
-    //get request
-    if (url.indexOf("?") === -1) {
-      url += "?page_token=" + _("page_token").value;
+  if (!loaderHaveStartedLoading) {
+    // $("#page").block({
+    //   message: "<div>Loading...</div>",
+    //   css: {
+    //     display: "flex",
+    //     width: "100%",
+    //     height: "100vh",
+    //     justifyContent: "center",
+    //     alignItems: "center",
+    //     border:'none',
+    //     fontWeight:'bold'
+    //   },
+    // });
+    if (postData == null) {
+      //get request
+      if (url.indexOf("?") === -1) {
+        url += "?page_token=" + _("page_token").value;
+      } else {
+        url += "&page_token=" + _("page_token").value;
+      }
+      ajaxRequest(url, loadPage);
     } else {
-      url += "&page_token=" + _("page_token").value;
+      //post request
+      postData += "&page_token=" + _("page_token").value;
+      ajaxRequest(url, loadPage, postData);
     }
-    ajaxRequest(url, loadPage);
-  } else {
-    //post request
-    postData += "&page_token=" + _("page_token").value;
-    ajaxRequest(url, loadPage, postData);
+    // $('#page').unblock();
   }
-  // $('#page').unblock();
+
 }
 
 function loadPage() {
@@ -67,6 +70,7 @@ function loadPage() {
   } else {
     _("requestLink").style.display = "none";
   }
+  loaderHaveStartedLoading = false;
 }
 
 setTimeout(function () {

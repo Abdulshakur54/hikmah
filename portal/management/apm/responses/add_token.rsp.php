@@ -19,6 +19,7 @@
          }
          $level = Utility::escape(Input::get('level'));
          $sch_abbr = Utility::escape(Input::get('sch_abbr'));
+         $term = Utility::escape(Input::get('term'));
          $db = DB::get_instance();
          $run = true;
          
@@ -31,7 +32,7 @@
                 $db->query('select token from token where token=?',[$createdToken]);
                 if($db->row_count() === 0){
                     //add token to table
-                    $db->query('insert into token (token,owner,sch_abbr,level,pro_rank,added_by) values(?,?,?,?,?,?)',[$createdToken,$name,$sch_abbr,$level,$rank,2]); //the 2 at the end shows it is added by the APM
+                    $db->query('insert into token (token,owner,sch_abbr,level,term,pro_rank,added_by) values(?,?,?,?,?,?,?)',[$createdToken,$name,$sch_abbr,$level,$term,$rank,2]); //the 2 at the end shows it is added by the APM
                     $run = false;
                 }
             }

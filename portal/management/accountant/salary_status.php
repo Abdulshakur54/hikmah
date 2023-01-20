@@ -25,6 +25,7 @@ $management_report = $acct->getMonthlySalaryDetails($payment_month, 'management'
                             <th>Received (&#8358;)</th>
                             <th>Owed (&#8358;)</th>
                             <th>Category</th>
+                            <th>School</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,11 +35,12 @@ $management_report = $acct->getMonthlySalaryDetails($payment_month, 'management'
 
                             <tr>
                                 <td></td>
-                                <td><?php echo $sr->title.'. '.Utility::formatName($sr->fname, $sr->oname, $sr->lname) ?></td>
-                                <td><?php echo number_format($sr->salary,2) ?></td>
-                                <td><?php echo number_format($sr->paid,2) ?></td>
-                                <td><?php echo number_format(round(((float)$sr->salary - (float)$sr->paid), 2),2) ?></td>
+                                <td><?php echo $sr->title . '. ' . Utility::formatName($sr->fname, $sr->oname, $sr->lname) ?></td>
+                                <td><?php echo number_format($sr->salary, 2) ?></td>
+                                <td><?php echo number_format($sr->paid, 2) ?></td>
+                                <td><?php echo number_format(round(((float)$sr->salary - (float)$sr->paid), 2), 2) ?></td>
                                 <td>Staff</td>
+                                <td><?php echo $sr->sch_abbr ?></td>
                             </tr>
                         <?php
                         }
@@ -49,10 +51,11 @@ $management_report = $acct->getMonthlySalaryDetails($payment_month, 'management'
                             <tr>
                                 <td></td>
                                 <td><?php echo Utility::formatName($mr->fname, $mr->oname, $mr->lname) ?></td>
-                                <td><?php echo number_format($mr->salary,2) ?></td>
-                                <td><?php echo number_format($mr->paid,2) ?></td>
-                                <td><?php echo number_format(round(((float)$mr->salary - (float)$mr->paid), 2),2) ?></td>
+                                <td><?php echo number_format($mr->salary, 2) ?></td>
+                                <td><?php echo number_format($mr->paid, 2) ?></td>
+                                <td><?php echo number_format(round(((float)$mr->salary - (float)$mr->paid), 2), 2) ?></td>
                                 <td>Management</td>
+                                <td><?php echo $mr->sch_abbr ?></td>
                             </tr>
                         <?php
                         }

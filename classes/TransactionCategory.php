@@ -8,8 +8,6 @@ enum TransactionCategory :int implements Enums{
     case WITHDRAWAL = 6;
     case DEPOSIT = 7;
     case TRANSFER = 8;
-    case REVOKE = 9;
-
     public function getName(): string
     {
         return str_replace('_', ' ', $this->name);

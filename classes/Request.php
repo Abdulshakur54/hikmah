@@ -125,8 +125,14 @@ class Request
                     $other_data['recipients'] = $recipients;
                     $other_data['request_id'] = $id;
                     $other_data['percentage'] = $percentage;
+                    if ($recipients == 'management') {
+                        $cat = 'M';
+                    } else {
+                        $cat = 'S';
+                    }
                     $this->deleteRequest($id);
-                    $this->_db->delete('payment_exist', "payment_month=$payment_month");
+                   
+                    $this->_db->delete('payment_exist', "payment_month=$payment_month and category='$cat'");
                     $this->requestResponseNotification($requester_id, $category, true, $other_data);
                     return Utility::response(204, 'Payment was successfully executed');
                 }
@@ -250,9 +256,14 @@ class Request
                     $recipients = $other_data['recipients'];
                     $percentage = $other_data['percentage'];
                     $payment_month = $other_data['payment_month'];
+                    if ($recipients == 'management') {
+                        $cat = 'M';
+                    } else {
+                        $cat = 'S';
+                    }
                     //delete record from payment_exist table
-                    $this->_db->delete('payment_exist', "payment_month=$payment_month");
-                    $salary_month = Account::getSalaryMonth((int) $other_data->payment_month);
+                    $this->_db->delete('payment_exist', "payment_month=$payment_month and category='$cat'");
+                    $salary_month = Account::getSalaryMonth((int) $payment_month);
                     $msg = "<p>This is to notify that your request to the Director to approve payment for the salary month ($salary_month) was rejected</p><p>$percentage% of remaining salary was proposed</p>";
                     $not->sendToRank(3, 'Payment of Salary', $msg);
                     $not->reset();
@@ -268,11 +279,10 @@ class Request
                 $title = (($accepted) ? 'Approval' : 'Declination') . ' of Deposit Request';
                 if ($accepted) {
                     $title = 'Approval of Deposit Request';
-                    $msg = "Hello, This is to notify you that the <span class='font-weight-bold'>director</span> have approved your request for the deposit of <span class='font-weight-bold'>(&#8358;)" . number_format($amount,2) . "</span> into <span class='font-weight-bold'>$account</span> from <span class='font-weight-bold'>$depositor</span>";
-               
+                    $msg = "Hello, This is to notify you that the <span class='font-weight-bold'>director</span> have approved your request for the deposit of <span class='font-weight-bold'>(&#8358;)" . number_format($amount, 2) . "</span> into <span class='font-weight-bold'>$account</span> from <span class='font-weight-bold'>$depositor</span>";
                 } else {
                     $title = 'Declination of Deposit Request';
-                    $msg = "Hello, This is to notify you that the <span class='font-weight-bold'>director</span> declined your request for the deposit of <span class='font-weight-bold'>(&#8358;)" . number_format($amount,2) . "</span> into <span class='font-weight-bold'>$account</span> from <span class='font-weight-bold'>$depositor</span>";
+                    $msg = "Hello, This is to notify you that the <span class='font-weight-bold'>director</span> declined your request for the deposit of <span class='font-weight-bold'>(&#8358;)" . number_format($amount, 2) . "</span> into <span class='font-weight-bold'>$account</span> from <span class='font-weight-bold'>$depositor</span>";
                 }
                 $not->sendToRank(3, $title, $msg);
                 break;
@@ -283,11 +293,10 @@ class Request
                 $not = new Alert(true);
                 if ($accepted) {
                     $title = 'Approval of Withdrawal Request';
-                    $msg = "Hello, This is to notify you that the <span class='font-weight-bold'>director</span> have approved your request for the withdrawal of <span class='font-weight-bold'>(&#8358;)" . number_format($amount,2) . "</span> from <span class='font-weight-bold'>$account</span> for <span class='font-weight-bold'>$recipient</span>";
-                 
+                    $msg = "Hello, This is to notify you that the <span class='font-weight-bold'>director</span> have approved your request for the withdrawal of <span class='font-weight-bold'>(&#8358;)" . number_format($amount, 2) . "</span> from <span class='font-weight-bold'>$account</span> for <span class='font-weight-bold'>$recipient</span>";
                 } else {
                     $title = 'Declination of Withdrawal Request';
-                    $msg = "Hello, This is to notify you that the <span class='font-weight-bold'>director</span> declined your request for the withdrawal of <span class='font-weight-bold'>(&#8358;)" . number_format($amount,2) . "</span> from <span class='font-weight-bold'>$account</span> for <span class='font-weight-bold'>$recipient</span>";
+                    $msg = "Hello, This is to notify you that the <span class='font-weight-bold'>director</span> declined your request for the withdrawal of <span class='font-weight-bold'>(&#8358;)" . number_format($amount, 2) . "</span> from <span class='font-weight-bold'>$account</span> for <span class='font-weight-bold'>$recipient</span>";
                 }
                 $not->sendToRank(3, $title, $msg);
                 break;
@@ -453,7 +462,7 @@ class Request
             $payer = $other_data->school;
             $category = TransactionCategory::STAFF_SALARY;
         }
-        $payer_balance = (float)$db->get('accounts', 'balance', "account_name='$payer'")->balance;
+        $payer_balance = Account::getAccountBalance($payer);
         if (Utility::equals($other_data->payment_type, 'online')) {
             $transaction_type = TransactionType::ONLINE;
         } else {
@@ -468,7 +477,7 @@ class Request
             foreach ($payment_details as $pd) {
                 $amount = (float) $recipient_data[$count][1];
                 $newPaid = round((float) $pd->paid + $amount, 2);
-                if ($newPaid < (float)$pd->salary) {
+                if (round($newPaid, 1) < round((float)$pd->salary, 1)) {
                     $newStatus = 1;
                 } else {
                     $newStatus = 2;

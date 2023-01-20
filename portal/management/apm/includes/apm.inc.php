@@ -29,7 +29,8 @@ $utils = new Utils();
 if ($data->active != 1) {
     exit('Sorry! you have been made inactive on the portal');
 }
-if ($rank !== 2) {
+$allowedRanks = [2, 4];
+if (!in_array($rank,$allowedRanks)) {
     exit(); // exits the page if the user is not the Apm
 }
 if ((Input::submitted('post') || Input::submitted('get')) && Token::check(Input::get('page_token'), 'page_token')) {

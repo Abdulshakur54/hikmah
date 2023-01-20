@@ -62,7 +62,7 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
         case 'save_schedules':
 
             $formvalues = [
-                'term' => [
+                'currTerm' => [
                     'name' => 'Current Term',
                     'required' => true,
                     'in' => ['ft', 'st', 'tt'],
@@ -91,46 +91,31 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                     'name' => 'Third Term School Fee',
                     'required' => true,
                     'pattern' => '^[0-9.]+$'
+                ],
+                'level' => [
+                    'name' => 'Level',
+                    'required' => true
                 ]
             ];
-            $fileValues = [
-                'logo' => [
-                    'name' => 'Logo',
-                    'required' => false,
-                    'maxSize' => 100,
-                    'extension' => ['jpg', 'jpeg', 'png']
-                ]
-            ];
-
 
             $val = new Validation();
             $sch_abbr = Input::get('school');
-            if ($val->check($formvalues) && $val->checkFile($fileValues)) {
-                $term = Utility::escape(Input::get('term'));
+            if ($val->check($formvalues)) {
+                $currTerm = Utility::escape(Input::get('currTerm'));
                 $formFee = Utility::escape(Input::get('formfee'));
                 $regFee = Utility::escape(Input::get('regfee'));
                 $ftsf = Utility::escape(Input::get('ftsf'));
                 $stsf = Utility::escape(Input::get('stsf'));
                 $ttsf = Utility::escape(Input::get('ttsf'));
-                if (!empty($_FILES['logo']['name'])) {
-                    $file = new File('logo');
-                    $ext = $file->extension();
-                    $logoName = $sch_abbr . '.' . $ext;
-                    if ($apm->updateSchedule($sch_abbr, $term, $formFee, $regFee, $ftsf, $stsf, $ttsf, $logoName)) {
-                        $file->move('../uploads/logo/' . $logoName); //move picture to the destination folder
-                        echo response(204, 'Update was successful');
-                    } else {
-                        echo response(500, 'An error is preventing changes to being saved');
-                    }
+                $level = Utility::escape(Input::get('level'));
+                if ($apm->updateSchedule($sch_abbr, $currTerm, $level, $formFee, $regFee, $ftsf, $stsf, $ttsf)) {
+                    echo response(204, 'Update was successful');
                 } else {
-                    if ($apm->updateSchedule($sch_abbr, $term, $formFee, $regFee, $ftsf, $stsf, $ttsf)) {
-                        echo response(204, 'Update was successful');
-                    } else {
-                        echo response(500, 'An error is preventing changes to being saved');
-                    }
+                    echo response(500, 'An error is preventing changes to being saved');
                 }
             } else {
                 $errors = $val->errors();
+                $msg = '';
                 foreach ($errors as $error) {
                     $msg .= $error . '<br>';
                 }
@@ -355,6 +340,11 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                     'name' => 'Email',
                     'required' => true,
                     'pattern' => '^[a-zA-Z]+[a-zA-Z0-9]*@[a-zA-Z]+.[a-zA-Z]+$'
+                ],
+                'term'=>[
+                    'name'=>'Term',
+                    'required'=>true,
+                    'pattern'=>'^[fFsStT][Tt]$'
                 ]
 
             ];
@@ -365,6 +355,8 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 $fathername = Utility::escape(Input::get('fathername'));
                 $mothername = Utility::escape(Input::get('mothername'));
                 $email = Utility::escape(Input::get('email'));
+                $term_of_entry = Utility::escape(Input::get('term'));
+                $waive_reg_fee = (Input::get('waive_reg_fee') === 'on') ? true : false;
                 $state = Utility::escape(Input::get('state'));
                 $lga = Utility::escape(Input::get('lga'));
                 $std_id = Utility::escape(Input::get('std_id'));
@@ -372,6 +364,10 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                 $dob = Utility::escape(Input::get('dob'));
                 $password = Utility::escape(Input::get('password'));
                 $std_arr = explode('/', $std_id);
+                if(!preg_match('/^(HCK|HCB|HA|HIS|HM|HCI|H E-M|HCM|hck|hcb|ha|his|hm|hci|h e-m|hcm)\/[1-9][0-9]\/[1-9]\/[0-9]{3,5}$/',$std_id)){
+                    echo response(400, 'Invalid Student ID');
+                    exit();
+                }
                 $sch_abbr = strtoupper($std_arr[0]);
                 $level = strtoupper($std_arr[2]);
                 $doa = Utility::escape(Input::get('doa'));
@@ -383,14 +379,49 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
                     echo response(400, 'Your student Id should reflect your school');
                     exit();
                 }
-                $sql1 = 'insert into student(fname,lname,oname,adm_id,password,std_id,rank,sch_abbr,level,date_of_admission) values(?,?,?,?,?,?,?,?,?,?)';
+                if(!empty($db->get('student', 'std_id', "std_id='$std_id'"))){
+                    echo response(400, 'This StudentId is already in use');
+                    exit();
+                }
+                $db = DB::get_instance();
+                $utils = new Utils();
+                $session = $utils->getSession($sch_abbr);
+                $sql1 = 'insert into student(fname,lname,oname,adm_id,password,std_id,rank,sch_abbr,level,date_of_admission,term_of_entry) values(?,?,?,?,?,?,?,?,?,?,?)';
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                $val1 = [$fname, $lname, $oname, $adm_id, $hashed_password, $std_id, $rank, $sch_abbr, $level, $doa];
+                $val1 = [$fname, $lname, $oname, $adm_id, $hashed_password, $std_id, $rank, $sch_abbr, $level, $doa,$term_of_entry];
                 $sql2 = 'insert into student2(std_id,fathername,mothername,dob,email,state,lga) values(?,?,?,?,?,?,?)';
                 $val2 = [$std_id, $fathername, $mothername, $dob, $email, $state, $lga];
                 $sql3 = 'insert into student_psy(std_id)values(?)';
                 $val3 = [$std_id];
-                if ($db->trans_query([[$sql1, $val1], [$sql2, $val2], [$sql3, $val3]])) {
+               
+                $fee_details = $db->get('fee', 'reg_fee,form_fee,ft_fee,st_fee,tt_fee', "sch_abbr = '$sch_abbr' and level = $level and session = '$session'");
+                $sql5 = 'insert into school_fee(std_id,amount,term,session) values(?,?,?,?)';
+                $sql8 = 'insert into reg_fee(std_id,session) values(?,?)';
+                $val5 = [$std_id, $fee_details->ft_fee, 'ft', $session];
+                $val6 = [$std_id, $fee_details->st_fee, 'st', $session];
+                $val7 = [$std_id, $fee_details->tt_fee, 'tt', $session];
+                $val8 = [$std_id, $session];
+                $queries = [[$sql1, $val1], [$sql2, $val2], [$sql3, $val3]];
+                switch ($term_of_entry) {
+                    case 'ft':
+                        $queries[] = [$sql5, $val5];
+                        $queries[] = [$sql5, $val6];
+                        $queries[] = [$sql5, $val7];
+                        break;
+                    case 'st':
+                        $queries[] = [$sql5, $val6];
+                        $queries[] = [$sql5, $val7];
+                        break;
+                    case 'tt':
+                        $queries[] = [$sql5, $val7];
+                        break;
+                }
+                if(!$waive_reg_fee){
+                    $queries[] = [$sql8, $val8];
+                }
+               
+                if ($db->trans_query($queries)) {
+                    Ses::updateStudentCount($sch_abbr, $session);
                     $mail = new Email();
                     $message = '<p>Congratulations, You have been successfully integrated into Hikmah Web Portal. You can now login to your portal with the link below.</p> <p>It is recommended for you to change your password and update your profile when you login</p>
                     <p>
@@ -409,9 +440,9 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
 
                         $mail->send($email, 'Integration to Hikmah Portal', $message);
                     }
-                    echo response(201, 'Student have been admitted <br>An email has been sent to him along with his Student ID and Password');
+                    echo response(201, 'Student have been admitted <br>An email has been sent to him along with his Student ID and Password<br>Student can download admission letter when he logs in to student portal');
                 } else {
-                    echo response(500, 'An error occoured while trying to admit student');
+                    echo response(500, 'An error occurred while trying to admit student');
                 }
             } else {
                 $errors = $val->errors();
@@ -444,12 +475,16 @@ if (Input::submitted() && Token::check(Input::get('token'))) {
             break;
         case 'reset_admission_decision':
             $adm_id = Utility::escape(Input::get('adm_id'));
-            if($db->update('admission', ['status' => 0], "adm_id='$adm_id'")){
+            if ($db->update('admission', ['status' => 0], "adm_id='$adm_id'")) {
 
                 echo response(204, 'reset was successful');
-            }else{
+            } else {
                 echo response(500, 'Something went wrong while trying to reset');
             }
+            break;
+        case 'getlevels':
+            $sch_abbr = Utility::escape(Input::get('school'));
+            echo response(200, '', School::getLevels($sch_abbr));
             break;
     }
 } else {

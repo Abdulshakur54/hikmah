@@ -15,25 +15,27 @@ class Student extends User
     public static function genId($sch_abbr, $level)
     {
         $db = DB::get_instance(); //get an instance of the database connection
+        $utils = new Utils();
+        $session = $utils->getSession($sch_abbr);
         //get student count and increement by 1
-        $db->query('select std_count from school where sch_abbr=?', [$sch_abbr]);
-        $id = ($db->one_result()->std_count) + 1;
-        //update the student count
-        $db->query('update school set std_count=? where sch_abbr=?', [$id, $sch_abbr]);
+        $count =  Ses::getStudentsCount($sch_abbr,$session) + 1;
+        
         $preZeros = '';
-        $preZerosCount = 3 - strlen((string)$id);
+        $preZerosCount = 3 - strlen((string)$count);
         for ($i = 1; $i <= $preZerosCount; $i++) {
             $preZeros .= '0';
         }
         //get current session year
-        $db->query('select current_session from school where sch_abbr=?', [$sch_abbr]);
-        $currSessionYear = explode('/', $db->one_result()->current_session)[0];
-        return $sch_abbr . '/' . substr($currSessionYear, -2) . '/' . $level . '/' . $preZeros . $id;
+        $utils = new Utils();
+        $currSession = $utils->getSession($sch_abbr);
+        $currSessionYear = explode('/', $currSession)[0];
+        return $sch_abbr . '/' . substr($currSessionYear, -2) . '/' . $level . '/' . $preZeros . $count;
     }
 
     public function getCurrentSession($sch)
     {
-        return $this->_agg->lookup('current_session', 'school', 'sch_abbr,=,' . $sch);
+        $utils = new Utils();
+        return $utils->getSession($sch);
     }
 
     public function getCurrentSessionFirstYear($sch)

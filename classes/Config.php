@@ -102,6 +102,9 @@ $GLOBALS['configuration'] = array(
 		'email' => 'mabdulshakur54@gmail.com',
 		'password' => '190587Ab',
 		'sender_name' => 'HIKMAH',
+	],
+	'receipts'=>[
+		'default_school'=> 'HCK',
 	]
 );
 

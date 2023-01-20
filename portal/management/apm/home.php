@@ -14,6 +14,9 @@ $menus = $menu->get($username);
     .plink:hover {
         background-color: #d9d9d9;
     }
+    .pointer {
+        cursor: pointer;
+    }
 </style>
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
@@ -39,7 +42,7 @@ $menus = $menu->get($username);
                                     <?php
                                     foreach ($menu->children as $child) {
                                     ?>
-                                        <span onclick="<?php echo (Utility::is_new_exam($child->url))?'location.assign(\''.$child->url.'\')':'getPage(\''.$child->url.'\')' ?>" class="d-block p-2 px-3 border border-primary text-primary rounded plink"><?php echo $child->display_name ?></span>
+                                        <span onclick="<?php echo (Utility::is_new_exam($child->url))?'location.assign(\''.$child->url.'\')':'getPage(\''.$child->url.'\')' ?>" class="d-block p-2 px-3 border border-primary text-primary rounded plink pointer"><?php echo $child->display_name ?></span>
                                     <?php
                                     }
                                     ?>

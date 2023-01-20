@@ -23,7 +23,7 @@ if (Session::exists('user')) {
   $menu = new Menu();
   $menus = $menu->get($username);
   $link = User::get_link($username);
-  $last_page = (Session::lastPageExists()) ? Session::getLastPage() : $link.'/home.php';
+  $last_page = (Session::lastPageExists()) ? Session::getLastPage() : $link . '/home.php';
   $profile_image_path = User::get_profile_image_path($username);
 } else {
 
@@ -212,13 +212,9 @@ if (Session::exists('user')) {
 
         <ul class="nav">
           <li class="nav-item">
-
             <a class="nav-link" href="#" onclick="getPage('<?php echo $link . '/home.php' ?>')">
-
               <i class="icon-grid menu-icon"></i>
-
               <span class="menu-title">Dashboard</span>
-
             </a>
 
           </li>

@@ -20,7 +20,7 @@ function changeSchool(event) {
       }
       break;
     default:
-      genHtml += "<option value='All'>All</option>";
+      genHtml += "<option value='ALL'>ALL</option>";
   }
   changePosition(pos);
   $("#school").html(genHtml);

@@ -1,4 +1,7 @@
 <?php
+
+use Monolog\Handler\Curl\Util;
+
 class Apm extends Management
 {
     private $_table;
@@ -83,27 +86,28 @@ class Apm extends Management
         return $this->_db->one_result()->counter;
     }
 
-    public function getSchedules($sch_abbr)
+    public function getSchedules(string $sch_abbr, int $level)
     {
         $utils = new Utils();
         $current_session = $utils->getSession($sch_abbr);
-        $this->_db->query('select school.*, fee.reg_fee,fee.form_fee,fee.ft_fee,fee.st_fee,fee.tt_fee from school inner join fee on school.sch_abbr = fee.sch_abbr  where school.sch_abbr = ? and fee.session = ?', [$sch_abbr,$current_session]);
-        return $this->_db->one_result();
+        return $this->_db->get('fee', '*', "sch_abbr = '$sch_abbr' and level=$level and session='$current_session'");
     }
 
 
     //this method updates the settings(schedules) for the selected school
-    public function updateSchedule($sch_abbr, $term, $formFee, $regFee, $ftsf, $stsf, $ttsf, $logoName = null): bool
+    public function updateSchedule($sch_abbr, $term, $level, $formFee, $regFee, $ftsf, $stsf, $ttsf): bool
     {
         $utils = new Utils();
         $current_session = $utils->getSession($sch_abbr);
-        $this->_db->update('fee', ['form_fee' => $formFee, 'reg_fee' => $regFee, 'ft_fee' => $ftsf, 'st_fee' => $stsf, 'tt_fee' => $ttsf], "sch_abbr = '$sch_abbr' and session='$current_session'");
-        if ($logoName !== null) {
-            $response =  $this->_db->query('update school set current_term=?, logo=? where sch_abbr=?', [$term, $logoName, $sch_abbr]);
-        } else {
-
+        try {
+            $this->_db->beginTransaction();
+            $this->_db->update('fee', ['form_fee' => $formFee, 'reg_fee' => $regFee, 'ft_fee' => $ftsf, 'st_fee' => $stsf, 'tt_fee' => $ttsf], "sch_abbr = '$sch_abbr' and session='$current_session' and level = $level");
             $response =  $this->_db->query('update school set current_term=? where sch_abbr=?', [$term, $sch_abbr]);
+            $this->_db->commit();
+            return $response;
+        } catch (PDOException $e) {
+            $this->_db->rollBack();
+            return false;
         }
-        return $response;
     }
 }

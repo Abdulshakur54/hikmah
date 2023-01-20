@@ -6,9 +6,7 @@
 					case 404:
 						http_response_code(404);
 						include 'include/error/404.php';
-						exit();
-						break;
-				}
+						exit();				}
 			}
 			header('Location: '.$location);
 			exit();

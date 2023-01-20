@@ -65,6 +65,7 @@ function round(number,dp){
   return Math.round(number * (10**dp))/(10**dp);
 }
 function formatMoney(money){
-  return Intl.NumberFormat().format(money);
+  const result = Intl.NumberFormat('en-US',{style: 'currency','currency':'USD'}).format(money);
+  return result.substring(1,result.length-1);
 }
 

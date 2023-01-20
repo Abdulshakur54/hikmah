@@ -23,6 +23,7 @@ function addToken() {
     const level = _("level");
     const token = _("token");
     const school = _("school");
+    const term = _("term");
     let rank = 11;
     ajaxRequest(
       "management/apm/responses/add_token.rsp.php",
@@ -33,6 +34,8 @@ function addToken() {
         rank +
         "&sch_abbr=" +
         school.value +
+        "&term=" +
+        term.value +
         "&token=" +
         token.value +
         "&level=" +

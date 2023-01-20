@@ -1,7 +1,6 @@
 <?php
-$array = [
-    ['m008',5000],['m001',7000],['m003',3000],['m009',1000],['m011',3000]
 
-];
-sort($array);
-print_r($array);
+function callFunction($function){
+    $function();
+}
+

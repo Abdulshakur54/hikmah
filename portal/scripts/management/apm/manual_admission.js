@@ -46,16 +46,46 @@ function populateLGA(obj) {
 
 async function admitStudent() {
   if (validate("manualAdmissionForm", { validateOnSubmit: true })) {
-    ld_startLoading('admitBtn');
-    await getPostPageWithUpload(
+    let question = `<p>Proceed to admit the student into the school</p>`;
+    if(_('waive_reg_fee').checked){
+question += `<p style="font-weight:bold">Student Registration Fee would be waved</p>`;
+    }
+    if(await swalConfirm(,'question')){
+
+    ld_startLoading("admitBtn");
+    const rsp = await getPostPageWithUpload(
       "manualAdmissionForm",
       "management/apm/responses/responses.php",
       { op: "manual_admission" },
-      false
+      false,
+      true
     );
-    emptyInputs(["fname", "lname", "oname",'email','fatherName','motherName','stdid','dob','doa','state','lga','password']);
-    resetInputStyling("manualAdmissionForm", "inputsuccess", "inputfailure");
-    ld_stopLoading('admitBtn');
+    const successCodes = [200, 201, 204];
+    if (successCodes.includes(rsp.status)) {
+      emptyInputs([
+        "fname",
+        "lname",
+        "oname",
+        "email",
+        "fatherName",
+        "motherName",
+        "stdid",
+        "dob",
+        "doa",
+        "state",
+        "lga",
+        "password",
+        "waive_reg_fee",
+      ]);
+      resetInputStyling("manualAdmissionForm", "inputsuccess", "inputfailure");
+      swalNotify(rsp.message, "success");
+    } else {
+      swalNotify(rsp.message, "warning");
+    }
+
+    ld_stopLoading("admitBtn");
+  
+    }
   }
 }
 

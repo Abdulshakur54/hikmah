@@ -69,6 +69,19 @@ require_once './includes/apm.inc.php';
                     <label for="doa">Date of Admission</label>
                     <input type="date" class="form-control" id="doa" name="doa" title="Date of Admission" required />
                 </div>
+                <div class="form-group">
+                    <label for="term">Term of entry <i class="mdi mdi-comment-question-outline" style="font-size:1.2rem" onmouseenter="document.getElementById('term_message').style.display='inline'" onmouseleave="document.getElementById('term_message').style.display='none'"></i> <span class="message" style="display:none" id="term_message">This determines the term the student would start paying school fees</span></label>
+                    <select class="js-example-basic-single w-100 p-2" id="term" title="Term of entry" name="term" required>
+                        <option value="ft">First Term</option>
+                        <option value="st">Second Term</option>
+                        <option value="tt">Third Term</option>
+                    </select>
+                </div>
+                <div class="form-check">
+                    <label for="waive_reg_fee">
+                        Waive registration fee <input type="checkbox" name="waive_reg_fee" id="waive_reg_fee">
+                    </label>
+                </div>
                 <input type="hidden" value="<?php echo $data->rank ?>" name="rank" id="rank" />
                 <input type="hidden" value="<?php echo Token::generate() ?>" name="token" id="token" />
                 <div class="text-center p-3">

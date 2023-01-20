@@ -125,8 +125,6 @@ if (Input::submitted('get') && (!empty(Input::get('sch_abbr')) && !empty(Input::
                                     ?>
                                 </tbody>
                             </table>
-                            <input type="hidden" value="<?php echo ($count - 1); ?>" id="counter" />
-                            <!--hidden counter -->
 
                         <?php
                         } else {

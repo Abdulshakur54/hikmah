@@ -371,4 +371,9 @@ class School
         $utils = new Utils();
         return $utils->getSession($sch_abbr);
     }
+
+    public static function getStudents(string $sch_abbr):array{
+        $db = DB::get_instance();
+        return $db->select('student', 'std_id,fname,oname,lname',"sch_abbr='$sch_abbr'");
+    }
 }

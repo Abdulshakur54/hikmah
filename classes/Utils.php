@@ -7,21 +7,14 @@ class Utils {
     }
     
     public function getSession($sch_abbr){
-        $this->_db->query('select current_session from school where sch_abbr=?',[$sch_abbr]);
-         return $this->_db->one_result()->current_session;
+        return $this->_db->get('session', 'session', "sch_abbr = '$sch_abbr' and current = 1")->session;
     }
     
     public function getFormattedSession($sch_abbr){
         return Utility::getFormattedSession($this->getSession($sch_abbr));
     }
     
-    public function getPreviousSession($sch_abbr){
-        $this->_db->query('select previous_session from school where sch_abbr=?',[$sch_abbr]);
-        if($this->_db->row_count() > 0){
-            return $this->_db->one_result()->previous_session;
-        }
-        return false;
-    }
+   
     
     public function getSessionStartYear($sch_abbr){
         return explode('/', $this->getSession($sch_abbr))[0];
@@ -39,6 +32,14 @@ class Utils {
     public function getCurrentTerm($sch_abbr){
         $this->_db->query('select current_term from school where sch_abbr = ?',[$sch_abbr]);
         return $this->_db->one_result()->current_term;
+    }
+    public function getCurrentTerms() :array{
+        $current_terms = $this->_db->select('school', "current_term,sch_abbr");
+        $result = [];
+        foreach($current_terms as $current_term){
+            $result[$current_term->sch_abbr] = $current_term->current_term;
+        }
+        return $result;
     }
     
     public function getSubDetails($subId){

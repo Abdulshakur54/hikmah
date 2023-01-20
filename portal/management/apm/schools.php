@@ -20,6 +20,7 @@ require_once './includes/apm.inc.php';
                             <th></th>
                             <th></th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -45,6 +46,7 @@ require_once './includes/apm.inc.php';
                             <td><a href="#" onclick="getPage(\'management/apm/performance_summary.php?school=' . $school . '\')">performance summary</a></td>
                              <td><a href="#" onclick="getPage(\'management/apm/send_message.php?school=' . $school . '\')">send messages</a></td>
                             <td><a href="#" onclick="getPage(\'management/apm/manage_permission.php?school=' . $school . '\')">permissions</a></td>
+                            <td><a href="#" onclick="getPage(\'management/apm/schedules.php?school=' . $school . '\')">schedules and fees</a></td>
                          </tr>';
                             }
                         } else {
